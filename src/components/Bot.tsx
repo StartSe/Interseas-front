@@ -18,6 +18,7 @@ import { CancelButton } from './buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
+import { ButtomUpload } from './buttons/UploadButton';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -215,6 +216,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const [userInput, setUserInput] = createSignal('');
   const [loading, setLoading] = createSignal(false);
+  const [modalOpen, setModalOpen] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -1196,25 +1198,26 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 )}
               </>
             ) : (
-              <TextInput
-                backgroundColor={props.textInput?.backgroundColor}
-                textColor={props.textInput?.textColor}
-                placeholder={props.textInput?.placeholder}
-                sendButtonColor={props.textInput?.sendButtonColor}
-                maxChars={props.textInput?.maxChars}
-                maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
-                autoFocus={props.textInput?.autoFocus}
-                fontSize={props.fontSize}
-                disabled={getInputDisabled()}
-                defaultValue={userInput()}
-                onSubmit={handleSubmit}
-                uploadsConfig={uploadsConfig()}
-                setPreviews={setPreviews}
-                onMicrophoneClicked={onMicrophoneClicked}
-                handleFileChange={handleFileChange}
-                sendMessageSound={props.textInput?.sendMessageSound}
-                sendSoundLocation={props.textInput?.sendSoundLocation}
-              />
+              // <TextInput
+              //   backgroundColor={props.textInput?.backgroundColor}
+              //   textColor={props.textInput?.textColor}
+              //   placeholder={props.textInput?.placeholder}
+              //   sendButtonColor={props.textInput?.sendButtonColor}
+              //   maxChars={props.textInput?.maxChars}
+              //   maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
+              //   autoFocus={props.textInput?.autoFocus}
+              //   fontSize={props.fontSize}
+              //   disabled={getInputDisabled()}
+              //   defaultValue={userInput()}
+              //   onSubmit={handleSubmit}
+              //   uploadsConfig={uploadsConfig()}
+              //   setPreviews={setPreviews}
+              //   onMicrophoneClicked={onMicrophoneClicked}
+              //   handleFileChange={handleFileChange}
+              //   sendMessageSound={props.textInput?.sendMessageSound}
+              //   sendSoundLocation={props.textInput?.sendSoundLocation}
+              // />
+              <ButtomUpload on:click={() => setModalOpen(true)} text="FAÇA O UPLOAD DO ARQUIVO AGORA" />
             )}
           </div>
           <Badge

@@ -3,7 +3,7 @@ import { Bot, BotProps } from '@/components/Bot';
 import { BubbleParams } from '@/features/bubble/types';
 import { createSignal, onCleanup, onMount, Show } from 'solid-js';
 
-const defaultButtonColor = '#3B81F6';
+const defaultButtonColor = '#002F6C';
 const defaultIconColor = 'white';
 
 export type FullProps = BotProps & BubbleParams;
@@ -80,6 +80,7 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
             isFullPage={true}
             observersConfig={props.observersConfig}
             starterPromptFontSize={props.theme?.chatWindow?.starterPromptFontSize}
+            fileTextExtractionUrl={props.fileTextExtractionUrl}
           />
         </div>
       </Show>

@@ -1,4 +1,4 @@
-import { FileUpload, IAction } from '@/components/Bot';
+import { FileUpload, IAction, MessageType } from '@/components/Bot';
 import { sendRequest } from '@/utils/index';
 
 export type IncomingInput = {
@@ -10,6 +10,7 @@ export type IncomingInput = {
   fileName?: string; // Only for assistant
   leadEmail?: string;
   action?: IAction;
+  history?: MessageType[];
 };
 
 export type MessageRequest = {

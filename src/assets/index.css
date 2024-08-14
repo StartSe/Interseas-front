@@ -2,10 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500;600;700&family=Inter:wght@100;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 :host {
   --chatbot-container-bg-image: none;
   --chatbot-container-bg-color: transparent;
-  --chatbot-container-font-family: 'Open Sans';
+  --chatbot-container-font-family: "Inter";
 
   --chatbot-button-bg-color: #0042da;
   --chatbot-button-color: #ffffff;
@@ -13,7 +16,7 @@
   --chatbot-host-bubble-bg-color: #f7f8ff;
   --chatbot-host-bubble-color: #303235;
 
-  --chatbot-guest-bubble-bg-color: #3b81f6;
+  --chatbot-guest-bubble-bg-color: #3B81F6;
   --chatbot-guest-bubble-color: #ffffff;
 
   --chatbot-input-bg-color: #ffffff;
@@ -164,7 +167,7 @@ textarea {
   background-image: var(--chatbot-container-bg-image);
   background-color: var(--chatbot-container-bg-color);
   font-family:
-    'Open Sans',
+    'Inter',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -220,8 +223,7 @@ textarea {
   border-radius: 6px;
 }
 
-.chatbot-input,
-.feedback-input {
+.chatbot-input {
   color: #303235;
   background-color: #ffffff;
   box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.1);
@@ -234,7 +236,6 @@ textarea {
 
 .chatbot-button > .send-icon {
   fill: var(--chatbot-button-color);
-  stroke: var(--chatbot-button-color);
 }
 
 .chatbot-chat-view {
@@ -306,7 +307,83 @@ textarea {
 .chatbot-popup-blocked-toast {
   border-radius: var(--chatbot-border-radius);
 }
+.chatbot-file-bubble {
+  font-family: "IBM Plex Sans";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: 0.5px;
+  min-width: 304px;
+  max-width: 304px;
+  gap: 6px;
+  border-radius: 0px 0px 5px 5px;
+}
 
+.chatbot-loading-icon-animation {
+  animation: spin 1.75s linear infinite;
+}
+
+.chatbot-input {
+  color: #303235;
+  background-color: #ffffff;
+  border-radius: var(--chatbot-border-radius);
+  border: 1px solid #D3D3D3;
+  filter: drop-shadow(0px 4px 4px rgba(42, 118, 126, 0.05));
+}
+
+.upload-file-button {
+  padding: 16px 14px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+
+.upload-file-button:disabled {
+  opacity: 0.5;
+}
+.form-container {
+  width: 100%;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  z-index: 1001;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal {
+  background-color: #ffffff;
+  min-width: 450px;
+  min-height: 332px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.modal-title {
+  color: #3C3C3B;
+  text-align: center;
+  font-family: "Inter", sans-serif;  
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
 .messagelist {
   width: 100%;
   height: 100%;
@@ -429,45 +506,151 @@ textarea {
   align-items: center;
 }
 
-input,
-textarea {
+input {
   background-color: transparent;
   border: none;
   padding: 10px 10px;
   font-family: 'Poppins', sans-serif;
 }
-@media (max-width: 640px) {
-  div[part='bot'] {
-    width: 100% !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    max-width: unset !important;
-    max-height: unset !important;
-    height: 100% !important;
-    overflow: auto; 
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-  }
 
-    div[part='button'], div[class='flex flex-row items-center w-full h-[50px] absolute top-0 left-0 z-10'], .chatbot-container, .rounded-lg {
-    border-radius: 0px !important;
-  }
+.header-button {
+  display: flex;
+  width: 174px;
+  height: 34px;
+  padding: 9px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  color: #FFF;
+  border-radius: 4px;
+  border: 1px solid #FAFAFA;
+  background: #2A767E;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+  /* 150% */
+  text-transform: uppercase;
 
-button {
-  cursor: default !important;
-}
-
-}
-.tooltip {
+  z-index: 10;
   position: fixed;
-  background: var(--tooltip-background-color, black);
-  color: var(--tooltip-text-color, white);
-  padding: 5px 10px;
-  border-radius: 5px;
-  z-index: 42424242;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-width: calc(100vw - 20px);
-  font-size: var(--tooltip-font-size, 12px);
-  transition: opacity 0.3s ease-in-out;
+  top: 16px;
+  right: 7px;
+}
+
+.dropzone {
+  width: 100%;
+  height: 316.939px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  border: 1px dashed rgba(42, 118, 126, 0.30);
+  background: #ECECEC;
+  font-family: "Inter", sans-serif;
+}
+
+.dropzone h3 {
+  color: #3C3C3B;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 12.59px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18.885px;
+  padding: 4px;
+}
+
+.dropzone h3>a {
+  color: #2A767E;
+  font-family: "Inter", sans-serif;
+  font-size: 12.59px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18.885px;
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.dropzone p {
+  color: #676767;
+  text-align: center;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 9.443px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 14.164px;
+  padding: 4px;
+}
+
+.upload-message {
+  color: #3C3C3B;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 0.5rem;
+}
+
+.upload-error-message {
+  color: #E41D1D;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 10px;
+  font-style: normal;
+  line-height: 11px;
+  margin-top: 0.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.upload-file-item {
+  font-family: "IBM Plex Sans", sans-serif;
+  border-radius: 4px;
+  border: 1px solid #11AF22;
+  background: #FFF;
+  min-width: 450px;
+  max-width: 450px;
+  height: 36px;
+  padding: 0px 10px;
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+}
+
+.upload-file-item-error {
+  font-family: "IBM Plex Sans", sans-serif;
+  border-radius: 4px;
+  border: 1px solid #E41D1D;
+  background: #FFF;
+  min-width: 450px;
+  max-width: 450px;
+  height: 36px;
+  padding: 0px 10px;
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+}
+
+.upload-file-item p {
+  color: #3C3C3B;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.upload-file-item-error p {
+  color: #3C3C3B;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
 }

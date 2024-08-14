@@ -84,4 +84,13 @@ export type autoWindowOpenTheme = {
     openDelay?: number;
     autoOpenOnMobile?: boolean;
 };
+export type ButtonInputTheme = {
+    backgroundColor?: string;
+    textColor?: string;
+    text?: string;
+};
+export type TextExtractionConfig = {
+    default: string;
+    image: string;
+};
 //# sourceMappingURL=types.d.ts.map

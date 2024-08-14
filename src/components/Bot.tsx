@@ -1,13 +1,20 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
-import { TextInput } from './inputs/textInput';
 import { GuestBubble } from './bubbles/GuestBubble';
 import { BotBubble } from './bubbles/BotBubble';
 import { LoadingBubble } from './bubbles/LoadingBubble';
 import { SourceBubble } from './bubbles/SourceBubble';
 import { StarterPromptBubble } from './bubbles/StarterPromptBubble';
-import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme } from '@/features/bubble/types';
+import {
+  BotMessageTheme,
+  FooterTheme,
+  TextInputTheme,
+  UserMessageTheme,
+  FeedbackTheme,
+  ButtonInputTheme,
+  TextExtractionConfig,
+} from '@/features/bubble/types';
 import { Badge } from './Badge';
 import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
@@ -19,6 +26,11 @@ import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { ButtomUpload } from './buttons/UploadButton';
+import { Modal } from '@/features/modal';
+import { UploadFileForm } from '@/features/modal/components/UploadFileForm';
+import { UploadFile } from '@solid-primitives/upload';
+import { sendFileToTextExtraction } from '@/queries/sendFileToExtract';
+import { isImage } from '@/utils/isImage';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -50,7 +62,7 @@ type FilePreview = {
   type: string;
 };
 
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage';
+type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage' | 'userFile';
 
 export type IAgentReasoning = {
   agentName?: string;
@@ -114,6 +126,8 @@ export type BotProps = {
   observersConfig?: observersConfigType;
   starterPrompts?: string[];
   starterPromptFontSize?: number;
+  buttonInput?: ButtonInputTheme;
+  fileTextExtractionUrl: TextExtractionConfig;
 };
 
 export type LeadsConfig = {
@@ -127,84 +141,7 @@ export type LeadsConfig = {
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 
-/*const sourceDocuments = [
-    {
-        "pageContent": "I know some are talking about “living with COVID-19”. Tonight – I say that we will never just accept living with COVID-19. \r\n\r\nWe will continue to combat the virus as we do other diseases. And because this is a virus that mutates and spreads, we will stay on guard. \r\n\r\nHere are four common sense steps as we move forward safely.  \r\n\r\nFirst, stay protected with vaccines and treatments. We know how incredibly effective vaccines are. If you’re vaccinated and boosted you have the highest degree of protection. \r\n\r\nWe will never give up on vaccinating more Americans. Now, I know parents with kids under 5 are eager to see a vaccine authorized for their children. \r\n\r\nThe scientists are working hard to get that done and we’ll be ready with plenty of vaccines when they do. \r\n\r\nWe’re also ready with anti-viral treatments. If you get COVID-19, the Pfizer pill reduces your chances of ending up in the hospital by 90%.",
-        "metadata": {
-          "source": "blob",
-          "blobType": "",
-          "loc": {
-            "lines": {
-              "from": 450,
-              "to": 462
-            }
-          }
-        }
-    },
-    {
-        "pageContent": "sistance,  and  polishing  [65].  For  instance,  AI  tools  generate\nsuggestions based on inputting keywords or topics. The tools\nanalyze  search  data,  trending  topics,  and  popular  queries  to\ncreate  fresh  content.  What’s  more,  AIGC  assists  in  writing\narticles and posting blogs on specific topics. While these tools\nmay not be able to produce high-quality content by themselves,\nthey can provide a starting point for a writer struggling with\nwriter’s block.\nH.  Cons of AIGC\nOne of the main concerns among the public is the potential\nlack  of  creativity  and  human  touch  in  AIGC.  In  addition,\nAIGC sometimes lacks a nuanced understanding of language\nand context, which may lead to inaccuracies and misinterpre-\ntations. There are also concerns about the ethics and legality\nof using AIGC, particularly when it results in issues such as\ncopyright  infringement  and  data  privacy.  In  this  section,  we\nwill discuss some of the disadvantages of AIGC (Table IV).",
-        "metadata": {
-          "source": "blob",
-          "blobType": "",
-          "pdf": {
-            "version": "1.10.100",
-            "info": {
-              "PDFFormatVersion": "1.5",
-              "IsAcroFormPresent": false,
-              "IsXFAPresent": false,
-              "Title": "",
-              "Author": "",
-              "Subject": "",
-              "Keywords": "",
-              "Creator": "LaTeX with hyperref",
-              "Producer": "pdfTeX-1.40.21",
-              "CreationDate": "D:20230414003603Z",
-              "ModDate": "D:20230414003603Z",
-              "Trapped": {
-                "name": "False"
-              }
-            },
-            "metadata": null,
-            "totalPages": 17
-          },
-          "loc": {
-            "pageNumber": 8,
-            "lines": {
-              "from": 301,
-              "to": 317
-            }
-          }
-        }
-    },
-    {
-        "pageContent": "Main article: Views of Elon Musk",
-        "metadata": {
-          "source": "https://en.wikipedia.org/wiki/Elon_Musk",
-          "loc": {
-            "lines": {
-              "from": 2409,
-              "to": 2409
-            }
-          }
-        }
-    },
-    {
-        "pageContent": "First Name: John\nLast Name: Doe\nAddress: 120 jefferson st.\nStates: Riverside\nCode: NJ\nPostal: 8075",
-        "metadata": {
-          "source": "blob",
-          "blobType": "",
-          "line": 1,
-          "loc": {
-            "lines": {
-              "from": 1,
-              "to": 6
-            }
-          }
-        }
-    },
-]*/
-
-const defaultBackgroundColor = '#ffffff';
+const defaultBackgroundColor = '#002F6C';
 const defaultTextColor = '#303235';
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
@@ -240,6 +177,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [leadsConfig, setLeadsConfig] = createSignal<LeadsConfig>();
   const [isLeadSaved, setIsLeadSaved] = createSignal(false);
   const [leadEmail, setLeadEmail] = createSignal('');
+  const [fileSended, setFileSended] = createSignal(false);
+  const [fileText, setFileText] = createSignal<string>();
 
   // drag & drop file input
   // TODO: fix this type
@@ -279,6 +218,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       chatContainer?.scrollTo(0, chatContainer.scrollHeight);
     }, 50);
   });
+
+  const onUploadFormSubmit = async (files: UploadFile[]) => {
+    setFileSended(true);
+    setLoading(true);
+    setModalOpen(false);
+    setMessages((prevMessages) => [...prevMessages, { message: files[0].name, type: 'userFile' }]);
+
+    const { text } = await sendFileToTextExtraction({
+      extractUrl: isImage(files[0].name) ? props.fileTextExtractionUrl.image : props.fileTextExtractionUrl.default,
+      body: { files: files[0] },
+    });
+    if (!text) return;
+    setFileText(text);
+  };
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -377,6 +330,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
+  const openModal = () => {
+    setModalOpen(true);
+    console.log(modalOpen());
+  };
+
   const updateLastMessageAction = (action: IAction) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -412,127 +370,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
   };
 
-  // Handle form submission
-  const handleSubmit = async (value: string, action?: IAction | undefined | null) => {
-    setUserInput(value);
-
-    if (value.trim() === '') {
-      const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
-      if (!(previews().length >= 1 && containsAudio)) {
-        return;
-      }
-    }
-
-    setLoading(true);
-    scrollToBottom();
-
-    const urls = previews().map((item) => {
-      return {
-        data: item.data,
-        type: item.type,
-        name: item.name,
-        mime: item.mime,
-      };
-    });
-
-    clearPreviews();
-
-    setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: urls }];
-      addChatMessage(messages);
-      return messages;
-    });
-
-    const body: IncomingInput = {
-      question: value,
-      chatId: chatId(),
-    };
-
-    if (urls && urls.length > 0) body.uploads = urls;
-
-    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-
-    if (leadEmail()) body.leadEmail = leadEmail();
-
-    if (action) body.action = action;
-
-    if (isChatFlowAvailableToStream()) {
-      body.socketIOClientId = socketIOClientId();
-    } else {
-      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-    }
-
-    const result = await sendMessageQuery({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
-      body,
-    });
-
-    if (result.data) {
-      const data = result.data;
-      const question = data.question;
-      if (value === '' && question) {
-        setMessages((data) => {
-          const messages = data.map((item, i) => {
-            if (i === data.length - 2) {
-              return { ...item, message: question };
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (urls && urls.length > 0) {
-        setMessages((data) => {
-          const messages = data.map((item, i) => {
-            if (i === data.length - 2) {
-              if (item.fileUploads) {
-                const fileUploads = item?.fileUploads.map((file) => ({
-                  type: file.type,
-                  name: file.name,
-                  mime: file.mime,
-                }));
-                return { ...item, fileUploads };
-              }
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (!isChatFlowAvailableToStream()) {
-        let text = '';
-        if (data.text) text = data.text;
-        else if (data.json) text = JSON.stringify(data.json, null, 2);
-        else text = JSON.stringify(data, null, 2);
-
-        updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
-      } else {
-        updateLastMessage('', data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
-      }
-      setLoading(false);
-      setUserInput('');
-      scrollToBottom();
-    }
-    if (result.error) {
-      const error = result.error;
-      console.error(error);
-      if (typeof error === 'object') {
-        handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
-        return;
-      }
-      if (typeof error === 'string') {
-        handleError(error);
-        return;
-      }
-      handleError();
-      return;
-    }
-  };
-
-  const handleActionClick = async (label: string, action: IAction | undefined | null) => {
+  const handleActionClick = async (label: string) => {
     setUserInput(label);
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -544,7 +382,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    handleSubmit(label, action);
+    handleSubmit(label, false);
   };
 
   const clearChat = () => {
@@ -941,6 +779,74 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       };
     }),
   );
+
+  const handleSubmit = async (value: string, hidden = false) => {
+    setUserInput(value);
+
+    if (value.trim() === '') {
+      return;
+    }
+
+    setLoading(true);
+    scrollToBottom();
+
+    const welcomeMessage = props.welcomeMessage ?? defaultWelcomeMessage;
+    const messageList = messages().filter((msg) => msg.message !== welcomeMessage);
+
+    if (!hidden)
+      setMessages((prevMessages) => {
+        const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage' }];
+        return messages;
+      });
+
+    const body: IncomingInput = {
+      question: value,
+      history: messageList,
+      overrideConfig: {
+        text: fileText(),
+      },
+      chatId: chatId(),
+    };
+
+    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+
+    if (isChatFlowAvailableToStream()) body.socketIOClientId = socketIOClientId();
+
+    const result = await sendMessageQuery({
+      chatflowid: props.chatflowid,
+      apiHost: props.apiHost,
+      body,
+    });
+
+    if (result.data) {
+      const data = result.data;
+      if (!isChatFlowAvailableToStream()) {
+        let text = '';
+        if (data.text) text = data.text;
+        else if (data.json) text = JSON.stringify(data.json, null, 2);
+        else text = JSON.stringify(data, null, 2);
+
+        setMessages((prevMessages) => {
+          const messages: MessageType[] = [
+            ...prevMessages,
+            { message: text, sourceDocuments: data?.sourceDocuments, fileAnnotations: data?.fileAnnotations, type: 'apiMessage' },
+          ];
+          return messages;
+        });
+      }
+      setLoading(false);
+      setUserInput('');
+      scrollToBottom();
+    }
+    if (result.error) {
+      const error = result.error;
+      console.error(error);
+      const err: any = error;
+      const errorData = typeof err === 'string' ? err : err.response.data || `${err.response.status}: ${err.response.statusText}`;
+      handleError(errorData);
+      return;
+    }
+  };
   return (
     <>
       <div
@@ -1046,7 +952,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         fontSize={props.fontSize}
                         isLoading={loading() && index() === messages().length - 1}
                         showAgentMessages={props.showAgentMessages}
-                        handleActionClick={(label, action) => handleActionClick(label, action)}
+                        handleActionClick={(label) => handleActionClick(label)}
                       />
                     )}
                     {message.type === 'leadCaptureMessage' && leadsConfig()?.status && !getLocalStorageChatflow(props.chatflowid)?.lead && (
@@ -1217,7 +1123,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               //   sendMessageSound={props.textInput?.sendMessageSound}
               //   sendSoundLocation={props.textInput?.sendSoundLocation}
               // />
-              <ButtomUpload on:click={() => setModalOpen(true)} text="FAÇA O UPLOAD DO ARQUIVO AGORA" />
+              <ButtomUpload onClick={() => openModal()} text="FAÇA O UPLOAD DE DOCUMENTOS" />
             )}
           </div>
           <Badge
@@ -1229,6 +1135,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         </div>
       </div>
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
+      {modalOpen() && (
+        <Modal isOpen={modalOpen()} onClose={() => setModalOpen(false)}>
+          <UploadFileForm onSubmit={onUploadFormSubmit} buttonInput={props.buttonInput} />
+        </Modal>
+      )}
     </>
   );
 };

@@ -18,7 +18,7 @@ export const Modal = (props: Props) => {
   return (
     <>
       {props.isOpen ? (
-        <div class="modal-backdrop" onClick={handleClick}>
+        <div class="modal-backdrop " onClick={handleClick}>
           <div ref={ref!} class="fixed modal">
             {props.children}
           </div>

@@ -1,4 +1,4 @@
-import { FileUpload, IAction } from '@/components/Bot';
+import { FileUpload, IAction, MessageType } from '@/components/Bot';
 export type IncomingInput = {
     question: string;
     uploads?: FileUpload[];
@@ -8,6 +8,7 @@ export type IncomingInput = {
     fileName?: string;
     leadEmail?: string;
     action?: IAction;
+    history?: MessageType[];
 };
 export type MessageRequest = {
     chatflowid?: string;

@@ -94,3 +94,14 @@ export type autoWindowOpenTheme = {
   openDelay?: number; // Optional parameter for delay time in seconds
   autoOpenOnMobile?: boolean; // Optional parameter for opening on mobile
 };
+
+export type ButtonInputTheme = {
+  backgroundColor?: string;
+  textColor?: string;
+  text?: string;
+};
+
+export type TextExtractionConfig = {
+  default: string;
+  image: string;
+};

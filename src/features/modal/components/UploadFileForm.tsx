@@ -27,6 +27,9 @@ export const UploadFileForm = (props: Props) => {
 
   const adicionarItem = (file: UploadFile[]) => {
     setFiles((prevState) => [...prevState, ...file]);
+    if (hasSpecificClass(file)) {
+      setError((prevState) => [...prevState, ...file]);
+    }
   };
 
   const clearFiles = () => {
@@ -36,6 +39,7 @@ export const UploadFileForm = (props: Props) => {
   };
 
   const removerItem = (archivePosition: number) => {
+    setError((prevErrors) => prevErrors.filter((uploadFile) => uploadFile.source !== files()[archivePosition].source));
     setFiles((prevState) => prevState.filter((_, index) => index !== archivePosition));
   };
 
@@ -46,7 +50,6 @@ export const UploadFileForm = (props: Props) => {
 
   const hasSpecificClass = (item: UploadFile[]): boolean => {
     const hasIncompatibleFile = item.some((file) => !acceptedFileTypes.includes(file.file.type));
-    setError((prevState) => [...prevState, ...item]);
     return hasIncompatibleFile;
   };
 
@@ -96,7 +99,7 @@ export const UploadFileForm = (props: Props) => {
         onSubmit={onSubmit}
         backgroundColor={props.buttonInput?.backgroundColor}
         textColor={props.buttonInput?.textColor}
-        disabled={files().length === 0}
+        disabled={files().length === 0 || error().length > 0}
       >
         CONFIRMAR ENVIO
       </Button>

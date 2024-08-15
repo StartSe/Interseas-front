@@ -15,30 +15,26 @@ export const UploadFileForm = (props: Props) => {
   const [files, setFiles] = createSignal<UploadFile[]>([]);
   const acceptedFileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
-  const { selectFiles, clearFiles: selectClearFiles } = createFileUploader({
+  const { selectFiles } = createFileUploader({
     accept: acceptedFileTypes.join(','),
   });
 
-  const { setRef: dropzoneRef, clearFiles: dropzoneClearFiles } = createDropzone({
+  const { setRef: dropzoneRef } = createDropzone({
     onDrop: (files) => {
-      adicionarItem(files);
+      addFile(files);
     },
   });
 
-  const adicionarItem = (file: UploadFile[]) => {
-    setFiles((prevState) => [...prevState, ...file]);
-    if (hasSpecificClass(file)) {
-      setError((prevState) => [...prevState, ...file]);
-    }
+  const addFile = (file: UploadFile[]) => {
+    file.forEach((item) => {
+      setFiles((prevState) => [...prevState, item]);
+      if (isFileCompatible([item]) === false) {
+        setError((prevState) => [...prevState, item]);
+      }
+    });
   };
 
-  const clearFiles = () => {
-    selectClearFiles();
-    dropzoneClearFiles();
-    setFiles([]);
-  };
-
-  const removerItem = (archivePosition: number) => {
+  const removeFile = (archivePosition: number) => {
     setError((prevErrors) => prevErrors.filter((uploadFile) => uploadFile.source !== files()[archivePosition].source));
     setFiles((prevState) => prevState.filter((_, index) => index !== archivePosition));
   };
@@ -48,9 +44,8 @@ export const UploadFileForm = (props: Props) => {
     props.onSubmit(files());
   };
 
-  const hasSpecificClass = (item: UploadFile[]): boolean => {
-    const hasIncompatibleFile = item.some((file) => !acceptedFileTypes.includes(file.file.type));
-    return hasIncompatibleFile;
+  const isFileCompatible = (item: UploadFile[]): boolean => {
+    return item.some((file) => acceptedFileTypes.includes(file.file.type));
   };
 
   return (
@@ -67,7 +62,7 @@ export const UploadFileForm = (props: Props) => {
                   onClick={(event) => {
                     event.preventDefault();
                     selectFiles((files) => {
-                      adicionarItem(files);
+                      addFile(files);
                     });
                   }}
                 >
@@ -82,14 +77,7 @@ export const UploadFileForm = (props: Props) => {
           {files().length > 0 && <h4 class="upload-message">Fazendo upload do documento</h4>}
           <For each={files()}>
             {(item) => (
-              <UploadFileItem
-                file={item}
-                onDelete={clearFiles}
-                index={files().indexOf(item)}
-                removeritem={removerItem}
-                error={hasSpecificClass([item])}
-                item={item.file.type}
-              />
+              <UploadFileItem file={item} index={files().indexOf(item)} removeFile={removeFile} error={isFileCompatible([item]) === false} />
             )}
           </For>
         </div>

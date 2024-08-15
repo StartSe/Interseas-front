@@ -348,12 +348,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
-  const clearPreviews = () => {
-    // Revoke the data uris to avoid memory leaks
-    previews().forEach((file) => URL.revokeObjectURL(file.preview));
-    setPreviews([]);
-  };
-
   // Handle errors
   const handleError = (message = 'Oops! There seems to be an error. Please try again.') => {
     setMessages((prevMessages) => {

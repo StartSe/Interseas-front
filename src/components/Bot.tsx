@@ -19,9 +19,8 @@ import { Badge } from '@/components/Badge';
 import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
-import { DeleteButton, SendButton } from '@/components/buttons/SendButton';
-import { CircleDotIcon, TrashIcon } from '@/components/icons';
-import { CancelButton } from '@/components/buttons/CancelButton';
+import { DeleteButton } from '@/components/buttons/SendButton';
+import { TrashIcon } from '@/components/icons';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { LeadCaptureBubble } from '@/components/bubbles';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
@@ -142,9 +141,6 @@ export type LeadsConfig = {
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 
-const defaultBackgroundColor = '#002F6C';
-const defaultTextColor = '#303235';
-
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
   const props = mergeProps({ showTitle: true }, botProps);
@@ -224,7 +220,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setFilesSent(true);
     setLoading(true);
     setModalOpen(false);
-    setMessages((prevMessages) => [...prevMessages, { message: files[0].name, type: 'userFile' }]);
+    files.forEach((file) => {
+      setMessages((prevMessages) => [...prevMessages, { message: `Título do documento: ${file.name} Tamanho: ${file.size}`, type: 'userMessage' }]);
+    });
 
     const { text } = await sendFileToTextExtraction({
       extractUrl: isImage(files[0].name) ? props.fileTextExtractionUrl.image : props.fileTextExtractionUrl.default,

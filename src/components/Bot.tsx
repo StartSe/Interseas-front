@@ -1,11 +1,11 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
-import { GuestBubble } from './bubbles/GuestBubble';
-import { BotBubble } from './bubbles/BotBubble';
-import { LoadingBubble } from './bubbles/LoadingBubble';
-import { SourceBubble } from './bubbles/SourceBubble';
-import { StarterPromptBubble } from './bubbles/StarterPromptBubble';
+import { GuestBubble } from '@/components/bubbles';
+import { BotBubble } from '@/components/bubbles';
+import { LoadingBubble } from '@/components/bubbles';
+import { SourceBubble } from '@/components/bubbles';
+import { StarterPromptBubble } from '@/components/bubbles';
 import {
   BotMessageTheme,
   FooterTheme,
@@ -15,22 +15,23 @@ import {
   ButtonInputTheme,
   TextExtractionConfig,
 } from '@/features/bubble/types';
-import { Badge } from './Badge';
+import { Badge } from '@/components/Badge';
 import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
 import { DeleteButton, SendButton } from '@/components/buttons/SendButton';
-import { CircleDotIcon, TrashIcon } from './icons';
-import { CancelButton } from './buttons/CancelButton';
+import { CircleDotIcon, TrashIcon } from '@/components/icons';
+import { CancelButton } from '@/components/buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
-import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
+import { LeadCaptureBubble } from '@/components/bubbles';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
-import { ButtomUpload } from './buttons/UploadButton';
+import { UploadButton } from '@/components/buttons/UploadButton';
 import { Modal } from '@/features/modal';
 import { UploadFileForm } from '@/features/modal/components/UploadFileForm';
 import { UploadFile } from '@solid-primitives/upload';
 import { sendFileToTextExtraction } from '@/queries/sendFileToExtract';
 import { isImage } from '@/utils/isImage';
+import { TextInput } from './inputs/textInput';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -177,7 +178,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [leadsConfig, setLeadsConfig] = createSignal<LeadsConfig>();
   const [isLeadSaved, setIsLeadSaved] = createSignal(false);
   const [leadEmail, setLeadEmail] = createSignal('');
-  const [fileSended, setFileSended] = createSignal(false);
+  const [filesSent, setFilesSent] = createSignal(false);
   const [fileText, setFileText] = createSignal<string>();
 
   // drag & drop file input
@@ -220,7 +221,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   });
 
   const onUploadFormSubmit = async (files: UploadFile[]) => {
-    setFileSended(true);
+    setFilesSent(true);
     setLoading(true);
     setModalOpen(false);
     setMessages((prevMessages) => [...prevMessages, { message: files[0].name, type: 'userFile' }]);
@@ -332,7 +333,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const openModal = () => {
     setModalOpen(true);
-    console.log(modalOpen());
   };
 
   const updateLastMessageAction = (action: IAction) => {
@@ -376,7 +376,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    handleSubmit(label, false);
+    handleSubmit(label);
   };
 
   const clearChat = () => {
@@ -775,12 +775,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   );
 
   const handleSubmit = async (value: string, hidden = false) => {
-    setUserInput(value);
-
     if (value.trim() === '') {
       return;
     }
 
+    setUserInput(value);
     setLoading(true);
     scrollToBottom();
 
@@ -1048,76 +1047,27 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             </div>
           </Show>
           <div class="w-full px-5 pt-2 pb-1">
-            {isRecording() ? (
-              <>
-                {recordingNotSupported() ? (
-                  <div class="w-full flex items-center justify-between p-4 border border-[#eeeeee]">
-                    <div class="w-full flex items-center justify-between gap-3">
-                      <span class="text-base">To record audio, use modern browsers like Chrome or Firefox that support audio recording.</span>
-                      <button
-                        class="py-2 px-4 justify-center flex items-center bg-red-500 text-white rounded-md"
-                        type="button"
-                        onClick={() => onRecordingCancelled()}
-                      >
-                        Okay
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    class="h-[58px] flex items-center justify-between chatbot-input border border-[#eeeeee]"
-                    data-testid="input"
-                    style={{
-                      margin: 'auto',
-                      'background-color': props.textInput?.backgroundColor ?? defaultBackgroundColor,
-                      color: props.textInput?.textColor ?? defaultTextColor,
-                    }}
-                  >
-                    <div class="flex items-center gap-3 px-4 py-2">
-                      <span>
-                        <CircleDotIcon color="red" />
-                      </span>
-                      <span>{elapsedTime() || '00:00'}</span>
-                      {isLoadingRecording() && <span class="ml-1.5">Sending...</span>}
-                    </div>
-                    <div class="flex items-center">
-                      <CancelButton buttonColor={props.textInput?.sendButtonColor} type="button" class="m-0" on:click={onRecordingCancelled}>
-                        <span style={{ 'font-family': 'Poppins, sans-serif' }}>Send</span>
-                      </CancelButton>
-                      <SendButton
-                        sendButtonColor={props.textInput?.sendButtonColor}
-                        type="button"
-                        isDisabled={loading()}
-                        class="m-0"
-                        on:click={onRecordingStopped}
-                      >
-                        <span style={{ 'font-family': 'Poppins, sans-serif' }}>Send</span>
-                      </SendButton>
-                    </div>
-                  </div>
-                )}
-              </>
+            {filesSent() ? (
+              <TextInput
+                backgroundColor={props.textInput?.backgroundColor}
+                textColor={props.textInput?.textColor}
+                placeholder={props.textInput?.placeholder}
+                sendButtonColor={props.textInput?.sendButtonColor}
+                maxChars={props.textInput?.maxChars}
+                maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
+                autoFocus={props.textInput?.autoFocus}
+                fontSize={props.fontSize}
+                defaultValue={userInput()}
+                onSubmit={handleSubmit}
+                uploadsConfig={uploadsConfig()}
+                setPreviews={setPreviews}
+                onMicrophoneClicked={onMicrophoneClicked}
+                handleFileChange={handleFileChange}
+                sendMessageSound={props.textInput?.sendMessageSound}
+                sendSoundLocation={props.textInput?.sendSoundLocation}
+              />
             ) : (
-              // <TextInput
-              //   backgroundColor={props.textInput?.backgroundColor}
-              //   textColor={props.textInput?.textColor}
-              //   placeholder={props.textInput?.placeholder}
-              //   sendButtonColor={props.textInput?.sendButtonColor}
-              //   maxChars={props.textInput?.maxChars}
-              //   maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
-              //   autoFocus={props.textInput?.autoFocus}
-              //   fontSize={props.fontSize}
-              //   disabled={getInputDisabled()}
-              //   defaultValue={userInput()}
-              //   onSubmit={handleSubmit}
-              //   uploadsConfig={uploadsConfig()}
-              //   setPreviews={setPreviews}
-              //   onMicrophoneClicked={onMicrophoneClicked}
-              //   handleFileChange={handleFileChange}
-              //   sendMessageSound={props.textInput?.sendMessageSound}
-              //   sendSoundLocation={props.textInput?.sendSoundLocation}
-              // />
-              <ButtomUpload onClick={() => openModal()} text="FAÇA O UPLOAD DE DOCUMENTOS" />
+              <UploadButton onClick={() => openModal()} text="FAÇA O UPLOAD DE DOCUMENTOS" />
             )}
           </div>
           <Badge

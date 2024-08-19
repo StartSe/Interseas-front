@@ -1,6 +1,6 @@
-const imageFormats = ['png', 'jpg', 'jpeg', 'gif'];
+const acceptedImageExtensions = ['png', 'jpg', 'jpeg'];
 
 export const isImage = (filename: string): boolean => {
   const ext = filename.split('.').reverse()[0];
-  return imageFormats.includes(ext);
+  return acceptedImageExtensions.includes(ext);
 };

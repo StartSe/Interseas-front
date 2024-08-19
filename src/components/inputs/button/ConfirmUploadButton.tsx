@@ -10,7 +10,7 @@ type Props = ParentProps & {
 const defaultBackgroundColor = '#002F6C';
 const defaultTextColor = '#FAFAFA';
 
-export const Button = (props: Props) => {
+export const ConfirmUploadButton = (props: Props) => {
   return (
     <button
       class={'flex font-semibold justify-center items-center upload-file-button'}
@@ -20,7 +20,6 @@ export const Button = (props: Props) => {
         right: '20px',
         bottom: '75px',
         margin: 'auto',
-        'z-index': 1000,
         'background-color': props.backgroundColor ?? defaultBackgroundColor,
         color: props.textColor ?? defaultTextColor,
       }}

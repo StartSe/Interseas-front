@@ -7,4 +7,4 @@ type Props = ParentProps & {
 };
 export declare const ConfirmUploadButton: (props: Props) => import("solid-js").JSX.Element;
 export {};
-//# sourceMappingURL=Button.d.ts.map
+//# sourceMappingURL=ConfirmUploadButton.d.ts.map

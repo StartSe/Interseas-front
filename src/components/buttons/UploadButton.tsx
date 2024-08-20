@@ -30,9 +30,9 @@ export const UploadButton = (props: UploadButtonProps) => {
           props.class
         }
         style={{
-          background: props.backgroundColor ? props.backgroundColor : DefaultButtonValues.backgroundColor,
-          border: props.border ? props.border : DefaultButtonValues.border,
-          color: props.color ? props.color : DefaultButtonValues.color,
+          background: props.backgroundColor ?? DefaultButtonValues.backgroundColor,
+          border: props.border ?? DefaultButtonValues.border,
+          color: props.color ?? DefaultButtonValues.color,
         }}
       >
         {props.text}

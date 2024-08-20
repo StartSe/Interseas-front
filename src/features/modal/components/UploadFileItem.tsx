@@ -19,7 +19,7 @@ export const UploadFileItem = (props: Props) => {
           {props.error ? <DeleteFileIcon /> : <DeleteIconBin />}
         </div>
       </div>
-      {props.error && <p class="upload-error-message">{props.errorMessage ? props.errorMessage : ''}</p>}
+      {props.error && <p class="upload-error-message">{props.errorMessage}</p>}
     </>
   );
 };

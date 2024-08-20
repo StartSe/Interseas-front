@@ -1,11 +1,7 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
-import { GuestBubble } from '@/components/bubbles';
-import { BotBubble } from '@/components/bubbles';
-import { LoadingBubble } from '@/components/bubbles';
-import { SourceBubble } from '@/components/bubbles';
-import { StarterPromptBubble } from '@/components/bubbles';
+import { GuestBubble, BotBubble, LoadingBubble, SourceBubble, StarterPromptBubble } from '@/components/bubbles';
 import {
   BotMessageTheme,
   FooterTheme,
@@ -30,7 +26,8 @@ import { UploadFileForm } from '@/features/modal/components/UploadFileForm';
 import { UploadFile } from '@solid-primitives/upload';
 import { sendFileToTextExtraction } from '@/queries/sendFileToExtract';
 import { isImage } from '@/utils/isImage';
-import { TextInput } from './inputs/textInput';
+import { TextInput } from '@/components/inputs/textInput';
+import { messageUtils } from '@/utils/messageUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1065,7 +1062,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 sendSoundLocation={props.textInput?.sendSoundLocation}
               />
             ) : (
-              <UploadButton onClick={() => openModal()} text="FAÇA O UPLOAD DE DOCUMENTOS" />
+              <UploadButton onClick={() => openModal()} text={messageUtils.UPLOAD_BUTTON_LABEL} />
             )}
           </div>
           <Badge

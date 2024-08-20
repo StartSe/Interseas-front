@@ -4,7 +4,7 @@ import { UploadFile, createFileUploader, createDropzone } from '@solid-primitive
 import { UploadIcon } from '@/components/icons/UploadIcon';
 import { UploadFileItem } from '@/features/modal/components/UploadFileItem';
 import { ConfirmUploadButton } from '@/components/inputs/button/ConfirmUploadButton';
-import { ModalMessages } from '@/utils/errorMessages';
+import { messageUtils } from '@/utils/messageUtils';
 
 type Props = {
   onSubmit: (files: UploadFile[]) => void;
@@ -53,7 +53,7 @@ export const UploadFileForm = (props: Props) => {
   return (
     <form class="flex flex-col justify-center items-center gap-8 form-container">
       <div class="flex flex-col justify-center items-center gap-6 form-container">
-        <h2 class="modal-title">{ModalMessages.MODAL_TITLE}</h2>
+        <h2 class="modal-title">{messageUtils.MODAL_TITLE}</h2>
         <div ref={dropzoneRef} class="dropzone flex justify-center items-center">
           <div class="flex flex-col justify-center items-center ">
             <UploadIcon />
@@ -84,7 +84,7 @@ export const UploadFileForm = (props: Props) => {
                 index={files().indexOf(item)}
                 removeFile={removeFile}
                 error={isFileAccepted([item]) === false}
-                errorMessage={ModalMessages.FILE_TYPE_NOT_SUPPORTED}
+                errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
               />
             )}
           </For>
@@ -97,7 +97,7 @@ export const UploadFileForm = (props: Props) => {
         textColor={props.buttonInput?.textColor}
         disabled={files().length === 0 || error().length > 0}
       >
-        {ModalMessages.MODAL_BUTTON}
+        {messageUtils.MODAL_BUTTON}
       </ConfirmUploadButton>
     </form>
   );

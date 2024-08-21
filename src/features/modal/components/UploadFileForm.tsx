@@ -4,11 +4,14 @@ import { UploadFile, createFileUploader, createDropzone } from '@solid-primitive
 import { UploadIcon } from '@/components/icons/UploadIcon';
 import { UploadFileItem } from '@/features/modal/components/UploadFileItem';
 import { ConfirmUploadButton } from '@/components/inputs/button/ConfirmUploadButton';
-import { messageUtils } from '@/utils/messageUtils';
 
 type Props = {
   onSubmit: (files: UploadFile[]) => void;
   buttonInput?: ButtonInputTheme;
+  uploadLabel?: string;
+  modalTitle?: string;
+  uploadingButtonLabel?: string;
+  errorMessage?: string;
 };
 
 export const UploadFileForm = (props: Props) => {
@@ -53,7 +56,7 @@ export const UploadFileForm = (props: Props) => {
   return (
     <form class="flex flex-col justify-center items-center gap-8 form-container">
       <div class="flex flex-col justify-center items-center gap-6 form-container">
-        <h2 class="modal-title">{messageUtils.MODAL_TITLE}</h2>
+        <h2 class="modal-title">{props.modalTitle}</h2>
         <div ref={dropzoneRef} class="dropzone flex justify-center items-center">
           <div class="flex flex-col justify-center items-center ">
             <UploadIcon />
@@ -76,7 +79,7 @@ export const UploadFileForm = (props: Props) => {
           </div>
         </div>
         <div class="flex flex-col archives">
-          {files().length > 0 && <h4 class="upload-message">Fazendo upload do documento</h4>}
+          {files().length > 0 && <h4 class="upload-message">{props.uploadLabel}</h4>}
           <For each={files()}>
             {(item) => (
               <UploadFileItem
@@ -84,7 +87,7 @@ export const UploadFileForm = (props: Props) => {
                 index={files().indexOf(item)}
                 removeFile={removeFile}
                 error={isFileAccepted([item]) === false}
-                errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+                errorMessage={props.errorMessage}
               />
             )}
           </For>
@@ -97,7 +100,7 @@ export const UploadFileForm = (props: Props) => {
         textColor={props.buttonInput?.textColor}
         disabled={files().length === 0 || error().length > 0}
       >
-        {messageUtils.MODAL_BUTTON}
+        {props.uploadingButtonLabel}
       </ConfirmUploadButton>
     </form>
   );

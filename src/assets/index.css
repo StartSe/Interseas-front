@@ -61,7 +61,7 @@ a:hover {
 
 pre {
   padding: 5px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 5px;
   width: auto;
   overflow: auto;
@@ -237,10 +237,10 @@ textarea {
 .upload-file-button {
   padding: 16px 14px;
   font-family: var(--chatbot-container-font-family), sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 700;
-  line-height: 18px;
+  line-height: 1.125rem;
   text-transform: uppercase;
   border-radius: 3px;
 }
@@ -281,7 +281,7 @@ textarea {
   color: var(--text-color);
   text-align: center;
   font-family: var(--chatbot-container-font-family), sans-serif;  
-  font-size: 16px;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
@@ -318,10 +318,10 @@ textarea {
   color: var(--text-color);
   text-align: center;
   font-family: var(--chatbot-container-font-family), sans-serif;
-  font-size: 12.59px;
+  font-size: 0.785rem;
   font-style: normal;
   font-weight: 600;
-  line-height: 19px;
+  line-height: 1.2rem;
   padding: 4px;
 }
 
@@ -329,10 +329,10 @@ textarea {
   color: var(--primary-color);
   text-decoration: underline;
   font-family: var(--chatbot-container-font-family), sans-serif;
-  font-size: 12.59px;
+  font-size: 0.785rem;
   font-style: normal;
   font-weight: 600;
-  line-height: 18.885px;
+  line-height: 1.18rem;
   text-decoration-line: underline;
   cursor: pointer;
 }
@@ -341,10 +341,10 @@ textarea {
   color: var(--grey-primary);
   text-align: center;
   font-family: var(--chatbot-container-font-family-secondary), sans-serif;
-  font-size: 9.443px;
+  font-size: 0.621rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 14.164px;
+  line-height: 0.885rem;
   padding: 4px;
 }
 
@@ -356,7 +356,7 @@ textarea {
 .upload-message {
   color: var(--text-color);
   font-family: var(--chatbot-container-font-family), sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -366,9 +366,9 @@ textarea {
 .upload-error-message {
   color: var(--error-color);
   font-family: var(--chatbot-container-font-family-secondary), sans-serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-style: normal;
-  line-height: 11px;
+  line-height: 0.6rem;
   margin-top: 0.1rem;
   margin-bottom: 0.3rem;
 }
@@ -402,10 +402,10 @@ textarea {
 .upload-file-item p {
   color: var(--text-color);
   font-family: var(--chatbot-container-font-family-secondary), sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 1.125rem;
   text-overflow: ellipsis;
   width: 100%;
   white-space: nowrap;
@@ -415,10 +415,10 @@ textarea {
 .upload-file-item-error p {
   color: var(--text-color);
   font-family: var(--chatbot-container-font-family-secondary), sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 1.125rem;
   text-overflow: ellipsis;
   width: 100%;
   white-space: nowrap;

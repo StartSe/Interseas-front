@@ -1076,7 +1076,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
       {modalOpen() && (
         <Modal isOpen={modalOpen()} onClose={() => setModalOpen(false)}>
-          <UploadFileForm onSubmit={onUploadFormSubmit} buttonInput={props.buttonInput} />
+          <UploadFileForm
+            onSubmit={onUploadFormSubmit}
+            buttonInput={props.buttonInput}
+            modalTitle={messageUtils.MODAL_TITLE}
+            uploadLabel={messageUtils.UPLOADING_LABEL}
+            uploadingButtonLabel={messageUtils.UPLOAD_BUTTON_LABEL}
+            errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+          />
         </Modal>
       )}
     </>

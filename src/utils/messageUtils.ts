@@ -3,4 +3,5 @@ export const messageUtils = {
   MODAL_TITLE: 'Faça o upload dos seus documentos.',
   MODAL_BUTTON: 'CONFIRMAR ENVIO',
   UPLOAD_BUTTON_LABEL: 'FAÇA O UPLOAD DE DOCUMENTOS',
+  UPLOADING_LABEL: 'Fazendo upload do documento',
 };

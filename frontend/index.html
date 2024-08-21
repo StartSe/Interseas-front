@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<body>
+    <script type="module">
+        import Chatbot from '../dist/web.js';
+        Chatbot.initFull({
+          chatflowid: '<chatflowid>',
+          apiHost: 'http://localhost:3000',
+          theme: {
+            button: {
+              backgroundColor: '#002F6C',
+              right: 20,
+              bottom: 20,
+              size: 48,
+              dragAndDrop: true,
+              iconColor: 'white',
+              autoWindowOpen: {
+                autoOpen: false, 
+                openDelay: 2, 
+                autoOpenOnMobile: false,
+              },
+            },
+            chatWindow: {
+              showTitle: true,
+              showAgentMessages: true,
+              title: 'Análise de Compliance',
+              welcomeMessage: 'Olá! Sou o assistente de IA da Interseas, especializado em Análise de Compliance. Por favor, faça o upload dos seus documentos para que possamos iniciar a análise e esclarecer todas as suas dúvidas.',
+              errorMessage: 'This is a custom error message',
+              backgroundColor: '#ffffff',
+              backgroundImage: 'enter image path or link',
+              fontSize: 16,
+              starterPromptFontSize: 15,
+              botMessage: {
+                backgroundColor: '#f7f8ff',
+                textColor: '#303235',
+                showAvatar: true,
+                avatarSrc: 'https://raw.githubusercontent.com/zahidkhawaja/langchain-chat-nextjs/main/public/parroticon.png',
+              },
+              userMessage: {
+                backgroundColor: '#002F6C',
+                textColor: '#ffffff',
+              },
+              textInput: {
+                placeholder: 'Type your question',
+                backgroundColor: '#ffffff',
+                textColor: '#303235',
+                sendButtonColor: '#002F6C',
+                maxChars: 50,
+                maxCharsWarningMessage: 'You exceeded the characters limit. Please input less than 50 characters.',
+                autoFocus: true, 
+                sendMessageSound: true,
+                receiveMessageSound: true,
+              },
+              feedback: {
+                color: '#303235',
+              },
+              footer: {
+                textColor: '#002F6C',
+                text: 'Powered by',
+                company: 'StartSe',
+                companyLink: 'https://startse.com',
+              }
+            },
+          },
+        });
+      </script>
+      <flowise-fullchatbot></flowise-fullchatbot>
+</body>
+
+</html>
+
+

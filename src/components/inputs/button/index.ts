@@ -1,0 +1,1 @@
+export { ConfirmUploadButton } from './ConfirmUploadButton';

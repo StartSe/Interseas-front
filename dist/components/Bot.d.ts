@@ -1,4 +1,4 @@
-import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme } from '@/features/bubble/types';
+import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme, ButtonInputTheme, TextExtractionConfig } from '@/features/bubble/types';
 export type FileEvent<T = EventTarget> = {
     target: T;
 };
@@ -23,7 +23,7 @@ type FilePreview = {
     preview: string;
     type: string;
 };
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage';
+type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage' | 'userFile';
 export type IAgentReasoning = {
     agentName?: string;
     messages?: string[];
@@ -81,6 +81,8 @@ export type BotProps = {
     observersConfig?: observersConfigType;
     starterPrompts?: string[];
     starterPromptFontSize?: number;
+    buttonInput?: ButtonInputTheme;
+    fileTextExtractionUrl: TextExtractionConfig;
 };
 export type LeadsConfig = {
     status: boolean;

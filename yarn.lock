@@ -524,6 +524,18 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
+"@solid-primitives/upload@^0.0.117":
+  version "0.0.117"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/upload/-/upload-0.0.117.tgz#9fbe15530f5137e1115fcf30a174344ab2a9e625"
+  integrity sha512-szDksm4u67JgiMtkpX8RPccxqfid4OCQ/zpJ1yB1PMFmenLjz8YKldGIIt+Yn3bEcfHBbdkPa2uu/y2FAdPeSw==
+  dependencies:
+    "@solid-primitives/utils" "^6.2.3"
+
+"@solid-primitives/utils@^6.2.3":
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.2.3.tgz#1abed4c74a2696e08bd2e49cf2b86fc8b87a32bd"
+  integrity sha512-CqAwKb2T5Vi72+rhebSsqNZ9o67buYRdEJrIFzRXz3U59QqezuuxPsyzTSVCacwS5Pf109VRsgCJQoxKRoECZQ==
+
 "@tailwindcss/typography@^0.5.10":
   version "0.5.10"
   resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.10.tgz#2abde4c6d5c797ab49cf47610830a301de4c1e0a"

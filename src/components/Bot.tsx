@@ -217,7 +217,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setLoading(true);
     setModalOpen(false);
     files.forEach((file) => {
-      setMessages((prevMessages) => [...prevMessages, { message: `Título do documento: ${file.name} Tamanho: ${file.size}`, type: 'userMessage' }]);
+      setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
     });
 
     const { text } = await sendFileToTextExtraction({

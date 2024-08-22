@@ -23,10 +23,9 @@ import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorage
 import { UploadButton } from '@/components/buttons/UploadButton';
 import { FileUploadModal } from '@/features/modal';
 import { UploadFile } from '@solid-primitives/upload';
-import { sendFileToTextExtraction } from '@/queries/sendFileToExtract';
-import { isImage } from '@/utils/isImage';
 import { TextInput } from '@/components/inputs/textInput';
 import { messageUtils } from '@/utils/messageUtils';
+import { NextChecklistButton } from './buttons/NextChecklistButton';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -174,6 +173,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [fileText, setFileText] = createSignal<string>();
   const [isInputDisabled, setIsInputDisabled] = createSignal(false);
 
+  const [files, setFiles] = createSignal<UploadFile[]>([]);
+  const [checklists, setChecklists] = createSignal<string[]>([]);
+  const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
+  const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
+
   // drag & drop file input
   // TODO: fix this type
   const [previews, setPreviews] = createSignal<FilePreview[]>([]);
@@ -213,40 +217,80 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   });
 
-  const processCompliance = async (files: UploadFile[]) => {
+  const startProcessingFiles = async (files: UploadFile[]) => {
     setFilesSent(true);
     setModalOpen(false);
     setIsInputDisabled(true);
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        message: 'Todos os seus documentos estão validados corretamente! Verifique cada um dos checklists abaixo detalhadamente',
-        type: 'apiMessage',
-      },
-    ]);
+    setFiles(files);
 
     files.forEach((file) => {
-      setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
-
-      setLoading(true);
+      // Mocked behavior
 
       // TODO: identify file type
 
       // TODO: identify checklist
+      // Note: we may have documents with no checklists, but will need its values anyway
 
-      // TODO: extract text && get filled checklist based on extracted text
+      // if checklist:
+      setChecklists((prevChecklists) => [...prevChecklists, file.name]);
+
+      // if no checklist:
+      // extract all text from document
     });
 
+    // if all documents have checklist, show this message:
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
+        type: 'apiMessage',
+      },
+    ]);
+
+    // if any document doesn't have a checklist, show another message
+
+    processNextChecklist();
+  };
+
+  const processNextChecklist = () => {
+    const file = files()[currentChecklistNumber()];
+    setCurrentChecklistNumber(currentChecklistNumber() + 1);
+
+    setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
+
+    setLoading(true);
+    setIsNextChecklistButtonDisabled(true);
+
+    // TODO: extract text && get filled checklist based on extracted text
+    // Mocked behavior
+    setTimeout(() => {
+      setLoading(false);
+      const checklistItems = {
+        'Checklist item 1': true,
+        'Checklist item 2': false,
+        'Checklist item 3': false,
+        'Checklist item 4': true,
+        'Checklist item 5': true,
+      };
+      let checklistMessage = `<b>[Nome do checklist]:</b><br>`;
+
+      for (const [key, value] of Object.entries(checklistItems)) {
+        checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
+      }
+
+      setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+      setIsNextChecklistButtonDisabled(false);
+
+      if (currentChecklistNumber() === checklists().length) {
+        executeComplianceCheck(checklists());
+      }
+    }, 2000);
+  };
+
+  const executeComplianceCheck = async (filledChecklists: string[]) => {
     // TODO: check compliance between files
 
-    const { text } = await sendFileToTextExtraction({
-      extractUrl: isImage(files[0].name) ? props.fileTextExtractionUrl.image : props.fileTextExtractionUrl.default,
-      body: { files: files[0] },
-    });
-
-    if (!text) return;
-    setFileText(text);
+    setLoading(false);
   };
 
   const scrollToBottom = () => {
@@ -411,6 +455,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       setMessages(messages);
       setFilesSent(false);
+      setCurrentChecklistNumber(0);
+      setChecklists([]);
     } catch (error: any) {
       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
       console.error(`error: ${errorData}`);
@@ -1063,6 +1109,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             </div>
           </Show>
           <div class="w-full px-5 pt-2 pb-1">
+            {filesSent() && isInputDisabled() && checklists().length > currentChecklistNumber() && (
+              <NextChecklistButton
+                onClick={() => processNextChecklist()}
+                text={messageUtils.NEXT_CHECKLIST_BUTTON_LABEL}
+                checklistNumber={checklists().length}
+                currentChecklistNumber={currentChecklistNumber()!}
+                isDisabled={isNextChecklistButtonDisabled()}
+              />
+            )}
             {filesSent() ? (
               <TextInput
                 backgroundColor={props.textInput?.backgroundColor}
@@ -1100,7 +1155,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         <FileUploadModal
           isOpen={modalOpen()}
           onClose={() => setModalOpen(false)}
-          onUploadSubmit={processCompliance}
+          onUploadSubmit={startProcessingFiles}
           buttonInput={props.buttonInput}
           modalTitle={messageUtils.MODAL_TITLE}
           uploadLabel={messageUtils.UPLOADING_LABEL}

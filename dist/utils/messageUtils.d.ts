@@ -4,5 +4,7 @@ export declare const messageUtils: {
     MODAL_BUTTON: string;
     UPLOAD_BUTTON_LABEL: string;
     UPLOADING_LABEL: string;
+    NEXT_CHECKLIST_BUTTON_LABEL: string;
+    ALL_DOCUMENTS_VALIDATED_MESSAGE: string;
 };
 //# sourceMappingURL=messageUtils.d.ts.map

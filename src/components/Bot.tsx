@@ -172,6 +172,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [leadEmail, setLeadEmail] = createSignal('');
   const [filesSent, setFilesSent] = createSignal(false);
   const [fileText, setFileText] = createSignal<string>();
+  const [isInputDisabled, setIsInputDisabled] = createSignal(false);
 
   // drag & drop file input
   // TODO: fix this type
@@ -212,18 +213,38 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   });
 
-  const onUploadFormSubmit = async (files: UploadFile[]) => {
+  const processCompliance = async (files: UploadFile[]) => {
     setFilesSent(true);
-    setLoading(true);
     setModalOpen(false);
+    setIsInputDisabled(true);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        message: 'Todos os seus documentos estão validados corretamente! Verifique cada um dos checklists abaixo detalhadamente',
+        type: 'apiMessage',
+      },
+    ]);
+
     files.forEach((file) => {
       setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
+
+      setLoading(true);
+
+      // TODO: identify file type
+
+      // TODO: identify checklist
+
+      // TODO: extract text && get filled checklist based on extracted text
     });
+
+    // TODO: check compliance between files
 
     const { text } = await sendFileToTextExtraction({
       extractUrl: isImage(files[0].name) ? props.fileTextExtractionUrl.image : props.fileTextExtractionUrl.default,
       body: { files: files[0] },
     });
+
     if (!text) return;
     setFileText(text);
   };
@@ -389,6 +410,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         messages.push({ message: '', type: 'leadCaptureMessage' });
       }
       setMessages(messages);
+      setFilesSent(false);
     } catch (error: any) {
       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
       console.error(`error: ${errorData}`);
@@ -1059,6 +1081,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 handleFileChange={handleFileChange}
                 sendMessageSound={props.textInput?.sendMessageSound}
                 sendSoundLocation={props.textInput?.sendSoundLocation}
+                disabled={getInputDisabled() || isInputDisabled()}
               />
             ) : (
               <UploadButton onClick={() => openModal()} text={messageUtils.UPLOAD_BUTTON_LABEL} />
@@ -1077,7 +1100,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         <FileUploadModal
           isOpen={modalOpen()}
           onClose={() => setModalOpen(false)}
-          onUploadSubmit={onUploadFormSubmit}
+          onUploadSubmit={processCompliance}
           buttonInput={props.buttonInput}
           modalTitle={messageUtils.MODAL_TITLE}
           uploadLabel={messageUtils.UPLOADING_LABEL}

@@ -13,7 +13,7 @@ const defaultTextColor = '#FAFAFA';
 export const ConfirmUploadButton = (props: Props) => {
   return (
     <button
-      class={'flex font-semibold justify-center items-center upload-file-button'}
+      class={'flex font-semibold uppercase justify-center items-center upload-file-button'}
       style={{
         width: '100%',
         left: '20px',

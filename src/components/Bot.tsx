@@ -21,8 +21,7 @@ import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@
 import { LeadCaptureBubble } from '@/components/bubbles';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { Modal } from '@/features/modal';
-import { UploadFileForm } from '@/features/modal/components/UploadFileForm';
+import { FileUploadModal } from '@/features/modal';
 import { UploadFile } from '@solid-primitives/upload';
 import { sendFileToTextExtraction } from '@/queries/sendFileToExtract';
 import { isImage } from '@/utils/isImage';
@@ -1075,16 +1074,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       </div>
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
       {modalOpen() && (
-        <Modal isOpen={modalOpen()} onClose={() => setModalOpen(false)}>
-          <UploadFileForm
-            onSubmit={onUploadFormSubmit}
-            buttonInput={props.buttonInput}
-            modalTitle={messageUtils.MODAL_TITLE}
-            uploadLabel={messageUtils.UPLOADING_LABEL}
-            uploadingButtonLabel={messageUtils.UPLOAD_BUTTON_LABEL}
-            errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
-          />
-        </Modal>
+        <FileUploadModal
+          isOpen={modalOpen()}
+          onClose={() => setModalOpen(false)}
+          onUploadSubmit={onUploadFormSubmit}
+          buttonInput={props.buttonInput}
+          modalTitle={messageUtils.MODAL_TITLE}
+          uploadLabel={messageUtils.UPLOADING_LABEL}
+          uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+          errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+        />
       )}
     </>
   );

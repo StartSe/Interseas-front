@@ -26,7 +26,7 @@ export const UploadButton = (props: UploadButtonProps) => {
         disabled={props.isDisabled || props.isLoading}
         {...props}
         class={
-          'py-4 px-12 font-semibold focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 ' +
+          'py-4 px-12 font-semibold uppercase focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 ' +
           props.class
         }
         style={{

@@ -78,7 +78,7 @@ export const UploadFileForm = (props: Props) => {
             </div>
           </div>
         </div>
-        <div class="flex flex-col archives">
+        <div class="flex flex-col files">
           {files().length > 0 && <h4 class="upload-message">{props.uploadLabel}</h4>}
           <For each={files()}>
             {(item) => (

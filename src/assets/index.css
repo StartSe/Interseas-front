@@ -242,7 +242,6 @@ textarea {
   font-weight: 700;
   line-height: 1.125rem;
   text-transform: uppercase;
-  border-radius: 3px;
 }
 
 .upload-file-button:disabled {
@@ -280,7 +279,7 @@ textarea {
 .modal-title {
   color: var(--text-color);
   text-align: center;
-  font-family: var(--chatbot-container-font-family), sans-serif;  
+  font-family: var(--chatbot-container-font-family), sans-serif;
   font-size: 1rem;
   font-style: normal;
   font-weight: 700;
@@ -353,6 +352,10 @@ textarea {
   font-weight: 100;
 }
 
+.files {
+  width: 100%;
+}
+
 .upload-message {
   color: var(--text-color);
   font-family: var(--chatbot-container-font-family), sans-serif;
@@ -361,6 +364,7 @@ textarea {
   font-weight: 600;
   line-height: normal;
   margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 .upload-error-message {
@@ -373,46 +377,26 @@ textarea {
   margin-bottom: 0.3rem;
 }
 
-.upload-file-item {
+.upload-file-item, .upload-file-item-error {
   font-family: var(--chatbot-container-font-family-secondary), sans-serif;
   border-radius: 4px;
-  border: 1px solid var(--success-color);
   background: var(--background-color);
-  min-width: 450px;
-  max-width: 450px;
+  width: 100%;
   height: 36px;
   padding: 0px 10px;
   flex-shrink: 0;
   margin-bottom: 0.5rem;
+}
+
+.upload-file-item {
+  border: 1px solid var(--success-color);
 }
 
 .upload-file-item-error {
-  font-family: var(--chatbot-container-font-family-secondary), sans-serif;
-  border-radius: 4px;
   border: 1px solid var(--error-color);
-  background: var(--background-color);
-  min-width: 450px;
-  max-width: 450px;
-  height: 36px;
-  padding: 0px 10px;
-  flex-shrink: 0;
-  margin-bottom: 0.5rem;
 }
 
-.upload-file-item p {
-  color: var(--text-color);
-  font-family: var(--chatbot-container-font-family-secondary), sans-serif;
-  font-size: 0.75rem;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1.125rem;
-  text-overflow: ellipsis;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.upload-file-item-error p {
+.upload-file-item p, .upload-file-item-error p {
   color: var(--text-color);
   font-family: var(--chatbot-container-font-family-secondary), sans-serif;
   font-size: 0.75rem;

@@ -23,6 +23,9 @@ import { messageUtils } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
+import { isImage } from '@/utils/isImage';
+import { FileMapping } from '@/utils/fileUtils';
+import { update } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -184,8 +187,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = createSignal(false);
   const [disableInput, setDisableInput] = createSignal(false);
-  const [files, setFiles] = createSignal<UploadFile[]>([]);
-  const [checklists, setChecklists] = createSignal<string[]>([]);
+  const [filesMapping, setFilesMapping] = createSignal<FileMapping[]>([]);
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
 
@@ -506,7 +508,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (startUploadingDocument()) {
       setDocumentsUploaded(false);
       setCurrentChecklistNumber(0);
-      setChecklists([]);
+      setFilesMapping([]);
     }
   };
 
@@ -883,78 +885,272 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }),
   );
 
+  const setImagesToBeUploaded = async (images: File[]): Promise<FilePreview[]> => {
+    // Logic from handleFileChange function
+    const filesList = [];
+    for (const file of images) {
+      const reader = new FileReader();
+      const { name } = file;
+      filesList.push(
+        new Promise((resolve) => {
+          reader.onload = (evt) => {
+            if (!evt?.target?.result) {
+              return;
+            }
+            const { result } = evt.target;
+            resolve({
+              data: result,
+              preview: URL.createObjectURL(file),
+              type: 'file',
+              name: name,
+              mime: file.type,
+            });
+          };
+          reader.readAsDataURL(file);
+        }),
+      );
+    }
+
+    const newFiles = await Promise.all(filesList);
+
+    return newFiles as FilePreview[];
+  };
+
+  const sendBackgroundMessage = async (value: string, urls: any[]) => {
+    const body: IncomingInput = {
+      question: value,
+      chatId: chatId(),
+    };
+
+    if (urls && urls.length > 0) body.uploads = urls;
+
+    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+
+    const result = await sendMessageQuery({
+      chatflowid: props.chatflowid,
+      apiHost: props.apiHost,
+      body,
+    });
+
+    if (result.data) {
+      const data = result.data;
+
+      return data;
+    }
+    if (result.error) {
+      const error = result.error;
+      console.error(error);
+      return;
+    }
+  };
+
   const startProcessingFiles = async (files: UploadFile[]) => {
     setDocumentsUploaded(true);
     setIsUploadModalOpen(false);
     setDisableInput(true);
-    setFiles(files);
+
+    const filesMap: FileMapping[] = [];
 
     files.forEach((file) => {
-      // Mocked behavior
+      const fileMap = {
+        file: file,
+      } as FileMapping;
 
       // TODO: identify file type
+      // fileMap.type = <type>;
 
       // TODO: identify checklist
       // Note: we may have documents with no checklists, but will need its values anyway
 
-      // if checklist:
-      setChecklists((prevChecklists) => [...prevChecklists, file.name]);
+      // TODO: if checklist:
+      // fileMap.checklist = <checklist>;
 
-      // if no checklist:
-      // extract all text from document
+      // Mocked behavior - remove it
+      if (file.name.includes('PACKING LIST')) {
+        fileMap.type = 'Packing List';
+        fileMap.checklist = `
+        • Referência à Ordem de Compra (OC) ou Fatura Comercial
+        • Dados do Importador
+        • Dados do Adquirente ou Encomendante
+        • Dados do Exportador
+        • Descrição ou referência
+        • Espécie dos volumes
+        • Quantidade total de Volumes
+        • Peso Líquido por volume
+        • Peso Líquido total
+        • Peso Bruto total
+        • Cubagem total`;
+      }
+
+      filesMap.push(fileMap);
     });
 
-    // if all documents have checklist, show this message:
+    setFilesMapping(filesMap);
+
+    const anyFileWithoutChecklist = filesMap.some((file) => !file.checklist);
+    let message = '';
+
+    if (anyFileWithoutChecklist) {
+      message = messageUtils.ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE;
+    } else {
+      message = messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE;
+    }
+
     setMessages((prevMessages) => [
       ...prevMessages,
       {
-        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
+        message: message,
         type: 'apiMessage',
       },
     ]);
 
-    // if any document doesn't have a checklist, show another message
+    processFilesWithoutChecklist();
 
-    processNextChecklist();
+    await processNextChecklist();
   };
 
-  const processNextChecklist = () => {
-    const file = files()[currentChecklistNumber()];
+  const processFilesWithoutChecklist = async () => {
+    for (const fileMap of filesMapping()) {
+      if (fileMap.checklist) {
+        continue;
+      }
+
+      console.info('Processing file without checklist:', fileMap.file.name);
+
+      const file = fileMap.file;
+      const imagesList: File[] = [];
+
+      if (isImage(file.name)) {
+        imagesList.push(file.file);
+      } else {
+        // TODO: Convert document to images
+        // imagesList.push(file.file);
+      }
+
+      const imagesToUpload = await setImagesToBeUploaded(imagesList);
+
+      // TODO: move this to a function to avoid repetition
+      const urls = imagesToUpload.map((item) => {
+        return {
+          data: item.data,
+          type: item.type,
+          name: item.name,
+          mime: item.mime,
+        };
+      });
+
+      const extractionPrompt = `EXTRACTION`;
+      const resultData = await sendBackgroundMessage(extractionPrompt, urls);
+
+      try {
+        const jsonData = JSON.parse(resultData.text);
+
+        fileMap.content = jsonData;
+        console.info(`Extraction of file ${fileMap.file.name} complete`, jsonData);
+      } catch (error) {
+        console.info('Current data:', resultData);
+        console.error(error);
+      }
+    }
+  };
+
+  const processNextChecklist = async () => {
+    const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
+
+    if (filesWithChecklist.length === 0) {
+      executeComplianceCheck(filesMapping());
+      return;
+    }
+
+    const fileMap = filesWithChecklist[currentChecklistNumber()];
+    const file = fileMap.file;
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
-    setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
+    const imagesList: File[] = [];
+    if (isImage(file.name)) {
+      imagesList.push(file.file);
+    } else {
+      // TODO: Convert document to images
+      // imagesList.push(file.file);
+    }
+
+    const imagesToUpload = await setImagesToBeUploaded(imagesList);
+
+    // TODO: move this to a function to avoid repetition
+    const urls = imagesToUpload.map((item) => {
+      return {
+        data: item.data,
+        type: item.type,
+        name: item.name,
+        mime: item.mime,
+      };
+    });
+
+    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     setLoading(true);
     setIsNextChecklistButtonDisabled(true);
 
-    // TODO: extract text && get filled checklist based on extracted text
-    // Mocked behavior
-    setTimeout(() => {
-      setLoading(false);
-      const checklistItems = {
-        'Checklist item 1': true,
-        'Checklist item 2': false,
-        'Checklist item 3': false,
-        'Checklist item 4': true,
-        'Checklist item 5': true,
-      };
-      let checklistMessage = `<b>[Nome do checklist]:</b><br>`;
+    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}`;
+    const result = await sendBackgroundMessage(checklistPrompt, urls);
 
-      for (const [key, value] of Object.entries(checklistItems)) {
+    try {
+      const jsonData = JSON.parse(result.text);
+      fileMap.content = jsonData;
+      fileMap.filledChecklist = jsonData;
+
+      // TODO: move validation and formatting logic to a separate function
+      if (!Object.keys(jsonData).includes('checklist')) {
+        throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
+      }
+
+      let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+
+      for (const [key, value] of Object.entries(jsonData.checklist)) {
         checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
       }
 
+      if (Object.keys(jsonData).includes('conferências')) {
+        checklistMessage += `<br><b>Conferências:</b><br>`;
+        for (const [key, value] of Object.entries(jsonData['conferências'])) {
+          checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
+        }
+      }
+
+      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+
+      if (!isChatFlowAvailableToStream()) {
+        updateLastMessage(
+          checklistMessage,
+          result?.sourceDocuments,
+          result?.fileAnnotations,
+          result?.agentReasoning,
+          result?.action,
+          checklistMessage,
+        );
+      } else {
+        updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
+      }
+
       setIsNextChecklistButtonDisabled(false);
 
-      if (currentChecklistNumber() === checklists().length) {
-        executeComplianceCheck(checklists());
+      if (currentChecklistNumber() === filesWithChecklist.length) {
+        executeComplianceCheck(filesMapping());
       }
-    }, 2000);
+    } catch (error) {
+      console.info('Current data:', result);
+      console.error(error);
+      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+
+      setLoading(false);
+      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+    }
   };
 
-  const executeComplianceCheck = async (filledChecklists: string[]) => {
+  const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     // TODO: check compliance between files
+    console.log('Files Mapping', filesMapping());
 
     setLoading(false);
   };
@@ -1166,15 +1362,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             </div>
           </Show>
           <div class="w-full px-5 pt-2 pb-1">
-            {startUploadingDocument() && documentsUploaded() && disableInput() && checklists().length > currentChecklistNumber() && (
-              <NextChecklistButton
-                onClick={() => processNextChecklist()}
-                text={messageUtils.NEXT_CHECKLIST_BUTTON_LABEL}
-                checklistNumber={checklists().length}
-                currentChecklistNumber={currentChecklistNumber()!}
-                isDisabled={isNextChecklistButtonDisabled()}
-              />
-            )}
+            {startUploadingDocument() &&
+              documentsUploaded() &&
+              disableInput() &&
+              filesMapping().filter((item) => !!item.checklist).length > currentChecklistNumber() && (
+                <NextChecklistButton
+                  onClick={() => processNextChecklist()}
+                  text={messageUtils.NEXT_CHECKLIST_BUTTON_LABEL}
+                  checklistNumber={filesMapping().filter((item) => !!item.checklist).length}
+                  currentChecklistNumber={currentChecklistNumber()!}
+                  isDisabled={isNextChecklistButtonDisabled()}
+                />
+              )}
 
             {(startUploadingDocument() && documentsUploaded()) || !startUploadingDocument() ? (
               isRecording() ? (

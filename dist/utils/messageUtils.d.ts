@@ -5,6 +5,9 @@ export declare const messageUtils: {
     UPLOAD_BUTTON_LABEL: string;
     UPLOADING_LABEL: string;
     NEXT_CHECKLIST_BUTTON_LABEL: string;
+    ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE: string;
     ALL_DOCUMENTS_VALIDATED_MESSAGE: string;
+    UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: string;
+    CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: string;
 };
 //# sourceMappingURL=messageUtils.d.ts.map

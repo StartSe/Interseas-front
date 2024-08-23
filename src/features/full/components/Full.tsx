@@ -80,7 +80,6 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
             isFullPage={true}
             observersConfig={props.observersConfig}
             starterPromptFontSize={props.theme?.chatWindow?.starterPromptFontSize}
-            fileTextExtractionUrl={props.fileTextExtractionUrl}
           />
         </div>
       </Show>

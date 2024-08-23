@@ -6,8 +6,4 @@ export const defaultBotProps: BubbleProps = {
   chatflowConfig: undefined,
   theme: undefined,
   observersConfig: undefined,
-  fileTextExtractionUrl: {
-    default: '',
-    image: '',
-  },
 };

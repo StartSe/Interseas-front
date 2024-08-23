@@ -1,31 +1,28 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
-import { GuestBubble, BotBubble, LoadingBubble, SourceBubble, StarterPromptBubble } from '@/components/bubbles';
-import {
-  BotMessageTheme,
-  FooterTheme,
-  TextInputTheme,
-  UserMessageTheme,
-  FeedbackTheme,
-  ButtonInputTheme,
-  TextExtractionConfig,
-} from '@/features/bubble/types';
+import { TextInput } from '@/components/inputs/textInput';
+import { GuestBubble } from '@/components/bubbles/GuestBubble';
+import { BotBubble } from '@/components/bubbles/BotBubble';
+import { LoadingBubble } from '@/components/bubbles/LoadingBubble';
+import { SourceBubble } from '@/components/bubbles/SourceBubble';
+import { StarterPromptBubble } from '@/components/bubbles/StarterPromptBubble';
+import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme } from '@/features/bubble/types';
 import { Badge } from '@/components/Badge';
 import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
-import { DeleteButton } from '@/components/buttons/SendButton';
-import { TrashIcon } from '@/components/icons';
+import { DeleteButton, SendButton } from '@/components/buttons/SendButton';
+import { CircleDotIcon, TrashIcon } from '@/components/icons';
+import { CancelButton } from '@/components/buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
-import { LeadCaptureBubble } from '@/components/bubbles';
+import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { FileUploadModal } from '@/features/modal';
-import { UploadFile } from '@solid-primitives/upload';
-import { TextInput } from '@/components/inputs/textInput';
 import { messageUtils } from '@/utils/messageUtils';
-import { NextChecklistButton } from './buttons/NextChecklistButton';
+import { FileUploadModal } from '@/features/modal/FileUploadModal';
+import { UploadFile } from '@solid-primitives/upload';
+import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -57,7 +54,7 @@ type FilePreview = {
   type: string;
 };
 
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage' | 'userFile';
+type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage';
 
 export type IAgentReasoning = {
   agentName?: string;
@@ -121,8 +118,6 @@ export type BotProps = {
   observersConfig?: observersConfigType;
   starterPrompts?: string[];
   starterPromptFontSize?: number;
-  buttonInput?: ButtonInputTheme;
-  fileTextExtractionUrl: TextExtractionConfig;
 };
 
 export type LeadsConfig = {
@@ -135,6 +130,8 @@ export type LeadsConfig = {
 };
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
+const defaultBackgroundColor = '#ffffff';
+const defaultTextColor = '#303235';
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -145,7 +142,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const [userInput, setUserInput] = createSignal('');
   const [loading, setLoading] = createSignal(false);
-  const [modalOpen, setModalOpen] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -169,14 +165,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [leadsConfig, setLeadsConfig] = createSignal<LeadsConfig>();
   const [isLeadSaved, setIsLeadSaved] = createSignal(false);
   const [leadEmail, setLeadEmail] = createSignal('');
-  const [filesSent, setFilesSent] = createSignal(false);
-  const [fileText, setFileText] = createSignal<string>();
-  const [isInputDisabled, setIsInputDisabled] = createSignal(false);
-
-  const [files, setFiles] = createSignal<UploadFile[]>([]);
-  const [checklists, setChecklists] = createSignal<string[]>([]);
-  const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
-  const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
 
   // drag & drop file input
   // TODO: fix this type
@@ -190,6 +178,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   // drag & drop
   const [isDragActive, setIsDragActive] = createSignal(false);
+
+  // document uploading
+  const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
+  const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = createSignal(false);
+  const [disableInput, setDisableInput] = createSignal(false);
+  const [files, setFiles] = createSignal<UploadFile[]>([]);
+  const [checklists, setChecklists] = createSignal<string[]>([]);
+  const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
+  const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
 
   onMount(() => {
     if (botProps?.observersConfig) {
@@ -216,82 +214,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       chatContainer?.scrollTo(0, chatContainer.scrollHeight);
     }, 50);
   });
-
-  const startProcessingFiles = async (files: UploadFile[]) => {
-    setFilesSent(true);
-    setModalOpen(false);
-    setIsInputDisabled(true);
-    setFiles(files);
-
-    files.forEach((file) => {
-      // Mocked behavior
-
-      // TODO: identify file type
-
-      // TODO: identify checklist
-      // Note: we may have documents with no checklists, but will need its values anyway
-
-      // if checklist:
-      setChecklists((prevChecklists) => [...prevChecklists, file.name]);
-
-      // if no checklist:
-      // extract all text from document
-    });
-
-    // if all documents have checklist, show this message:
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
-        type: 'apiMessage',
-      },
-    ]);
-
-    // if any document doesn't have a checklist, show another message
-
-    processNextChecklist();
-  };
-
-  const processNextChecklist = () => {
-    const file = files()[currentChecklistNumber()];
-    setCurrentChecklistNumber(currentChecklistNumber() + 1);
-
-    setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
-
-    setLoading(true);
-    setIsNextChecklistButtonDisabled(true);
-
-    // TODO: extract text && get filled checklist based on extracted text
-    // Mocked behavior
-    setTimeout(() => {
-      setLoading(false);
-      const checklistItems = {
-        'Checklist item 1': true,
-        'Checklist item 2': false,
-        'Checklist item 3': false,
-        'Checklist item 4': true,
-        'Checklist item 5': true,
-      };
-      let checklistMessage = `<b>[Nome do checklist]:</b><br>`;
-
-      for (const [key, value] of Object.entries(checklistItems)) {
-        checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
-      }
-
-      setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-      setIsNextChecklistButtonDisabled(false);
-
-      if (currentChecklistNumber() === checklists().length) {
-        executeComplianceCheck(checklists());
-      }
-    }, 2000);
-  };
-
-  const executeComplianceCheck = async (filledChecklists: string[]) => {
-    // TODO: check compliance between files
-
-    setLoading(false);
-  };
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -390,10 +312,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
   const updateLastMessageAction = (action: IAction) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -405,6 +323,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
+  };
+
+  const clearPreviews = () => {
+    // Revoke the data uris to avoid memory leaks
+    previews().forEach((file) => URL.revokeObjectURL(file.preview));
+    setPreviews([]);
   };
 
   // Handle errors
@@ -423,7 +347,127 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
   };
 
-  const handleActionClick = async (label: string) => {
+  // Handle form submission
+  const handleSubmit = async (value: string, action?: IAction | undefined | null) => {
+    setUserInput(value);
+
+    if (value.trim() === '') {
+      const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
+      if (!(previews().length >= 1 && containsAudio)) {
+        return;
+      }
+    }
+
+    setLoading(true);
+    scrollToBottom();
+
+    const urls = previews().map((item) => {
+      return {
+        data: item.data,
+        type: item.type,
+        name: item.name,
+        mime: item.mime,
+      };
+    });
+
+    clearPreviews();
+
+    setMessages((prevMessages) => {
+      const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: urls }];
+      addChatMessage(messages);
+      return messages;
+    });
+
+    const body: IncomingInput = {
+      question: value,
+      chatId: chatId(),
+    };
+
+    if (urls && urls.length > 0) body.uploads = urls;
+
+    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+
+    if (leadEmail()) body.leadEmail = leadEmail();
+
+    if (action) body.action = action;
+
+    if (isChatFlowAvailableToStream()) {
+      body.socketIOClientId = socketIOClientId();
+    } else {
+      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
+    }
+
+    const result = await sendMessageQuery({
+      chatflowid: props.chatflowid,
+      apiHost: props.apiHost,
+      body,
+    });
+
+    if (result.data) {
+      const data = result.data;
+      const question = data.question;
+      if (value === '' && question) {
+        setMessages((data) => {
+          const messages = data.map((item, i) => {
+            if (i === data.length - 2) {
+              return { ...item, message: question };
+            }
+            return item;
+          });
+          addChatMessage(messages);
+          return [...messages];
+        });
+      }
+      if (urls && urls.length > 0) {
+        setMessages((data) => {
+          const messages = data.map((item, i) => {
+            if (i === data.length - 2) {
+              if (item.fileUploads) {
+                const fileUploads = item?.fileUploads.map((file) => ({
+                  type: file.type,
+                  name: file.name,
+                  mime: file.mime,
+                }));
+                return { ...item, fileUploads };
+              }
+            }
+            return item;
+          });
+          addChatMessage(messages);
+          return [...messages];
+        });
+      }
+      if (!isChatFlowAvailableToStream()) {
+        let text = '';
+        if (data.text) text = data.text;
+        else if (data.json) text = JSON.stringify(data.json, null, 2);
+        else text = JSON.stringify(data, null, 2);
+
+        updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
+      } else {
+        updateLastMessage('', data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
+      }
+      setLoading(false);
+      setUserInput('');
+      scrollToBottom();
+    }
+    if (result.error) {
+      const error = result.error;
+      console.error(error);
+      if (typeof error === 'object') {
+        handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
+        return;
+      }
+      if (typeof error === 'string') {
+        handleError(error);
+        return;
+      }
+      handleError();
+      return;
+    }
+  };
+
+  const handleActionClick = async (label: string, action: IAction | undefined | null) => {
     setUserInput(label);
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -435,7 +479,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    handleSubmit(label);
+    handleSubmit(label, action);
   };
 
   const clearChat = () => {
@@ -454,12 +498,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         messages.push({ message: '', type: 'leadCaptureMessage' });
       }
       setMessages(messages);
-      setFilesSent(false);
-      setCurrentChecklistNumber(0);
-      setChecklists([]);
     } catch (error: any) {
       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
       console.error(`error: ${errorData}`);
+    }
+
+    if (startUploadingDocument()) {
+      setDocumentsUploaded(false);
+      setCurrentChecklistNumber(0);
+      setChecklists([]);
     }
   };
 
@@ -836,72 +883,82 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }),
   );
 
-  const handleSubmit = async (value: string, hidden = false) => {
-    if (value.trim() === '') {
-      return;
-    }
+  const startProcessingFiles = async (files: UploadFile[]) => {
+    setDocumentsUploaded(true);
+    setIsUploadModalOpen(false);
+    setDisableInput(true);
+    setFiles(files);
 
-    setUserInput(value);
-    setLoading(true);
-    scrollToBottom();
+    files.forEach((file) => {
+      // Mocked behavior
 
-    const welcomeMessage = props.welcomeMessage ?? defaultWelcomeMessage;
-    const messageList = messages().filter((msg) => msg.message !== welcomeMessage);
+      // TODO: identify file type
 
-    if (!hidden)
-      setMessages((prevMessages) => {
-        const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage' }];
-        return messages;
-      });
+      // TODO: identify checklist
+      // Note: we may have documents with no checklists, but will need its values anyway
 
-    const body: IncomingInput = {
-      question: value,
-      history: messageList,
-      overrideConfig: {
-        text: fileText(),
-      },
-      chatId: chatId(),
-    };
+      // if checklist:
+      setChecklists((prevChecklists) => [...prevChecklists, file.name]);
 
-    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-
-    if (isChatFlowAvailableToStream()) body.socketIOClientId = socketIOClientId();
-
-    const result = await sendMessageQuery({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
-      body,
+      // if no checklist:
+      // extract all text from document
     });
 
-    if (result.data) {
-      const data = result.data;
-      if (!isChatFlowAvailableToStream()) {
-        let text = '';
-        if (data.text) text = data.text;
-        else if (data.json) text = JSON.stringify(data.json, null, 2);
-        else text = JSON.stringify(data, null, 2);
+    // if all documents have checklist, show this message:
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
+        type: 'apiMessage',
+      },
+    ]);
 
-        setMessages((prevMessages) => {
-          const messages: MessageType[] = [
-            ...prevMessages,
-            { message: text, sourceDocuments: data?.sourceDocuments, fileAnnotations: data?.fileAnnotations, type: 'apiMessage' },
-          ];
-          return messages;
-        });
-      }
-      setLoading(false);
-      setUserInput('');
-      scrollToBottom();
-    }
-    if (result.error) {
-      const error = result.error;
-      console.error(error);
-      const err: any = error;
-      const errorData = typeof err === 'string' ? err : err.response.data || `${err.response.status}: ${err.response.statusText}`;
-      handleError(errorData);
-      return;
-    }
+    // if any document doesn't have a checklist, show another message
+
+    processNextChecklist();
   };
+
+  const processNextChecklist = () => {
+    const file = files()[currentChecklistNumber()];
+    setCurrentChecklistNumber(currentChecklistNumber() + 1);
+
+    setMessages((prevMessages) => [...prevMessages, { message: `Documento: ${file.name}`, type: 'userMessage' }]);
+
+    setLoading(true);
+    setIsNextChecklistButtonDisabled(true);
+
+    // TODO: extract text && get filled checklist based on extracted text
+    // Mocked behavior
+    setTimeout(() => {
+      setLoading(false);
+      const checklistItems = {
+        'Checklist item 1': true,
+        'Checklist item 2': false,
+        'Checklist item 3': false,
+        'Checklist item 4': true,
+        'Checklist item 5': true,
+      };
+      let checklistMessage = `<b>[Nome do checklist]:</b><br>`;
+
+      for (const [key, value] of Object.entries(checklistItems)) {
+        checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
+      }
+
+      setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+      setIsNextChecklistButtonDisabled(false);
+
+      if (currentChecklistNumber() === checklists().length) {
+        executeComplianceCheck(checklists());
+      }
+    }, 2000);
+  };
+
+  const executeComplianceCheck = async (filledChecklists: string[]) => {
+    // TODO: check compliance between files
+
+    setLoading(false);
+  };
+
   return (
     <>
       <div
@@ -1007,7 +1064,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         fontSize={props.fontSize}
                         isLoading={loading() && index() === messages().length - 1}
                         showAgentMessages={props.showAgentMessages}
-                        handleActionClick={(label) => handleActionClick(label)}
+                        handleActionClick={(label, action) => handleActionClick(label, action)}
                       />
                     )}
                     {message.type === 'leadCaptureMessage' && leadsConfig()?.status && !getLocalStorageChatflow(props.chatflowid)?.lead && (
@@ -1109,7 +1166,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             </div>
           </Show>
           <div class="w-full px-5 pt-2 pb-1">
-            {filesSent() && isInputDisabled() && checklists().length > currentChecklistNumber() && (
+            {startUploadingDocument() && documentsUploaded() && disableInput() && checklists().length > currentChecklistNumber() && (
               <NextChecklistButton
                 onClick={() => processNextChecklist()}
                 text={messageUtils.NEXT_CHECKLIST_BUTTON_LABEL}
@@ -1118,28 +1175,91 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 isDisabled={isNextChecklistButtonDisabled()}
               />
             )}
-            {filesSent() ? (
-              <TextInput
-                backgroundColor={props.textInput?.backgroundColor}
-                textColor={props.textInput?.textColor}
-                placeholder={props.textInput?.placeholder}
-                sendButtonColor={props.textInput?.sendButtonColor}
-                maxChars={props.textInput?.maxChars}
-                maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
-                autoFocus={props.textInput?.autoFocus}
-                fontSize={props.fontSize}
-                defaultValue={userInput()}
-                onSubmit={handleSubmit}
-                uploadsConfig={uploadsConfig()}
-                setPreviews={setPreviews}
-                onMicrophoneClicked={onMicrophoneClicked}
-                handleFileChange={handleFileChange}
-                sendMessageSound={props.textInput?.sendMessageSound}
-                sendSoundLocation={props.textInput?.sendSoundLocation}
-                disabled={getInputDisabled() || isInputDisabled()}
-              />
+
+            {(startUploadingDocument() && documentsUploaded()) || !startUploadingDocument() ? (
+              isRecording() ? (
+                <>
+                  {recordingNotSupported() ? (
+                    <div class="w-full flex items-center justify-between p-4 border border-[#eeeeee]">
+                      <div class="w-full flex items-center justify-between gap-3">
+                        <span class="text-base">To record audio, use modern browsers like Chrome or Firefox that support audio recording.</span>
+                        <button
+                          class="py-2 px-4 justify-center flex items-center bg-red-500 text-white rounded-md"
+                          type="button"
+                          onClick={() => onRecordingCancelled()}
+                        >
+                          Okay
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      class="h-[58px] flex items-center justify-between chatbot-input border border-[#eeeeee]"
+                      data-testid="input"
+                      style={{
+                        margin: 'auto',
+                        'background-color': props.textInput?.backgroundColor ?? defaultBackgroundColor,
+                        color: props.textInput?.textColor ?? defaultTextColor,
+                      }}
+                    >
+                      <div class="flex items-center gap-3 px-4 py-2">
+                        <span>
+                          <CircleDotIcon color="red" />
+                        </span>
+                        <span>{elapsedTime() || '00:00'}</span>
+                        {isLoadingRecording() && <span class="ml-1.5">Sending...</span>}
+                      </div>
+                      <div class="flex items-center">
+                        <CancelButton buttonColor={props.textInput?.sendButtonColor} type="button" class="m-0" on:click={onRecordingCancelled}>
+                          <span style={{ 'font-family': 'Poppins, sans-serif' }}>Send</span>
+                        </CancelButton>
+                        <SendButton
+                          sendButtonColor={props.textInput?.sendButtonColor}
+                          type="button"
+                          isDisabled={loading()}
+                          class="m-0"
+                          on:click={onRecordingStopped}
+                        >
+                          <span style={{ 'font-family': 'Poppins, sans-serif' }}>Send</span>
+                        </SendButton>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <TextInput
+                  backgroundColor={props.textInput?.backgroundColor}
+                  textColor={props.textInput?.textColor}
+                  placeholder={props.textInput?.placeholder}
+                  sendButtonColor={props.textInput?.sendButtonColor}
+                  maxChars={props.textInput?.maxChars}
+                  maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
+                  autoFocus={props.textInput?.autoFocus}
+                  fontSize={props.fontSize}
+                  disabled={getInputDisabled() || disableInput()}
+                  defaultValue={userInput()}
+                  onSubmit={handleSubmit}
+                  uploadsConfig={uploadsConfig()}
+                  setPreviews={setPreviews}
+                  onMicrophoneClicked={onMicrophoneClicked}
+                  handleFileChange={handleFileChange}
+                  sendMessageSound={props.textInput?.sendMessageSound}
+                  sendSoundLocation={props.textInput?.sendSoundLocation}
+                />
+              )
             ) : (
-              <UploadButton onClick={() => openModal()} text={messageUtils.UPLOAD_BUTTON_LABEL} />
+              <>
+                <UploadButton onClick={() => setIsUploadModalOpen(true)} text={messageUtils.UPLOAD_BUTTON_LABEL} />
+                <FileUploadModal
+                  isOpen={isUploadModalOpen()}
+                  onClose={() => setIsUploadModalOpen(false)}
+                  onUploadSubmit={startProcessingFiles}
+                  modalTitle={messageUtils.MODAL_TITLE}
+                  uploadLabel={messageUtils.UPLOADING_LABEL}
+                  uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+                  errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+                />
+              </>
             )}
           </div>
           <Badge
@@ -1151,18 +1271,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         </div>
       </div>
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
-      {modalOpen() && (
-        <FileUploadModal
-          isOpen={modalOpen()}
-          onClose={() => setModalOpen(false)}
-          onUploadSubmit={startProcessingFiles}
-          buttonInput={props.buttonInput}
-          modalTitle={messageUtils.MODAL_TITLE}
-          uploadLabel={messageUtils.UPLOADING_LABEL}
-          uploadingButtonLabel={messageUtils.MODAL_BUTTON}
-          errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
-        />
-      )}
     </>
   );
 };

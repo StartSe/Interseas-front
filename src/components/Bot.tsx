@@ -1004,6 +1004,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       },
     ]);
 
+    // TODO: send alert message if needed
+
     processFilesWithoutChecklist();
 
     await processNextChecklist();

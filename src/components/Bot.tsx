@@ -1056,6 +1056,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       try {
         const jsonData = JSON.parse(resultData.text);
 
+        if (jsonData.error) {
+          throw new Error(jsonData.error);
+        }
+
         fileMap.content = jsonData;
         console.info(`Extraction of file ${fileMap.file.name} complete`, jsonData);
       } catch (error) {
@@ -1088,6 +1092,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     try {
       const jsonData = JSON.parse(result.text);
+
+      if (jsonData.error) {
+        throw new Error(jsonData.error);
+      }
+
       fileMap.content = jsonData;
       fileMap.filledChecklist = jsonData;
 

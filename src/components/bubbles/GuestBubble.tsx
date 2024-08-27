@@ -42,7 +42,7 @@ export const GuestBubble = (props: Props) => {
         }}
       >
         {props.message.fileUploads && props.message.fileUploads.length > 0 && (
-          <div class="flex flex-col items-start flex-wrap w-full gap-2">
+          <div class="flex flex-col items-center flex-wrap w-full gap-2">
             <For each={props.message.fileUploads}>
               {(item) => {
                 const fileData = `${props.apiHost}/api/v1/get-upload-file?chatflowId=${props.chatflowid}&chatId=${props.chatId}&fileName=${item.name}`;

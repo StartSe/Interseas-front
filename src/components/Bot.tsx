@@ -25,7 +25,6 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { update } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1106,16 +1105,27 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
       }
 
+      const generateChecklistItemToPrint = (key: string, value: string) => {
+        const lowerValue = value.toLowerCase();
+        const hasValue = lowerValue !== 'null' && lowerValue !== 'n/a';
+        const multiSpaces = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+
+        let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>`;
+        checklistItem += (hasValue ? `:<br>${multiSpaces}${value}` : '') + '<br>';
+
+        return checklistItem;
+      };
+
       let checklistMessage = `<b>${fileMap.type}:</b><br>`;
 
       for (const [key, value] of Object.entries(jsonData.checklist)) {
-        checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
+        checklistMessage += generateChecklistItemToPrint(key, value as string);
       }
 
-      if (Object.keys(jsonData).includes('conferências')) {
+      if (Object.keys(jsonData).includes('conferências') && jsonData['conferências'].length > 0) {
         checklistMessage += `<br><b>Conferências:</b><br>`;
         for (const [key, value] of Object.entries(jsonData['conferências'])) {
-          checklistMessage += `<input type="checkbox" ${value ? 'checked' : ''} disabled> ${key}<br>`;
+          checklistMessage += generateChecklistItemToPrint(key, value as string);
         }
       }
 

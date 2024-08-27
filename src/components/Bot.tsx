@@ -189,6 +189,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [disableInput, setDisableInput] = createSignal(false);
   const [filesMapping, setFilesMapping] = createSignal<FileMapping[]>([]);
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
+  const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
 
   onMount(() => {
@@ -958,9 +959,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const startProcessingFiles = async (files: UploadFile[]) => {
-    setDocumentsUploaded(true);
     setIsUploadModalOpen(false);
     setDisableInput(true);
+    setIsUploadButtonDisabled(true);
 
     const filesMap: FileMapping[] = [];
 
@@ -1022,6 +1023,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     processFilesWithoutChecklist();
 
     await processNextChecklist();
+
+    setDocumentsUploaded(true);
+    setIsUploadButtonDisabled(false);
   };
 
   const processFileToSend = async (file: File) => {
@@ -1077,15 +1081,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
 
+    setLoading(true);
+    setIsNextChecklistButtonDisabled(true);
+
     const fileMap = filesWithChecklist[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
-
-    setLoading(true);
-    setIsNextChecklistButtonDisabled(true);
 
     const checklistPrompt = `CHECKLIST\n${fileMap.checklist}`;
     const result = await sendBackgroundMessage(checklistPrompt, urls);
@@ -1366,12 +1370,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             {startUploadingDocument() &&
               documentsUploaded() &&
               disableInput() &&
+              filesMapping().filter((item) => !!item.checklist).length > 1 &&
               filesMapping().filter((item) => !!item.checklist).length > currentChecklistNumber() && (
                 <NextChecklistButton
                   onClick={() => processNextChecklist()}
                   text={messageUtils.NEXT_CHECKLIST_BUTTON_LABEL}
                   checklistNumber={filesMapping().filter((item) => !!item.checklist).length}
-                  currentChecklistNumber={currentChecklistNumber()!}
+                  currentChecklistNumber={currentChecklistNumber()}
                   isDisabled={isNextChecklistButtonDisabled()}
                 />
               )}
@@ -1449,7 +1454,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               )
             ) : (
               <>
-                <UploadButton onClick={() => setIsUploadModalOpen(true)} text={messageUtils.UPLOAD_BUTTON_LABEL} />
+                <UploadButton
+                  onClick={() => setIsUploadModalOpen(true)}
+                  text={messageUtils.UPLOAD_BUTTON_LABEL}
+                  disabled={isUploadButtonDisabled()}
+                />
                 <FileUploadModal
                   isOpen={isUploadModalOpen()}
                   onClose={() => setIsUploadModalOpen(false)}

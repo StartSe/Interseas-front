@@ -25,6 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
+import { convertPdfToSingleImage } from '@/utils/pdfUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -884,6 +885,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }),
   );
 
+  const readImagesUrls = (imagesToUpload: any[]) => {
+    // Logic from handleSubmit function
+    const urls = imagesToUpload.map((item) => {
+      return {
+        data: item.data,
+        type: item.type,
+        name: item.name,
+        mime: item.mime,
+      };
+    });
+    return urls;
+  };
+
   const setImagesToBeUploaded = async (images: File[]): Promise<FilePreview[]> => {
     // Logic from handleFileChange function
     const filesList = [];
@@ -1010,6 +1024,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     await processNextChecklist();
   };
 
+  const processFileToSend = async (file: File) => {
+    const imagesList: File[] = [];
+
+    if (isImage(file.name)) {
+      imagesList.push(file);
+    } else {
+      const pdfImage = await convertPdfToSingleImage(file);
+      imagesList.push(pdfImage);
+    }
+
+    const imagesToUpload = await setImagesToBeUploaded(imagesList);
+    const urls = readImagesUrls(imagesToUpload);
+    return urls;
+  };
+
   const processFilesWithoutChecklist = async () => {
     for (const fileMap of filesMapping()) {
       if (fileMap.checklist) {
@@ -1019,26 +1048,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       console.info('Processing file without checklist:', fileMap.file.name);
 
       const file = fileMap.file;
-      const imagesList: File[] = [];
-
-      if (isImage(file.name)) {
-        imagesList.push(file.file);
-      } else {
-        // TODO: Convert document to images
-        // imagesList.push(file.file);
-      }
-
-      const imagesToUpload = await setImagesToBeUploaded(imagesList);
-
-      // TODO: move this to a function to avoid repetition
-      const urls = imagesToUpload.map((item) => {
-        return {
-          data: item.data,
-          type: item.type,
-          name: item.name,
-          mime: item.mime,
-        };
-      });
+      const urls = await processFileToSend(file.file);
 
       const extractionPrompt = `EXTRACTION`;
       const resultData = await sendBackgroundMessage(extractionPrompt, urls);
@@ -1065,27 +1075,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const fileMap = filesWithChecklist[currentChecklistNumber()];
     const file = fileMap.file;
+    const urls = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
-
-    const imagesList: File[] = [];
-    if (isImage(file.name)) {
-      imagesList.push(file.file);
-    } else {
-      // TODO: Convert document to images
-      // imagesList.push(file.file);
-    }
-
-    const imagesToUpload = await setImagesToBeUploaded(imagesList);
-
-    // TODO: move this to a function to avoid repetition
-    const urls = imagesToUpload.map((item) => {
-      return {
-        data: item.data,
-        type: item.type,
-        name: item.name,
-        mime: item.mime,
-      };
-    });
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
@@ -1145,8 +1136,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
       }
 
-      setIsNextChecklistButtonDisabled(false);
-
       if (currentChecklistNumber() === filesWithChecklist.length) {
         executeComplianceCheck(filesMapping());
       }
@@ -1157,6 +1146,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+    } finally {
+      setIsNextChecklistButtonDisabled(false);
     }
   };
 

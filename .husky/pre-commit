@@ -2,6 +2,7 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 set -e # Exit on any error
+cd flowise-embed
 
 echo "Running ESLint for linting..."
 npm run lint

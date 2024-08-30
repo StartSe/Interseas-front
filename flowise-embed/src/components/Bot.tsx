@@ -25,7 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { convertPdfToSingleImage } from '@/utils/pdfUtils';
+import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1029,13 +1029,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const processFileToSend = async (file: File) => {
-    const imagesList: File[] = [];
+    let imagesList: File[] = [];
 
     if (isImage(file.name)) {
       imagesList.push(file);
     } else {
-      const pdfImage = await convertPdfToSingleImage(file);
-      imagesList.push(pdfImage);
+      // const pdfImage = await convertPdfToSingleImage(file);
+      // imagesList.push(pdfImage);
+      const pdfImages = await convertPdfToMultipleImages(file);
+      imagesList = [...imagesList, ...pdfImages];
     }
 
     const imagesToUpload = await setImagesToBeUploaded(imagesList);
@@ -1110,8 +1112,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       const generateChecklistItemToPrint = (key: string, value: string) => {
-        const lowerValue = value.toLowerCase();
-        const hasValue = lowerValue !== 'null' && lowerValue !== 'n/a';
+        const lowerValue = typeof value === 'string' ? value.toLowerCase() : value;
+        const hasValue = lowerValue !== 'null' && lowerValue !== 'n/a' && lowerValue !== null;
         const multiSpaces = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 
         let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>`;

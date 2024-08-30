@@ -91,3 +91,19 @@ export const convertPdfToSingleImage = async (file: File) => {
   const imageFile = base64ToFile(base64String, imageFileName, imageType);
   return imageFile;
 };
+
+export const convertPdfToMultipleImages = async (file: File) => {
+  const images = await convertPdfToImages(file);
+  const files: File[] = [];
+
+  for (const image of images) {
+    const base64String = image.split(',')[1];
+    const imageFileName = file.name.replace('.pdf', '.png');
+    const imageType = 'image/png';
+
+    const imageFile = base64ToFile(base64String, imageFileName, imageType);
+    files.push(imageFile);
+  }
+
+  return files;
+};

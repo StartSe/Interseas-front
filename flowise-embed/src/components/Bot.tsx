@@ -26,6 +26,8 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
+import { identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import { sanitizeJson } from '@/utils/jsonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -970,32 +972,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         file: file,
       } as FileMapping;
 
-      // TODO: identify file type
-      // fileMap.type = <type>;
-
-      // TODO: identify checklist
-      // Note: we may have documents with no checklists, but will need its values anyway
-
-      // TODO: if checklist:
-      // fileMap.checklist = <checklist>;
-
-      // Mocked behavior - remove it
-      if (file.name.includes('PACKING LIST')) {
-        fileMap.type = 'Packing List';
-        fileMap.checklist = `
-        • Referência à Ordem de Compra (OC) ou Fatura Comercial
-        • Dados do Importador
-        • Dados do Adquirente ou Encomendante
-        • Dados do Exportador
-        • Descrição ou referência
-        • Espécie dos volumes
-        • Quantidade total de Volumes
-        • Peso Líquido por volume
-        • Peso Líquido total
-        • Peso Bruto total
-        • Cubagem total`;
+      const docType = identifyDocumentType(fileMap.file.file.name);
+      if (docType) {
+        fileMap.type = docType;
+        const checklist = identifyDocumentChecklist(docType);
+        if (checklist) {
+          fileMap.checklist = checklist;
+        }
       }
-
       filesMap.push(fileMap);
     });
 
@@ -1060,7 +1044,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const resultData = await sendBackgroundMessage(extractionPrompt, urls);
 
       try {
-        const jsonData = JSON.parse(resultData.text);
+        let jsonData = JSON.parse(resultData.text);
+        jsonData = sanitizeJson(jsonData);
 
         if (jsonData.error) {
           throw new Error(jsonData.error);
@@ -1112,12 +1097,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       const generateChecklistItemToPrint = (key: string, value: string) => {
-        const lowerValue = typeof value === 'string' ? value.toLowerCase() : value;
-        const hasValue = lowerValue !== 'null' && lowerValue !== 'n/a' && lowerValue !== null;
         const multiSpaces = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-
-        let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>`;
-        checklistItem += (hasValue ? `:<br>${multiSpaces}${value}` : '') + '<br>';
+        const hasValue = value !== null;
+        let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+        checklistItem += (hasValue ? `${multiSpaces}${value}` : `${multiSpaces}N/A`) + '<br>';
 
         return checklistItem;
       };

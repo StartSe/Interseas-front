@@ -1047,7 +1047,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         let jsonData = JSON.parse(resultData.text);
         jsonData = sanitizeJson(jsonData);
 
-        if (jsonData.error) {
+        if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
           throw new Error(jsonData.error);
         }
 
@@ -1085,14 +1085,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       let jsonData = JSON.parse(result.text);
       jsonData = sanitizeJson(jsonData);
 
-      if (jsonData.error) {
+      if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
         throw new Error(jsonData.error);
       }
 
       fileMap.content = jsonData;
       fileMap.filledChecklist = jsonData;
 
-      // TODO: move validation and formatting logic to a separate function
       if (!Object.keys(jsonData).includes('checklist')) {
         throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
       }

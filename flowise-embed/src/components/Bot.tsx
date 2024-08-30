@@ -1082,7 +1082,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await sendBackgroundMessage(checklistPrompt, urls);
 
     try {
-      const jsonData = JSON.parse(result.text);
+      let jsonData = JSON.parse(result.text);
+      jsonData = sanitizeJson(jsonData);
 
       if (jsonData.error) {
         throw new Error(jsonData.error);

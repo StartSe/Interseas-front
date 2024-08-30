@@ -139,11 +139,11 @@ export const checklistCRT = `
 • Nº de Série (obrigatório para máquinas e equipamentos)
 • Processo com EX|Descrição Conforme o Ex-tarifário`;
 
-export const checklistPackingList = `
+export const checklistPackingList = ` 
 • Referência à Ordem de Compra (OC) ou Fatura Comercial
-• Dados do Importador
-• Dados do Adquirente ou Encomendante
-• Dados do Exportador
+• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
+• Dados do Adquirente ou Encomendante - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
+• Dados do Exportador (nome, endereço, NIF)
 • Descrição ou referência
 • Espécie dos volumes
 • Quantidade total de Volumes

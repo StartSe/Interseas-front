@@ -1,6 +1,6 @@
 import { Show } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
-import { DeleteIcon, SendIcon } from '../icons';
+import { SendIcon } from '../icons';
 
 type SendButtonProps = {
   sendButtonColor?: string;
@@ -9,6 +9,9 @@ type SendButtonProps = {
   disableIcon?: boolean;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
+type NewItemButtonProps = {
+  newItemText: string;
+} & SendButtonProps;
 export const SendButton = (props: SendButtonProps) => {
   return (
     <button
@@ -21,13 +24,14 @@ export const SendButton = (props: SendButtonProps) => {
       }
       style={{ background: 'transparent', border: 'none' }}
     >
-      <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
+      <Show when={!props.isLoading}>
         <SendIcon color={props.sendButtonColor} class={'send-icon flex ' + (props.disableIcon ? 'hidden' : '')} />
       </Show>
     </button>
   );
 };
-export const DeleteButton = (props: SendButtonProps) => {
+
+export const NewItemButton = (props: NewItemButtonProps) => {
   // Check if <flowise-fullchatbot> is present in the DOM
   const isFullChatbot = document.querySelector('flowise-fullchatbot') !== null;
   const paddingClass = isFullChatbot ? 'px-4' : 'px-12';
@@ -41,12 +45,10 @@ export const DeleteButton = (props: SendButtonProps) => {
         `py-2 ${paddingClass} justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 chatbot-button ` +
         props.class
       }
-      style={{ background: 'transparent', border: 'none' }}
-      title="Reset Chat"
+      style={{ background: 'transparent', border: '2px solid white', color: 'white', padding: '20px 40px' }}
+      title="New Chat"
     >
-      <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
-        <DeleteIcon color={props.sendButtonColor} class={'send-icon flex ' + (props.disableIcon ? 'hidden' : '')} />
-      </Show>
+      {props.newItemText}
     </button>
   );
 };

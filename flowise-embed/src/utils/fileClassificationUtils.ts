@@ -139,7 +139,7 @@ export const checklistCRT = `
 • Nº de Série (obrigatório para máquinas e equipamentos)
 • Processo com EX|Descrição Conforme o Ex-tarifário`;
 
-export const checklistPackingList = ` 
+export const checklistPackingList = `
 • Referência à Ordem de Compra (OC) ou Fatura Comercial
 • Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
 • Dados do Adquirente ou Encomendante - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
@@ -285,6 +285,7 @@ export const checklistTypeMapping = {
   [DocumentTypes.CONHECIMENTO_CRT]: checklistCRT,
   [DocumentTypes.CE_MERCANTE]: checklistCeMercante,
   [DocumentTypes.CERTIFICADO_DE_ORIGEM]: checklistCertificadoOrigem,
+  [DocumentTypes.DOWNPAYMENT_INVOICE]: ChecklistProformaInvoice,
 };
 
 export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTypes) => {

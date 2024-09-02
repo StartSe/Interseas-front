@@ -61,6 +61,7 @@ export type ChatWindowTheme = {
     poweredByTextColor?: string;
     starterPrompts?: string[];
     starterPromptFontSize?: number;
+    newItemText?: string;
 };
 export type ButtonTheme = {
     size?: 'small' | 'medium' | 'large' | number;

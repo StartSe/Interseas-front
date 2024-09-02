@@ -5,8 +5,11 @@ type SendButtonProps = {
     isLoading?: boolean;
     disableIcon?: boolean;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+type NewItemButtonProps = {
+    newItemText: string;
+} & SendButtonProps;
 export declare const SendButton: (props: SendButtonProps) => JSX.Element;
-export declare const DeleteButton: (props: SendButtonProps) => JSX.Element;
+export declare const NewItemButton: (props: NewItemButtonProps) => JSX.Element;
 export declare const Spinner: (props: JSX.SvgSVGAttributes<SVGSVGElement>) => JSX.Element;
 export {};
 //# sourceMappingURL=SendButton.d.ts.map

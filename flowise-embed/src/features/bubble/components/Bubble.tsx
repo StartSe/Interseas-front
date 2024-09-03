@@ -142,7 +142,6 @@ export const Bubble = (props: BubbleProps) => {
               chatflowConfig={props.chatflowConfig}
               apiHost={props.apiHost}
               observersConfig={props.observersConfig}
-              newItemText={bubbleProps.theme?.chatWindow?.newItemText}
             />
           </div>
         </Show>

@@ -1,13 +1,17 @@
 export const checklistCeMercante = `
+• Número do conhecimento de embarque
 • NCM
-• Importador
-• Adquirente
+• Dados do Importador - também chamado de Consignee (Razão social e CNPJ)
+• Dados do Adquirente - também chamado de Notify (Razão social)
 • Peso Bruto
-• Data de embarque
-• Local de Embarque
-• Valores Lançados (Prepaid/Collect; moeda; valor)
-• Consulta benefícios isenção/suspensão do AFRMM - AI
-• Solicitar inclusão dos valores de Capatazia/THC no BL`;
+• Cubagem
+• Data de emissão
+• Porto de origem
+• Porto de descarregamento
+• Valor do frete total (Prepaid/Collect; moeda; valor)
+• Componentes do frete (Prepaid/Collect; moeda; valor)
+• Quantidade de containers
+• Número dos containers (no formato <3 letras>U<7 números>)`;
 
 export const checklistCertificadoOrigem = `
 • Dados do Exportador
@@ -120,24 +124,40 @@ Tipo de frete = "Prepaid"
 Tipo de frete = "Collect"`;
 
 export const checklistCRT = `
-• Shipper
-• Consignee
-• Notify
-• Frete
+• Dados do Remetente - também chamado de Shipper (nome, endereço)
+• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
+• Dados do Destinatário (razão social, endereço e CNPJ)
+• Notificar
+• Frete (valor e moeda)
 • Tipo de Frete
-• Nº Contêineres/Lacres
-• Local de Recebimento
-• Porto | Embarque
-• Porto | Desembarque
-• Local de Destino
+• Declarações e observações - detalhamento do frete internacional e nacional
+• Declaração valor das mercadorias
+• Local de embarque
+• Local de Destino Final
 • Peso Bruto
-• Cubagem
+• Peso Líquido
 • Quantidade de Volumes
 • Tipo de Volumes
-• Detalhamento volumes (Processed Wood/ Treated and
-• NCM (4 dígitos)
-• Nº de Série (obrigatório para máquinas e equipamentos)
-• Processo com EX|Descrição Conforme o Ex-tarifário`;
+• Informação "Wooden Packing" (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
+• Descrição resumida das mercadorias
+• NCM (4 dígitos a 8 dígitos de cada NCM)
+• Valor da mercadoria (pode estar em numeral ou por extenso)
+• Documentos anexos
+• Carimbo e assinatura
+
+Se mercadoria é máquina ou equipamento
+• Nº de Série
+
+Conferências:
+• Se importação direta:
+    Destinatário = Importador
+• Se importação por Conta e Ordem:
+    Destinatário = Adquirente ou Importador
+
+• Se INCOTERM de responsabilidade do exportador:
+    Tipo de frete = "Prepaid"
+• Se INCOTERM de responsabilidade do importador:
+    Tipo de frete = "Collect"`;
 
 export const checklistPackingList = `
 • Referência à Ordem de Compra (OC) ou Fatura Comercial
@@ -177,6 +197,60 @@ export const ChecklistProformaInvoice = `
 Conferências:
 • Multiplicação do valor unitário = quantidade comercializada de cada item
 • Somatório dos itens = valor total informado`;
+
+const checklistCCTAereo = `
+• Identificação do conhecimento de carga (número do HAWB)
+• Data e hora da emissão
+• Aeroporto de origem
+• Aeroporto de destino
+• Recinto aduaneiro de destino
+• Quantidade de volumes
+• Peso bruto
+• Presença de peças de madeira maciça - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
+• Descrição resumida das mercadorias
+• Descrição da mercadoria
+• Moeda de origem
+• Frete por item de carga (somatório)
+• Forma de pagamento (por peso/valor)
+• Forma de pagamento (outros encargos)
+• Totais na moeda de origem
+• Embarcador estrangeiro
+• País
+• Dados do Importador - também chamado de Consignee (CNPJ)
+• MAWB/AWB associados`;
+
+const checklistMicDta = `
+• Dados do Remetente - também chamado de Shipper (nome, endereço)
+• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
+• Dados do Destinatário - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
+• Moeda da mercadoria
+• País de origem
+• Valor da mercadoria
+• Valor do frete
+• Valor do seguro
+• Número do CRT
+• Local de embarque
+• Local de destino Final
+• Peso Bruto
+• Documentos anexos
+• Quantidade de Volumes
+• Tipo de Volumes
+• Informação "Wooden Packing" (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
+• Descrição resumida das mercadorias
+• NCM (4 dígitos a 8 dígitos de cada NCM)
+• Placa do veículo
+• Placa do reboque/semireboque
+• Aduana de destino
+• Assinatura
+
+Se mercadoria é máquina ou equipamento
+• Nº de Série
+
+Conferências:
+• Se importação direta:
+    Destinatário = Importador
+• Se importação por Conta e Ordem:
+    Destinatário = Adquirente ou Importador`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',
@@ -286,6 +360,8 @@ export const checklistTypeMapping = {
   [DocumentTypes.CE_MERCANTE]: checklistCeMercante,
   [DocumentTypes.CERTIFICADO_DE_ORIGEM]: checklistCertificadoOrigem,
   [DocumentTypes.DOWNPAYMENT_INVOICE]: ChecklistProformaInvoice,
+  [DocumentTypes.CCT]: checklistCCTAereo,
+  [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
 };
 
 export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTypes) => {

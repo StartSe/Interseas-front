@@ -1202,14 +1202,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               <span class="px-3 whitespace-pre-wrap font-semibold max-w-full">{props.title}</span>
             </Show>
             <div style={{ flex: 1 }} />
-            <NewItemButton
-              newItemText={props.newItemText || ''}
-              sendButtonColor={props.bubbleTextColor}
-              type="button"
-              isDisabled={messages().length === 1}
-              class="my-2 ml-2"
-              on:click={clearChat}
-            />
+            <div style={{ 'padding-right': '10px' }}>
+              <NewItemButton
+                newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL}
+                sendButtonColor={props.bubbleTextColor}
+                type="button"
+                isDisabled={messages().length === 1}
+                class="my-2 ml-2"
+                on:click={clearChat}
+              />
+            </div>
           </div>
         ) : null}
         <div class="flex flex-col w-full h-full justify-start z-0">

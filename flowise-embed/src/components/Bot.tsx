@@ -1201,7 +1201,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               <span class="px-3 whitespace-pre-wrap font-semibold max-w-full">{props.title}</span>
             </Show>
             <div style={{ flex: 1 }} />
-            <div style={{ 'padding-right': '10px' }}>
+            <div style={{ 'padding-right': '0.625rem' }}>
               <NewItemButton
                 newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL}
                 sendButtonColor={props.bubbleTextColor}

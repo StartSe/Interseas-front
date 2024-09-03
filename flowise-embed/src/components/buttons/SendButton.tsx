@@ -45,7 +45,7 @@ export const NewItemButton = (props: NewItemButtonProps) => {
         `py-2 ${paddingClass} justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 chatbot-button ` +
         props.class
       }
-      style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '5px 30px' }}
+      style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '0.3125rem 1.875rem' }}
       title="New Chat"
     >
       <span style={{ color: 'white' }}>{props.newItemText || '+ NOVO CHAT'}</span>

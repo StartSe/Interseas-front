@@ -12,7 +12,7 @@ import { Badge } from '@/components/Badge';
 import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
-import { DeleteButton, SendButton } from '@/components/buttons/SendButton';
+import { NewItemButton, SendButton } from '@/components/buttons/SendButton';
 import { CircleDotIcon, TrashIcon } from '@/components/icons';
 import { CancelButton } from '@/components/buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
@@ -1201,15 +1201,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               <span class="px-3 whitespace-pre-wrap font-semibold max-w-full">{props.title}</span>
             </Show>
             <div style={{ flex: 1 }} />
-            <DeleteButton
-              sendButtonColor={props.bubbleTextColor}
-              type="button"
-              isDisabled={messages().length === 1}
-              class="my-2 ml-2"
-              on:click={clearChat}
-            >
-              <span style={{ 'font-family': 'Poppins, sans-serif' }}>Clear</span>
-            </DeleteButton>
+            <div style={{ 'padding-right': '0.625rem' }}>
+              <NewItemButton
+                newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL}
+                sendButtonColor={props.bubbleTextColor}
+                type="button"
+                isDisabled={messages().length === 1}
+                class="my-2 ml-2"
+                on:click={clearChat}
+              />
+            </div>
           </div>
         ) : null}
         <div class="flex flex-col w-full h-full justify-start z-0">

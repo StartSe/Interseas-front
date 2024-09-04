@@ -8,6 +8,7 @@ type SendButtonProps = {
 type NewItemButtonProps = {
     newItemText: string;
     textColor?: string;
+    borderColor?: string;
 } & SendButtonProps;
 export declare const SendButton: (props: SendButtonProps) => JSX.Element;
 export declare const NewItemButton: (props: NewItemButtonProps) => JSX.Element;

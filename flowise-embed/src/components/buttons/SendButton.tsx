@@ -12,6 +12,7 @@ type SendButtonProps = {
 type NewItemButtonProps = {
   newItemText: string;
   textColor?: string;
+  borderColor?: string;
 } & SendButtonProps;
 export const SendButton = (props: SendButtonProps) => {
   return (
@@ -46,7 +47,7 @@ export const NewItemButton = (props: NewItemButtonProps) => {
         `py-2 ${paddingClass} justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 chatbot-button ` +
         props.class
       }
-      style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '0.3125rem 1.875rem' }}
+      style={{ background: 'transparent', border: `1px solid ${props.borderColor || defaultColor}`, padding: '0.3125rem 1.875rem' }}
       title="New Chat"
     >
       <span style={{ color: props.textColor || defaultColor, 'text-transform': 'uppercase' }}>+ {props.newItemText}</span>

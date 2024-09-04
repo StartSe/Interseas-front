@@ -11,6 +11,7 @@ type SendButtonProps = {
 
 type NewItemButtonProps = {
   newItemText: string;
+  textColor?: string;
 } & SendButtonProps;
 export const SendButton = (props: SendButtonProps) => {
   return (
@@ -35,7 +36,7 @@ export const NewItemButton = (props: NewItemButtonProps) => {
   // Check if <flowise-fullchatbot> is present in the DOM
   const isFullChatbot = document.querySelector('flowise-fullchatbot') !== null;
   const paddingClass = isFullChatbot ? 'px-4' : 'px-12';
-
+  const defaultColor = 'white';
   return (
     <button
       type="submit"
@@ -48,7 +49,7 @@ export const NewItemButton = (props: NewItemButtonProps) => {
       style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '0.3125rem 1.875rem' }}
       title="New Chat"
     >
-      <span style={{ color: 'white' }}>{props.newItemText || '+ NOVO CHAT'}</span>
+      <span style={{ color: props.textColor || defaultColor, 'text-transform': 'uppercase' }}>+ {props.newItemText}</span>
     </button>
   );
 };

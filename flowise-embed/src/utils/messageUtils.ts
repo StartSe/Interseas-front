@@ -5,7 +5,7 @@ export const messageUtils = {
   UPLOAD_BUTTON_LABEL: 'Fazer upload de documentos',
   UPLOADING_LABEL: 'Fazendo upload do documento',
   NEXT_CHECKLIST_BUTTON_LABEL: 'Próximo checklist',
-  NEW_CHAT_BUTTON_LABEL: '+ NOVO CHAT',
+  NEW_CHAT_BUTTON_LABEL: 'Novo chat',
   ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE:
     'Um ou mais arquivos não puderam ter seu checklist identificado, mas os demais serão processados normalmente.',
   ALL_DOCUMENTS_VALIDATED_MESSAGE: 'Todos os seus documentos estão validados corretamente! Verifique cada um dos checklists abaixo detalhadamente',

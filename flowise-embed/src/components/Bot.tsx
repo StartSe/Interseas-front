@@ -26,7 +26,7 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import { DocumentTypes, conferenciasDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
 import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
 
@@ -972,13 +972,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const fileMap = {
         file: file,
       } as FileMapping;
-
       const docType = identifyDocumentType(fileMap.file.file.name);
       if (docType) {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
         if (checklist) {
-          fileMap.checklist = checklist;
+          fileMap.checklist = checklist.concat(conferenciasDefault);
         }
       }
       filesMap.push(fileMap);
@@ -1110,7 +1109,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         checklistMessage += generateChecklistItemToPrint(key, value as string);
       }
 
-      if (Object.keys(jsonData).includes('conferências') && jsonData['conferências'].length > 0) {
+      if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
         checklistMessage += `<br><b>Conferências:</b><br>`;
         for (const [key, value] of Object.entries(jsonData['conferências'])) {
           checklistMessage += generateChecklistItemToPrint(key, value as string);
@@ -1119,6 +1118,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+      if (Object.keys(jsonData.checklist).includes('Máquina/Equipamento') && jsonData.checklist['Máquina/Equipamento'] === true) {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX, type: 'apiMessage' }]);
+      }
+
+      if (Object.keys(jsonData.checklist).includes('Possui EX-tarifário') && jsonData.checklist['Possui EX-tarifário'] === true) {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX, type: 'apiMessage' }]);
+      }
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(
@@ -1153,8 +1159,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
     });
 
+    executePreCompliance(filledChecklists);
     setLoading(false);
   };
+
+  function executePreCompliance(fileMappings: FileMapping[]) {
+    for (const fileMapping of fileMappings) {
+      if (fileMapping.type === DocumentTypes.LICENCA_DE_IMPORTACAO) {
+        return;
+      }
+    }
+    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND, type: 'apiMessage' }]);
+  }
 
   return (
     <>

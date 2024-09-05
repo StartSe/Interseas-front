@@ -10,5 +10,7 @@ export declare const messageUtils: {
     ALL_DOCUMENTS_VALIDATED_MESSAGE: string;
     UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: string;
     CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: string;
+    CHECK_EX: string;
+    IMPORT_LICENSE_NOT_FOUND: string;
 };
 //# sourceMappingURL=messageUtils.d.ts.map

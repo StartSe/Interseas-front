@@ -1,3 +1,8 @@
+export const conferenciasDefault = `
+Conferências:
+• Máquina/Equipamento - (true/false)
+• Possui Ex-tarifário - (true/false)`;
+
 export const checklistCeMercante = `
 • Número do conhecimento de embarque
 • NCM

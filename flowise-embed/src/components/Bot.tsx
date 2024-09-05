@@ -26,9 +26,10 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { DocumentTypes, conferenciasDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
 import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
+import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -943,8 +944,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
 
-    console.log(props.chatflowid, props.apiHost, body);
-
     const result = await sendMessageQuery({
       chatflowid: props.chatflowid,
       apiHost: props.apiHost,
@@ -979,7 +978,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
         if (checklist) {
-          fileMap.checklist = checklist.concat(conferenciasDefault);
+          fileMap.checklist = checklist.concat(conferencesDefault);
         }
       }
       filesMap.push(fileMap);
@@ -1046,6 +1045,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       try {
         let jsonData = JSON.parse(resultData.text);
         jsonData = sanitizeJson(jsonData);
+
+        const conferences = jsonData['conferências'];
+
+        if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+          setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
+        }
 
         if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
           throw new Error(jsonData.error);
@@ -1120,14 +1125,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-      const conferencias = jsonData['conferências'];
 
-      if (conferencias['Máquina/Equipamento'] === 'true') {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX_TARIFF, type: 'apiMessage' }]);
-      }
+      const conferences = jsonData['conferências'];
 
-      if (conferencias['Possui Ex-tarifário'] === 'true') {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX_TARIFF, type: 'apiMessage' }]);
+      if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
       }
 
       if (!isChatFlowAvailableToStream()) {
@@ -1159,22 +1161,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    if (!checkImportLicenseDocuments(filledChecklists)) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
+    }
     pairwiseCompareDocuments(filledChecklists, (firstFile: FileMapping, secondFile: FileMapping) => {
       console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
     });
-
-    executePreCompliance(filledChecklists);
     setLoading(false);
   };
-
-  function executePreCompliance(fileMappings: FileMapping[]) {
-    for (const fileMapping of fileMappings) {
-      if (fileMapping.type === DocumentTypes.LICENCA_DE_IMPORTACAO) {
-        return;
-      }
-    }
-    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND, type: 'apiMessage' }]);
-  }
 
   return (
     <>

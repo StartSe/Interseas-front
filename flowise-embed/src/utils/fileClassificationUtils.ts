@@ -1,4 +1,4 @@
-export const conferenciasDefault = `
+export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento - (true/false)
 • Possui Ex-tarifário - (true/false)`;

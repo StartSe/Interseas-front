@@ -13,6 +13,6 @@ export const messageUtils = {
   UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: 'Não foi possível verificar o checklist deste arquivo.',
 
   CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: 'Checklist not found in response',
-  CHECK_EX: 'Atenção, comparare se a descrição referente está conforme a plataforma do EX-tarifário',
+  CHECK_EX_TARIFF: 'Atenção, compare se a descrição referente está conforme a plataforma do EX-tarifário',
   IMPORT_LICENSE_NOT_FOUND: 'Dados de LI/Licença de importação não encontrados, revise os documentos enviados',
 };

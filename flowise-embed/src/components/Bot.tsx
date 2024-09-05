@@ -943,6 +943,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
 
+    console.log(props.chatflowid, props.apiHost, body);
+
     const result = await sendMessageQuery({
       chatflowid: props.chatflowid,
       apiHost: props.apiHost,
@@ -1118,12 +1120,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-      if (Object.keys(jsonData.checklist).includes('Máquina/Equipamento') && jsonData.checklist['Máquina/Equipamento'] === true) {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX, type: 'apiMessage' }]);
+      const conferencias = jsonData['conferências'];
+
+      if (conferencias['Máquina/Equipamento'] === 'true') {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX_TARIFF, type: 'apiMessage' }]);
       }
 
-      if (Object.keys(jsonData.checklist).includes('Possui EX-tarifário') && jsonData.checklist['Possui EX-tarifário'] === true) {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX, type: 'apiMessage' }]);
+      if (conferencias['Possui Ex-tarifário'] === 'true') {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CHECK_EX_TARIFF, type: 'apiMessage' }]);
       }
 
       if (!isChatFlowAvailableToStream()) {

@@ -1149,8 +1149,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    console.log('Files Mapping', filesMapping());
-
     const pairwiseComparisonDocuments = filledChecklists;
     comparePairwiseDocuments(pairwiseComparisonDocuments);
 

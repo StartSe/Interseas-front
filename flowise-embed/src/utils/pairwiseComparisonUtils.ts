@@ -1,6 +1,6 @@
 import { FileMapping } from '@/utils/fileUtils';
 
-export function comparePairDocuments(fileMappingsForPairwiseComparison: FileMapping[]): void {
+export function comparePairwiseDocuments(fileMappingsForPairwiseComparison: FileMapping[]): void {
   const processedPairs: Set<string> = new Set();
 
   fileMappingsForPairwiseComparison.forEach((firstFileMappingToCompare, index) => {
@@ -12,7 +12,7 @@ export function comparePairDocuments(fileMappingsForPairwiseComparison: FileMapp
         continue;
       }
 
-      compareTwoDocuments(firstFileMappingToCompare, secondFileMappingToCompare);
+      comparePair(firstFileMappingToCompare, secondFileMappingToCompare);
       processedPairs.add(pairKey);
     }
   });
@@ -22,6 +22,6 @@ function generatePairKey(firstFileMappingToCompare: FileMapping, secondFileMappi
   return [JSON.stringify(firstFileMappingToCompare), JSON.stringify(secondFileMappingToCompare)].sort().join('-');
 }
 
-function compareTwoDocuments(firstFileMappingToCompare: FileMapping, secondFileMappingToCompare: FileMapping): void {
+function comparePair(firstFileMappingToCompare: FileMapping, secondFileMappingToCompare: FileMapping): void {
   console.log(`Comparing ${JSON.stringify(firstFileMappingToCompare)} with ${JSON.stringify(secondFileMappingToCompare)}`);
 }

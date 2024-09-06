@@ -28,7 +28,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
-import { comparePairDocuments } from '@/utils/pairwiseComparisonUtils';
+import { comparePairwiseDocuments } from '@/utils/pairwiseComparisonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1151,8 +1151,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     console.log('Files Mapping', filesMapping());
 
-    const documentsForPairwiseComparison = filledChecklists;
-    comparePairDocuments(documentsForPairwiseComparison);
+    const pairwiseComparisonDocuments = filledChecklists;
+    comparePairwiseDocuments(pairwiseComparisonDocuments);
 
     setLoading(false);
   };

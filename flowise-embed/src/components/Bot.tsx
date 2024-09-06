@@ -28,7 +28,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
-import { processDocumentComparisons } from '@/utils/documentComparisonUtils';
+import { comparePairDocuments } from '@/utils/documentComparisonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1007,8 +1007,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     processFilesWithoutChecklist();
 
-    const documentNames = files.map((file) => file.file.name);
-    processDocumentComparisons(documentNames);
+    const documentsNameForPairwiseComparison = files.map((file) => file.file.name);
+    comparePairDocuments(documentsNameForPairwiseComparison);
 
     await processNextChecklist();
 

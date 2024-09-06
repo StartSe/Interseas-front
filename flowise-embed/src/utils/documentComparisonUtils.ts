@@ -1,23 +1,25 @@
-export function processDocumentComparisons(documents: string[]): void {
-  const processedCombinations: Set<string> = new Set();
+export function comparePairDocuments(documentsForPairwiseComparison: string[]): void {
+  const processedPairs: Set<string> = new Set();
 
-  documents.forEach((docA, i) => {
-    for (let j = i + 1; j < documents.length; j++) {
-      const docB = documents[j];
-      const combinationKey = generateCombinationKey(docA, docB);
+  documentsForPairwiseComparison.forEach((firstDocumentNameForComparison, index) => {
+    for (let nextIndex = index + 1; nextIndex < documentsForPairwiseComparison.length; nextIndex++) {
+      const secondDocumentNameForComparison = documentsForPairwiseComparison[nextIndex];
+      const pairKey = generatePairKey(firstDocumentNameForComparison, secondDocumentNameForComparison);
 
-      if (!processedCombinations.has(combinationKey)) {
-        compareDocuments(docA, docB);
-        processedCombinations.add(combinationKey);
+      if (processedPairs.has(pairKey)) {
+        continue;
       }
+
+      compareTwoDocuments(firstDocumentNameForComparison, secondDocumentNameForComparison);
+      processedPairs.add(pairKey);
     }
   });
 }
 
-function generateCombinationKey(docA: string, docB: string): string {
-  return [docA, docB].sort().join('-');
+function generatePairKey(firstDocumentNameForComparison: string, secondDocumentNameForComparison: string): string {
+  return [firstDocumentNameForComparison, secondDocumentNameForComparison].sort().join('-');
 }
 
-function compareDocuments(docA: string, docB: string): void {
-  console.log(`Comparing ${docA} with ${docB}`);
+function compareTwoDocuments(firstDocumentNameForComparison: string, secondDocumentNameForComparison: string): void {
+  console.log(`Comparing ${firstDocumentNameForComparison} with ${secondDocumentNameForComparison}`);
 }

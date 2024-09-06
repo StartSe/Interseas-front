@@ -1007,9 +1007,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     processFilesWithoutChecklist();
 
-    const documentsNameForPairwiseComparison = files.map((file) => file.file.name);
-    comparePairDocuments(documentsNameForPairwiseComparison);
-
     await processNextChecklist();
 
     setDocumentsUploaded(true);
@@ -1022,8 +1019,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (isImage(file.name)) {
       imagesList.push(file);
     } else {
-      // const pdfImage = await convertPdfToSingleImage(file);
-      // imagesList.push(pdfImage);
       const pdfImages = await convertPdfToMultipleImages(file);
       imagesList = [...imagesList, ...pdfImages];
     }
@@ -1154,8 +1149,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    // TODO: check compliance between files
     console.log('Files Mapping', filesMapping());
+
+    const documentsForPairwiseComparison = filledChecklists;
+    comparePairDocuments(documentsForPairwiseComparison);
 
     setLoading(false);
   };

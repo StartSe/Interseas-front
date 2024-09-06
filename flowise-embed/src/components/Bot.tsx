@@ -28,7 +28,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
-import { comparePairDocuments } from '@/utils/documentComparisonUtils';
+import { comparePairDocuments } from '@/utils/pairwiseComparisonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;

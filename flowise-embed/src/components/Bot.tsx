@@ -1149,8 +1149,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    const pairwiseComparisonDocuments = filledChecklists;
-    pairwiseCompareDocuments(pairwiseComparisonDocuments);
+    pairwiseCompareDocuments(filledChecklists, (firstFile: FileMapping, secondFile: FileMapping) => {
+      console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
+    });
 
     setLoading(false);
   };

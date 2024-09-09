@@ -1,5 +1,5 @@
-import { DocumentTypes } from './fileClassificationUtils';
-import { FileMapping } from './fileUtils';
+import { DocumentTypes } from '@/utils/fileClassificationUtils';
+import { FileMapping } from '@/utils/fileUtils';
 
 export function checkImportLicenseDocuments(fileMappings: FileMapping[]) {
   for (const fileMapping of fileMappings) {

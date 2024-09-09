@@ -1046,9 +1046,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         let jsonData = JSON.parse(resultData.text);
         jsonData = sanitizeJson(jsonData);
 
-        const conferences = jsonData['conferências'];
-
-        if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+        if (jsonData['Máquina/Equipamento'] === 'true' || jsonData['Possui Ex-tarifário'] === 'true') {
           setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
         }
 

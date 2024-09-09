@@ -28,6 +28,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
+import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1018,8 +1019,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (isImage(file.name)) {
       imagesList.push(file);
     } else {
-      // const pdfImage = await convertPdfToSingleImage(file);
-      // imagesList.push(pdfImage);
       const pdfImages = await convertPdfToMultipleImages(file);
       imagesList = [...imagesList, ...pdfImages];
     }
@@ -1150,8 +1149,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    // TODO: check compliance between files
-    console.log('Files Mapping', filesMapping());
+    pairwiseCompareDocuments(filledChecklists, (firstFile: FileMapping, secondFile: FileMapping) => {
+      console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
+    });
 
     setLoading(false);
   };

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"file":"pairwiseComparisonUtils.d.ts","sourceRoot":"","sources":["../../src/utils/pairwiseComparisonUtils.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAIhD,wBAAsB,wBAAwB,CAC5C,YAAY,EAAE,WAAW,EAAE,EAC3B,qBAAqB,EAAE,CAAC,KAAK,EAAE,MAAM,EAAE,GAAG,EAAE,GAAG,KAAK,OAAO,CAAC,GAAG,CAAC,EAChE,WAAW,EAAE,CAAC,KAAK,EAAE,GAAG,KAAK,IAAI,EACjC,eAAe,EAAE,CAAC,SAAS,EAAE,WAAW,EAAE,UAAU,EAAE,WAAW,KAAK,OAAO,CAAC,IAAI,CAAC,GAClF,OAAO,CAAC,IAAI,CAAC,CAoEf"}
+=======
+{"version":3,"file":"pairwiseComparisonUtils.d.ts","sourceRoot":"","sources":["../../src/utils/pairwiseComparisonUtils.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAGhD,wBAAgB,wBAAwB,CAAC,YAAY,EAAE,WAAW,EAAE,EAAE,WAAW,EAAE,CAAC,SAAS,EAAE,WAAW,EAAE,UAAU,EAAE,WAAW,KAAK,IAAI,GAAG,IAAI,CAgClJ"}
+>>>>>>> 10ae4ec (feat: filter specific compliance methods using document type)

@@ -1,11 +1,11 @@
 import { FileMapping } from '@/utils/fileUtils';
 
-export function comparePairwiseDocuments(fileMappingsForPairwiseComparison: FileMapping[]): void {
+export function pairwiseCompareDocuments(fileMappings: FileMapping[]): void {
   const processedPairs: Set<string> = new Set();
 
-  fileMappingsForPairwiseComparison.forEach((firstFileMappingToCompare, index) => {
-    for (let nextIndex = index + 1; nextIndex < fileMappingsForPairwiseComparison.length; nextIndex++) {
-      const secondFileMappingToCompare = fileMappingsForPairwiseComparison[nextIndex];
+  fileMappings.forEach((firstFileMappingToCompare, index) => {
+    for (let nextIndex = index + 1; nextIndex < fileMappings.length; nextIndex++) {
+      const secondFileMappingToCompare = fileMappings[nextIndex];
       const pairKey = generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
 
       if (processedPairs.has(pairKey)) {

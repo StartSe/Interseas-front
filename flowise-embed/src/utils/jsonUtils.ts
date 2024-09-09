@@ -20,5 +20,10 @@ function shouldReplaceWithNull(keyValue: any): boolean {
   if (keyValue === null) {
     return false;
   }
+
+  if (typeof keyValue === 'boolean') {
+    return false;
+  }
+
   return ['n/a', 'null', 'undefined', ''].includes(keyValue.toLowerCase());
 }

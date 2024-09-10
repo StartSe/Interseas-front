@@ -386,6 +386,7 @@ export enum DocumentTypes {
   ANEXO_VII = 'DECLARAÇÃO DE CARGA PERIGOSA',
   FICHA_DE_LOTE = 'FICHA DE LOTE',
   CERTIFICADO_FITOSSANITARIO = 'CERTIFICADO FITOSSANITÁRIO',
+  ROTULOS_E_CONTRARROTULOS = 'ROTULOS E CONTRARROTULOS',
   CERTIFICADO_DE_ANALISE_DE_VINHOS = 'CERTIFICADO DE ANÁLISE DE VINHOS',
 }
 
@@ -440,6 +441,8 @@ const documentNameAndTypeMapping = {
   'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
   'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
   'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
+  'ROTULOS[_-\\s]E[_-\\s]CONTRARROTULOS/i': DocumentTypes.ROTULOS_E_CONTRARROTULOS,
+  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS/i': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
 };
 
 export const checklistTypeMapping = {
@@ -456,6 +459,7 @@ export const checklistTypeMapping = {
   [DocumentTypes.CCT]: checklistCCTAereo,
   [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
   [DocumentTypes.LABELS]: checklistLabels,
+  [DocumentTypes.ROTULOS_E_CONTRARROTULOS]: checklistRotulosEContrarrotulosVinhos,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS]: checklistAnaliseDeVinhos,
 };
 

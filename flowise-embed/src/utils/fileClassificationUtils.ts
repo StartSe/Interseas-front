@@ -105,7 +105,9 @@ Notify = Adquirente ou Importador
 • Se INCOTERM de responsabilidade do exportador:
 Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
-Tipo de frete = "Collect"`;
+Tipo de frete = "Collect"
+Dados de compliance:
+• Número do Conhecimento de Embarque`;
 
 export const checklistConhecimentoHawb = `
 • Shipper (nome, endereço)
@@ -126,7 +128,20 @@ Se mercadoria é máquina ou equipamento
 • Se INCOTERM de responsabilidade do exportador:
 Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
-Tipo de frete = "Collect"`;
+Tipo de frete = "Collect"
+Dados de Compliance:
+• Número do HAWB
+• Data de emissão do HAWB
+• Final Destination (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
+• Nº of Pieces (Quantidade de volumes)
+• Description of Goods (Descrição resumida e completa das mercadorias)
+• Forma de pagamento (Collect/Prepaid, por peso/valor ou outros encargos)
+• Shipper (Embarcador estrangeiro)
+• País do Shipper
+• CNPJ do Consignee (Consignatário/Identificação)
+• MAWB/AWB associados
+• Valor total do frete que consta no HAWB
+`;
 
 export const checklistCRT = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço)

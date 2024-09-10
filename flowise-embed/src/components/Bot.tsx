@@ -1067,7 +1067,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
 
     if (filesWithChecklist.length === 0) {
-      executeComplianceCheck(filesMapping());
+      setLoading(true);
+      await executeComplianceCheck(filesMapping());
       return;
     }
 
@@ -1085,6 +1086,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await sendBackgroundMessage(checklistPrompt, urls);
 
     try {
+      console.log(result);
       let jsonData = JSON.parse(result.text);
       jsonData = sanitizeJson(jsonData);
 
@@ -1121,6 +1123,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
 
+      console.log(setLoading);
       setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
 
@@ -1144,6 +1147,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       if (currentChecklistNumber() === filesWithChecklist.length) {
+        setLoading(true);
         executeComplianceCheck(filesMapping());
       }
     } catch (error) {
@@ -1159,13 +1163,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    setLoading(true);
     if (!checkImportLicenseDocuments(filledChecklists)) {
+      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
-    pairwiseCompareDocuments(filledChecklists, (firstFile: FileMapping, secondFile: FileMapping) => {
-      console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
-    });
-    setLoading(false);
+    pairwiseCompareDocuments(
+      filledChecklists,
+      (firstFile: FileMapping, secondFile: FileMapping) => {
+        console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
+      },
+      sendBackgroundMessage,
+      setMessages,
+      setLoading,
+    );
   };
 
   return (
@@ -1285,7 +1296,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       />
                     )}
                     {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && message.message === '' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

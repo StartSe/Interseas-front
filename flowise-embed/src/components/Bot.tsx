@@ -1160,7 +1160,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    setLoading(true);
     if (!checkImportLicenseDocuments(filledChecklists)) {
+      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
 

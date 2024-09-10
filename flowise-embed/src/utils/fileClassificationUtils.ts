@@ -322,6 +322,25 @@ export const checklistAnaliseDeVinhos = `
 • Parâmetros obrigatórios de acordo com o tipo de vinho (COLUNA "Laudo estrangeiro (Certificado de Origem)") (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Parâmetros não obrigatórios de acordo com o tipo de vinho (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Aditivos Alimentares (Aqui, além de verificar se consta o aditivo, a solução deve verificar se o valor está dentro do permitido para o tipo de vinho, de acordo com a tabela)`;
+export const checklistRotulosEContrarrotulosVinhos = `
+    • Denominação (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
+    • Produzido e engarrafado por (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
+    • Exportador (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
+    • Importador (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+    • Distribuidor (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+    • Ingredientes e aditivos alimentares (Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”)
+    • Prazo de validade e conservação do produto (Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”)
+    • Conteúdo líquido (A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”)
+    • Graduação alcoólica (Exemplo: “13,5% Vol.”)
+    • Safra (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
+    • País de origem (Informar o país de origem)
+    • EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
+    • “NÃO CONTÉM GLÚTEN”
+    • “PROIBIDA A VENDA PARA MENORES DE 18 ANOS”
+    • Lote (Exemplo: “Lote: XXXXX. Lote: vide garrafa”)
+    • Marca (Incluir a marca do produto)
+    • Símbolo de Grávida com o “r” de proibido
+    • Símbolo de retorno/reciclável`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',
@@ -367,6 +386,10 @@ export enum DocumentTypes {
   ANEXO_VII = 'DECLARAÇÃO DE CARGA PERIGOSA',
   FICHA_DE_LOTE = 'FICHA DE LOTE',
   CERTIFICADO_FITOSSANITARIO = 'CERTIFICADO FITOSSANITÁRIO',
+<<<<<<< HEAD
+=======
+  ROTULOS_E_CONTRARROTULOS = 'ROTULOS E CONTRARROTULOS',
+>>>>>>> b3ae74f (feat: add two new checklists in utils for classification)
   CERTIFICADO_DE_ANALISE_DE_VINHOS = 'CERTIFICADO DE ANÁLISE DE VINHOS',
 }
 
@@ -421,6 +444,8 @@ const documentNameAndTypeMapping = {
   'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
   'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
   'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
+  'ROTULOS[_-\\s]E[_-\\s]CONTRARROTULOS/i': DocumentTypes.ROTULOS_E_CONTRARROTULOS,
+  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS/i': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
 };
 
 export const checklistTypeMapping = {

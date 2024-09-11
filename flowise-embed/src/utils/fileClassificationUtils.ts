@@ -258,34 +258,34 @@ Conferências:
     Destinatário = Adquirente ou Importador`;
 
 export const checklistRotulosEContrarrotulosVinhos = `
-    • Denominação (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
-    • Produzido e engarrafado por (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
-    • Exportador (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
-    • Importador (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-    • Distribuidor (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-    • Ingredientes e aditivos alimentares (Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”)
-    • Prazo de validade e conservação do produto (Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”)
-    • Conteúdo líquido (A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”)
-    • Graduação alcoólica (Exemplo: “13,5% Vol.”)
-    • Safra (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
-    • País de origem (Informar o país de origem)
-    • EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
-    • “NÃO CONTÉM GLÚTEN”
-    • “PROIBIDA A VENDA PARA MENORES DE 18 ANOS”
-    • Lote (Exemplo: “Lote: XXXXX. Lote: vide garrafa”)
-    • Marca (Incluir a marca do produto)
-    • Símbolo de Grávida com o “r” de proibido
-    • Símbolo de retorno/reciclável`;
+• Denominação (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
+• Produzido e engarrafado por (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
+• Exportador (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
+• Importador (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+• Distribuidor (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+• Ingredientes e aditivos alimentares (Exemplo: "Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)")
+• Prazo de validade e conservação do produto (Exemplo: "Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal")
+• Conteúdo líquido (A indicação quantitativa pode ser precedida das declarações "Peso líquido" ou "Conteúdo líquido")
+• Graduação alcoólica (Exemplo: "13,5% Vol.")
+• Safra (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
+• País de origem (Informar o país de origem)
+• EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
+• "NÃO CONTÉM GLÚTEN"
+• "PROIBIDA A VENDA PARA MENORES DE 18 ANOS"
+• Lote (Exemplo: "Lote: XXXXX. Lote: vide garrafa")
+• Marca (Incluir a marca do produto)
+• Símbolo de Grávida com o "/" de proibido 
+• Símbolo de retorno/reciclável`;
 
 export const checklistAnaliseDeVinhos = `
-    • Usuário deve informar qual é o tipo de vinho (não consta no certificado de análise)
-    • Número de lote (“Lote: XXXX”, “Lote No. XXXX”, “L-XXXX”)
-    • Descrição do produto (pode variar, não exatamente igual à proforma)
-    • Embalagem (Exemplo: garrafa 750ml; botella 750 c.c.)
-    • Origem Geográfica (“Denominação de Origem”)
-    • Parâmetros obrigatórios de acordo com o tipo de vinho (COLUNA “Laudo estrangeiro (Certificado de Origem)”) (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
-    • Parâmetros não obrigatórios de acordo com o tipo de vinho (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
-    • Aditivos Alimentares (Aqui, além de verificar se consta o aditivo, a solução deve verificar se o valor está dentro do permitido para o tipo de vinho, de acordo com a tabela)`;
+• Usuário deve informar qual é o tipo de vinho (não consta no certificado de análise)
+• Número de lote ("Lote: XXXX”, "Lote No. XXXX", "L-XXXX")
+• Descrição do produto (pode variar, não exatamente igual à proforma)
+• Embalagem (Exemplo: garrafa 750ml; botella 750 c.c.)
+• Origem Geográfica ("Denominação de Origem")
+• Parâmetros obrigatórios de acordo com o tipo de vinho (COLUNA "Laudo estrangeiro (Certificado de Origem)") (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
+• Parâmetros não obrigatórios de acordo com o tipo de vinho (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
+• Aditivos Alimentares (Aqui, além de verificar se consta o aditivo, a solução deve verificar se o valor está dentro do permitido para o tipo de vinho, de acordo com a tabela)`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',

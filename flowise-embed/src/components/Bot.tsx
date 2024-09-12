@@ -964,6 +964,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const startProcessingFiles = async (files: UploadFile[]) => {
+    console.log('Arquivo que ta passando::', files);
     setIsUploadModalOpen(false);
     setDisableInput(true);
     setIsUploadButtonDisabled(true);
@@ -975,9 +976,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         file: file,
       } as FileMapping;
       const docType = identifyDocumentType(fileMap.file.file.name);
+      console.log('Document type:', docType);
       if (docType) {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
+        console.log('Checklist:', checklist);
         if (checklist) {
           fileMap.checklist = checklist.concat(conferencesDefault);
         }

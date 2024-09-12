@@ -1167,9 +1167,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const crossValidationPrompt = `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
         secondFile.type,
       )} ${JSON.stringify(secondFile.content)}`;
-      const validationResponse = await sendBackgroundMessage(crossValidationPrompt, []);
+      const result = await sendBackgroundMessage(crossValidationPrompt, []);
 
-      const extractedJson = validationResponse.text.replace(/```json|```/g, '');
+      console.log(`Comparing ${result.text}`);
     });
   };
 

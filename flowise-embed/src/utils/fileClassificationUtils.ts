@@ -459,7 +459,6 @@ export const checklistTypeMapping = {
   [DocumentTypes.CCT]: checklistCCTAereo,
   [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
   [DocumentTypes.LABELS]: checklistLabels,
-  [DocumentTypes.ROTULOS_E_CONTRARROTULOS]: checklistRotulosEContrarrotulosVinhos,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS]: checklistAnaliseDeVinhos,
 };
 

@@ -82,7 +82,6 @@ export declare const checklistTypeMapping: {
     CCT: string;
     "CONHECIMENTO - MIC/DTA": string;
     LABEL: string;
-    "ROTULOS E CONTRARROTULOS": string;
     "CERTIFICADO DE AN\u00C1LISE DE VINHOS": string;
 };
 export declare const identifyDocumentChecklist: (documentType: keyof typeof DocumentTypes) => string | null;

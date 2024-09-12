@@ -1170,8 +1170,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const validationResponse = await sendBackgroundMessage(crossValidationPrompt, []);
 
       const extractedJson = validationResponse.text.replace(/```json|```/g, '');
-
-      console.log(`JSON Extraído:\n${extractedJson}`);
     });
   };
 

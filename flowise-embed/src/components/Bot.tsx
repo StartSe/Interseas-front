@@ -1162,7 +1162,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (!checkImportLicenseDocuments(filledChecklists)) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
-    await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages);
+    await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages, async (firstFile: FileMapping, secondFile: FileMapping) => {
+      const crossValidationPrompt = `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
+        secondFile.type,
+      )} ${JSON.stringify(secondFile.content)}`;
+      const result = await sendBackgroundMessage(crossValidationPrompt, []);
+
+      console.log(`Comparing ${result.text}`);
+    });
   };
 
   return (

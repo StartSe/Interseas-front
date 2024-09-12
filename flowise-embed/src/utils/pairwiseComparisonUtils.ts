@@ -6,6 +6,7 @@ export async function pairwiseCompareDocuments(
   fileMappings: FileMapping[],
   sendBackgroundMessage: (value: string, url: any) => Promise<any>,
   setMessages: (value: any) => void,
+  crossValidation: (firstFile: FileMapping, secondFile: FileMapping) => Promise<void>,
 ): Promise<void> {
   const separateFiles = async () => {
     const processedPairs: Set<string> = new Set();
@@ -19,6 +20,7 @@ export async function pairwiseCompareDocuments(
             continue;
           }
           await comparePair(firstFileMappingToCompare, secondFileMappingToCompare);
+          crossValidation(firstFileMappingToCompare, secondFileMappingToCompare);
           processedPairs.add(pairKey);
         }
       }),

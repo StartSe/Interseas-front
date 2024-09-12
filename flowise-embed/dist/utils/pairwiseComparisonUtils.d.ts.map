@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 {"version":3,"file":"pairwiseComparisonUtils.d.ts","sourceRoot":"","sources":["../../src/utils/pairwiseComparisonUtils.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAIhD,wBAAsB,wBAAwB,CAC5C,YAAY,EAAE,WAAW,EAAE,EAC3B,qBAAqB,EAAE,CAAC,KAAK,EAAE,MAAM,EAAE,GAAG,EAAE,GAAG,KAAK,OAAO,CAAC,GAAG,CAAC,EAChE,WAAW,EAAE,CAAC,KAAK,EAAE,GAAG,KAAK,IAAI,EACjC,eAAe,EAAE,CAAC,SAAS,EAAE,WAAW,EAAE,UAAU,EAAE,WAAW,KAAK,OAAO,CAAC,IAAI,CAAC,GAClF,OAAO,CAAC,IAAI,CAAC,CAoEf"}
 =======
 {"version":3,"file":"pairwiseComparisonUtils.d.ts","sourceRoot":"","sources":["../../src/utils/pairwiseComparisonUtils.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAGhD,wBAAgB,wBAAwB,CAAC,YAAY,EAAE,WAAW,EAAE,EAAE,WAAW,EAAE,CAAC,SAAS,EAAE,WAAW,EAAE,UAAU,EAAE,WAAW,KAAK,IAAI,GAAG,IAAI,CAgClJ"}
@@ -15,3 +16,6 @@
 =======
 {"version":3,"file":"pairwiseComparisonUtils.d.ts","sourceRoot":"","sources":["../../src/utils/pairwiseComparisonUtils.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAIhD,wBAAsB,wBAAwB,CAC5C,YAAY,EAAE,WAAW,EAAE,EAC3B,qBAAqB,EAAE,CAAC,KAAK,EAAE,MAAM,EAAE,GAAG,EAAE,GAAG,KAAK,OAAO,CAAC,GAAG,CAAC,EAChE,WAAW,EAAE,CAAC,KAAK,EAAE,GAAG,KAAK,IAAI,GAChC,OAAO,CAAC,IAAI,CAAC,CAmEf"}
 >>>>>>> 13c14e0 (refactor: loading compliance)
+=======
+{"version":3,"file":"pairwiseComparisonUtils.d.ts","sourceRoot":"","sources":["../../src/utils/pairwiseComparisonUtils.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAIhD,wBAAsB,wBAAwB,CAC5C,YAAY,EAAE,WAAW,EAAE,EAC3B,qBAAqB,EAAE,CAAC,KAAK,EAAE,MAAM,EAAE,GAAG,EAAE,GAAG,KAAK,OAAO,CAAC,GAAG,CAAC,EAChE,WAAW,EAAE,CAAC,KAAK,EAAE,GAAG,KAAK,IAAI,EACjC,eAAe,EAAE,CAAC,SAAS,EAAE,WAAW,EAAE,UAAU,EAAE,WAAW,KAAK,OAAO,CAAC,IAAI,CAAC,GAClF,OAAO,CAAC,IAAI,CAAC,CAoEf"}
+>>>>>>> 493b819 (feat: logic to send JSONs for cross-validation flow)

@@ -257,7 +257,7 @@ Conferências:
 • Se importação por Conta e Ordem:
     Destinatário = Adquirente ou Importador`;
 
-export const checklistRotulosEContrarrotulosVinhos = `
+export const checklistLabels = `
 • Denominação (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
 • Produzido e engarrafado por (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
 • Exportador (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
@@ -331,7 +331,6 @@ export enum DocumentTypes {
   ANEXO_VII = 'DECLARAÇÃO DE CARGA PERIGOSA',
   FICHA_DE_LOTE = 'FICHA DE LOTE',
   CERTIFICADO_FITOSSANITARIO = 'CERTIFICADO FITOSSANITÁRIO',
-  ROTULOS_E_CONTRARROTULOS = 'ROTULOS E CONTRARROTULOS',
   CERTIFICADO_DE_ANALISE_DE_VINHOS = 'CERTIFICADO DE ANÁLISE DE VINHOS',
 }
 
@@ -360,6 +359,7 @@ const documentNameAndTypeMapping = {
   'CONFIRMATION[_-\\s]OF[_-\\s]ORDER': DocumentTypes.CONFIRMATION_OF_ORDER,
   'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DIGITAL': DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL,
   'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM': DocumentTypes.CERTIFICADO_DE_ORIGEM,
+  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
   'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE': DocumentTypes.TEST_REPORT,
   'LABELS|LABEL|CONTRA[_-\\s]ROTULO': DocumentTypes.LABELS,
   'ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL':
@@ -385,8 +385,6 @@ const documentNameAndTypeMapping = {
   'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
   'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
   'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
-  'ROTULOS[_-\\s]E[_-\\s]CONTRARROTULOS/i': DocumentTypes.ROTULOS_E_CONTRARROTULOS,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS/i': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
 };
 
 export const checklistTypeMapping = {
@@ -401,7 +399,7 @@ export const checklistTypeMapping = {
   [DocumentTypes.DOWNPAYMENT_INVOICE]: ChecklistProformaInvoice,
   [DocumentTypes.CCT]: checklistCCTAereo,
   [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
-  [DocumentTypes.ROTULOS_E_CONTRARROTULOS]: checklistRotulosEContrarrotulosVinhos,
+  [DocumentTypes.LABELS]: checklistLabels,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS]: checklistAnaliseDeVinhos,
 };
 

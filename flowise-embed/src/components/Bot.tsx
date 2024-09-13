@@ -1086,7 +1086,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await sendBackgroundMessage(checklistPrompt, urls);
 
     try {
-      console.log(result);
       let jsonData = JSON.parse(result.text);
       jsonData = sanitizeJson(jsonData);
 
@@ -1123,7 +1122,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
 
-      console.log(setLoading);
       setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
 

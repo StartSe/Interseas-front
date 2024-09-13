@@ -1159,6 +1159,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    const listDifferentKeys: any[] = [];
+
     if (!checkImportLicenseDocuments(filledChecklists)) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
@@ -1167,10 +1169,44 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const crossValidationPrompt = `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
         secondFile.type,
       )} ${JSON.stringify(secondFile.content)}`;
-      const validationResponse = await sendBackgroundMessage(crossValidationPrompt, []);
+      const crossValidationResponse = await sendBackgroundMessage(crossValidationPrompt, []);
 
-      const extractedJson = validationResponse.text.replace(/```json|```/g, '');
+      const extractedJsonResponse = crossValidationResponse.text.replace(/```json|```/g, '');
+
+      try {
+        const parsedJson = JSON.parse(extractedJsonResponse);
+
+        parsedJson.chaves_equivalente.forEach((data: any) => {
+          if (data.data[0].value !== data.data[1].value) {
+            const differentKeys = {
+              [data.data[0].key_identifier]: [
+                {
+                  document_name: data.data[0].document_name,
+                  key_name: data.data[0].key_name,
+                  value: data.data[0].value,
+                },
+                {
+                  document_name: data.data[1].document_name,
+                  key_name: data.data[1].key_name,
+                  value: data.data[1].value,
+                },
+              ],
+            };
+
+            listDifferentKeys.push(differentKeys);
+          }
+        });
+
+        console.log(`JSON Extraído:\n${extractedJsonResponse}`);
+      } catch (error) {
+        console.error('Erro ao tentar parsear o JSON:', error);
+      }
+
+      console.log('Resultados Teste:', listDifferentKeys);
     });
+    console.log('Resultados:', listDifferentKeys);
+
+    setLoading(false);
   };
 
   return (

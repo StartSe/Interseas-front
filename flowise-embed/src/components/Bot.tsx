@@ -1197,6 +1197,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           }
         });
 
+        setLoading(true);
+        if (listDifferentKeys.length > 0) {
+          const listDifferentKeysPrompt = `LIST_DIFFERENT_KEYS\n${JSON.stringify(listDifferentKeys)}`;
+          const listDifferentKeysResponse = await sendBackgroundMessage(listDifferentKeysPrompt, []);
+          console.log('resultado do agente sem regex:\n', listDifferentKeysResponse.text);
+          const extractedDifferentKeysResponse = listDifferentKeysResponse.text.replace(/```json|```|\n|"|\\/g, '');
+          console.log('resultado do agente:\n', extractedDifferentKeysResponse);
+
+          setLoading(false);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              message: JSON.stringify(extractedDifferentKeysResponse),
+              type: 'apiMessage',
+            },
+          ]);
+        }
         console.log(`JSON Extraído:\n${extractedJsonResponse}`);
       } catch (error) {
         console.error('Erro ao tentar parsear o JSON:', error);

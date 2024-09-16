@@ -30,6 +30,7 @@ import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } f
 import { sanitizeJson } from '@/utils/jsonUtils';
 import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
+import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1067,7 +1068,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
 
     if (filesWithChecklist.length === 0) {
-      setLoading(true);
       await executeComplianceCheck(filesMapping());
       return;
     }
@@ -1145,8 +1145,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       if (currentChecklistNumber() === filesWithChecklist.length) {
-        setLoading(true);
-        executeComplianceCheck(filesMapping());
+        await executeComplianceCheck(filesMapping());
       }
     } catch (error) {
       console.info('Current data:', result);
@@ -1163,18 +1162,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     setLoading(true);
     if (!checkImportLicenseDocuments(filledChecklists)) {
-      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
-    pairwiseCompareDocuments(
-      filledChecklists,
-      (firstFile: FileMapping, secondFile: FileMapping) => {
-        console.log(`Comparing ${JSON.stringify(firstFile)} with ${JSON.stringify(secondFile)}`);
-      },
-      sendBackgroundMessage,
-      setMessages,
-      setLoading,
-    );
+    await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages);
+    setLoading(false);
   };
 
   return (

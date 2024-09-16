@@ -1174,26 +1174,26 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const extractedJsonResponse = crossValidationResponse.text.replace(/```json|```/g, '');
 
       try {
-        const parsedJson = JSON.parse(extractedJsonResponse);
+        const parsedJsonExtractResponse = JSON.parse(extractedJsonResponse);
 
-        parsedJson.chaves_equivalente.forEach((data: any) => {
-          if (data.data[0].value !== data.data[1].value) {
-            const differentKeys = {
-              [data.data[0].key_identifier]: [
+        parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
+          if (dataDocument.data[0].value !== dataDocument.data[1].value) {
+            const differentValue = {
+              [dataDocument.data[0].key_identifier]: [
                 {
-                  document_name: data.data[0].document_name,
-                  key_name: data.data[0].key_name,
-                  value: data.data[0].value,
+                  document_name: dataDocument.data[0].document_name,
+                  key_name: dataDocument.data[0].key_name,
+                  value: dataDocument.data[0].value,
                 },
                 {
-                  document_name: data.data[1].document_name,
-                  key_name: data.data[1].key_name,
-                  value: data.data[1].value,
+                  document_name: dataDocument.data[1].document_name,
+                  key_name: dataDocument.data[1].key_name,
+                  value: dataDocument.data[1].value,
                 },
               ],
             };
 
-            listDifferentKeys.push(differentKeys);
+            listDifferentKeys.push(differentValue);
           }
         });
 
@@ -1344,7 +1344,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                     )}
                     {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
                     {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

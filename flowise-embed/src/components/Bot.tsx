@@ -30,6 +30,7 @@ import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } f
 import { sanitizeJson } from '@/utils/jsonUtils';
 import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
+import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1160,7 +1161,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     setLoading(true);
     if (!checkImportLicenseDocuments(filledChecklists)) {
-      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
 

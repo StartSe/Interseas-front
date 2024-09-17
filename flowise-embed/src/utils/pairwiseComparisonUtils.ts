@@ -7,21 +7,22 @@ export async function pairwiseCompareDocuments(
   sendBackgroundMessage: (value: string, url: any) => Promise<any>,
   setMessages: (value: any) => void,
 ): Promise<void> {
-  const separateFiles = () => {
+  const separateFiles = async () => {
     const processedPairs: Set<string> = new Set();
+    await Promise.all(
+      fileMappings.map(async (firstFileMappingToCompare, index) => {
+        for (let nextIndex = index + 1; nextIndex < fileMappings.length; nextIndex++) {
+          const secondFileMappingToCompare = fileMappings[nextIndex];
+          const pairKey = generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
 
-    fileMappings.forEach(async (firstFileMappingToCompare, index) => {
-      for (let nextIndex = index + 1; nextIndex < fileMappings.length; nextIndex++) {
-        const secondFileMappingToCompare = fileMappings[nextIndex];
-        const pairKey = generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
-
-        if (processedPairs.has(pairKey)) {
-          continue;
+          if (processedPairs.has(pairKey)) {
+            continue;
+          }
+          await comparePair(firstFileMappingToCompare, secondFileMappingToCompare);
+          processedPairs.add(pairKey);
         }
-        await comparePair(firstFileMappingToCompare, secondFileMappingToCompare);
-        processedPairs.add(pairKey);
-      }
-    });
+      }),
+    );
   };
 
   const generatePairKey = (firstFileMappingToCompare: FileMapping, secondFileMappingToCompare: FileMapping): string => {
@@ -68,7 +69,7 @@ export async function pairwiseCompareDocuments(
   };
 
   try {
-    separateFiles();
+    await separateFiles();
   } catch (error) {
     console.log('Erro no envio da mensagem');
   }

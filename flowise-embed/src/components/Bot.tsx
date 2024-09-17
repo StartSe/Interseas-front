@@ -1065,6 +1065,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const processNextChecklist = async () => {
+    setLoading(true);
     const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
 
     if (filesWithChecklist.length === 0) {
@@ -1072,7 +1073,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
 
-    setLoading(true);
     setIsNextChecklistButtonDisabled(true);
 
     const fileMap = filesWithChecklist[currentChecklistNumber()];
@@ -1122,7 +1122,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
 
-      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
 
       const conferences = jsonData['conferências'];
@@ -1152,20 +1151,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
 
-      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
     } finally {
       setIsNextChecklistButtonDisabled(false);
+      setLoading(false);
     }
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    setLoading(true);
     if (!checkImportLicenseDocuments(filledChecklists)) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
     await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages);
-    setLoading(false);
   };
 
   return (

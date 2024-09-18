@@ -30,7 +30,6 @@ import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } f
 import { sanitizeJson } from '@/utils/jsonUtils';
 import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
-import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;

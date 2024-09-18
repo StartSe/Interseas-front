@@ -19,7 +19,7 @@ export async function pairwiseCompareDocuments(
           if (processedPairs.has(pairKey)) {
             continue;
           }
-          await comparePair(firstFileMappingToCompare, secondFileMappingToCompare);
+          await comparePairForSpecificCompliance(firstFileMappingToCompare, secondFileMappingToCompare);
           crossValidation(firstFileMappingToCompare, secondFileMappingToCompare);
           processedPairs.add(pairKey);
         }
@@ -31,7 +31,7 @@ export async function pairwiseCompareDocuments(
     return [JSON.stringify(firstFileMappingToCompare), JSON.stringify(secondFileMappingToCompare)].sort().join('-');
   };
 
-  const comparePair = async (firstFile: FileMapping, secondFile: FileMapping): Promise<void> => {
+  const comparePairForSpecificCompliance = async (firstFile: FileMapping, secondFile: FileMapping): Promise<void> => {
     const CCTxHAWB =
       (firstFile.type === DocumentTypes.CCT && secondFile.type === DocumentTypes.CONHECIMENTO_HAWB) ||
       (firstFile.type === DocumentTypes.CONHECIMENTO_HAWB && secondFile.type === DocumentTypes.CCT);

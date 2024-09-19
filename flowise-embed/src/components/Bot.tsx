@@ -28,9 +28,8 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
-import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
+import CompareDocuments from '@/utils/pairwiseComparisonUtils';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
-import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1159,64 +1158,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    const listDifferentKeys: any[] = [];
-
     if (!checkImportLicenseDocuments(filledChecklists)) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
 
-    await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages, async (firstFile: FileMapping, secondFile: FileMapping) => {
-      const crossValidationPrompt = `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
-        secondFile.type,
-      )} ${JSON.stringify(secondFile.content)}`;
-      const crossValidationResponse = await sendBackgroundMessage(crossValidationPrompt, []);
-
-      const extractedJsonResponse = crossValidationResponse.text.replace(/```json|```/g, '');
-
-      try {
-        const parsedJsonExtractResponse = JSON.parse(extractedJsonResponse);
-
-        parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
-          if (dataDocument.data[0].value !== dataDocument.data[1].value) {
-            const differentValue = {
-              [dataDocument.data[0].key_identifier]: [
-                {
-                  document_name: dataDocument.data[0].document_name,
-                  key_name: dataDocument.data[0].key_name,
-                  value: dataDocument.data[0].value,
-                },
-                {
-                  document_name: dataDocument.data[1].document_name,
-                  key_name: dataDocument.data[1].key_name,
-                  value: dataDocument.data[1].value,
-                },
-              ],
-            };
-
-            listDifferentKeys.push(differentValue);
-          }
-        });
-
-        setLoading(true);
-        if (listDifferentKeys.length > 0) {
-          const listDifferentKeysPrompt = `LIST_DIFFERENT_KEYS\n${JSON.stringify(listDifferentKeys)}`;
-          const listDifferentKeysResponse = await sendBackgroundMessage(listDifferentKeysPrompt, []);
-          const extractedDifferentKeysResponse = listDifferentKeysResponse.text.replace(/```json|```|\n|"|\\/g, '');
-
-          setLoading(false);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              message: JSON.stringify(extractedDifferentKeysResponse),
-              type: 'apiMessage',
-            },
-          ]);
-        }
-      } catch (error) {
-        console.error('Erro ao tentar parsear o JSON:', error);
-      }
+    const compareDocuments = new CompareDocuments({
+      fileMappings: filledChecklists,
+      sendBackgroundMessage,
+      setMessages,
     });
-    setLoading(false);
+    await compareDocuments.execute();
   };
 
   return (

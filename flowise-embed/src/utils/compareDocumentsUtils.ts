@@ -67,7 +67,6 @@ export default class CompareDocuments {
     const prompt = this.comparePairForSpecificCompliance(firstFile, secondFile);
 
     await this.analyseFilesWithAI(prompt);
-
     if (prompt.includes('Specific compliance')) {
       this.sendMessageToChat(this.parsedJsonExtractResponse);
       return;
@@ -168,7 +167,7 @@ export default class CompareDocuments {
     this.dependencies.setMessages((prevMessages: any) => [
       ...prevMessages,
       {
-        message: JSON.stringify(message),
+        message: message,
         type: 'apiMessage',
       },
     ]);

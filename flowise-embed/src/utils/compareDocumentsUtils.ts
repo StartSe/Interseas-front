@@ -28,19 +28,23 @@ export default class CompareDocuments {
   }
 
   private separateFilesInPairs(): void {
-    this.dependencies.fileMappings.forEach((firstFileMappingToCompare, index) => {
-      for (let nextIndex = index + 1; nextIndex < this.dependencies.fileMappings.length; nextIndex++) {
-        const secondFileMappingToCompare = this.dependencies.fileMappings[nextIndex];
-        const pairKey = this.generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
+    try {
+      this.dependencies.fileMappings.forEach((firstFileMappingToCompare, index) => {
+        for (let nextIndex = index + 1; nextIndex < this.dependencies.fileMappings.length; nextIndex++) {
+          const secondFileMappingToCompare = this.dependencies.fileMappings[nextIndex];
+          const pairKey = this.generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
 
-        const documentsToCompare = { key: pairKey, firstDocument: firstFileMappingToCompare, secondDocument: secondFileMappingToCompare };
-        if (this.processedPairs.find((d) => d.key === documentsToCompare.key)) {
-          continue;
+          const documentsToCompare = { key: pairKey, firstDocument: firstFileMappingToCompare, secondDocument: secondFileMappingToCompare };
+          if (this.processedPairs.find((d) => d.key === documentsToCompare.key)) {
+            continue;
+          }
+
+          this.processedPairs.push(documentsToCompare);
         }
-
-        this.processedPairs.push(documentsToCompare);
-      }
-    });
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   private generatePairKey(firstFileMappingToCompare: FileMapping, secondFileMappingToCompare: FileMapping): string {
@@ -69,7 +73,7 @@ export default class CompareDocuments {
       return;
     }
 
-    this.verifyValues();
+    this.unifyDifferentValues();
 
     await this.convertToNaturalLanguage();
   }
@@ -123,27 +127,31 @@ export default class CompareDocuments {
     this.parsedJsonExtractResponse = JSON.parse(extractedJsonResponse);
   }
 
-  private verifyValues() {
-    this.parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
-      if (dataDocument.data[0].value !== dataDocument.data[1].value) {
-        const differentValue = {
-          [dataDocument.data[0].key_identifier]: [
-            {
-              document_name: dataDocument.data[0].document_name,
-              key_name: dataDocument.data[0].key_name,
-              value: dataDocument.data[0].value,
-            },
-            {
-              document_name: dataDocument.data[1].document_name,
-              key_name: dataDocument.data[1].key_name,
-              value: dataDocument.data[1].value,
-            },
-          ],
-        };
+  private unifyDifferentValues() {
+    try {
+      this.parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
+        if (dataDocument.data[0].value !== dataDocument.data[1].value) {
+          const differentValue = {
+            [dataDocument.data[0].key_identifier]: [
+              {
+                document_name: dataDocument.data[0].document_name,
+                key_name: dataDocument.data[0].key_name,
+                value: dataDocument.data[0].value,
+              },
+              {
+                document_name: dataDocument.data[1].document_name,
+                key_name: dataDocument.data[1].key_name,
+                value: dataDocument.data[1].value,
+              },
+            ],
+          };
 
-        this.listDifferentKeys.push(differentValue);
-      }
-    });
+          this.listDifferentKeys.push(differentValue);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   private async convertToNaturalLanguage() {

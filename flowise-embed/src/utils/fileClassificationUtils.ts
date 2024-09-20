@@ -105,9 +105,45 @@ Notify = Adquirente ou Importador
 • Se INCOTERM de responsabilidade do exportador:
 Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
-Tipo de frete = "Collect"`;
+Tipo de frete = "Collect"
+Dados de compliance:
+• Número do Conhecimento de Embarque`;
 
 export const checklistConhecimentoHawb = `
+• Shipper (nome, endereço)
+• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ)
+• Notify (razão social, endereço e CNPJ)
+• Valor do Frete
+• Moeda do Frete
+• Tipo de Frete
+• Aeroporto de Partida
+• Aeroporto de Destino
+• Peso Bruto
+• Peso Taxado
+• Quantidade de Volumes
+• Informação "Wooden Packing"
+• Descrição resumida das mercadorias
+Se mercadoria é máquina ou equipamento
+• Nº de Série
+• Se INCOTERM de responsabilidade do exportador:
+Tipo de frete = "Prepaid"
+• Se INCOTERM de responsabilidade do importador:
+Tipo de frete = "Collect"
+Dados de Compliance:
+• Número do HAWB
+• Data de emissão do HAWB
+• Final Destination (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
+• Nº of Pieces (Quantidade de volumes)
+• Description of Goods (Descrição resumida e completa das mercadorias)
+• Forma de pagamento (Collect/Prepaid, por peso/valor ou outros encargos)
+• Shipper (Embarcador estrangeiro)
+• País do Shipper
+• CNPJ do Consignee (Consignatário/Identificação)
+• MAWB/AWB associados
+• Valor total do frete que consta no HAWB
+`;
+
+export const checklistConhecimentoMawb = `
 • Shipper (nome, endereço)
 • Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ)
 • Notify (razão social, endereço e CNPJ)
@@ -307,6 +343,25 @@ export const checklistAnaliseDeVinhos = `
 • Parâmetros obrigatórios de acordo com o tipo de vinho (COLUNA "Laudo estrangeiro (Certificado de Origem)") (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Parâmetros não obrigatórios de acordo com o tipo de vinho (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Aditivos Alimentares (Aqui, além de verificar se consta o aditivo, a solução deve verificar se o valor está dentro do permitido para o tipo de vinho, de acordo com a tabela)`;
+export const checklistRotulosEContrarrotulosVinhos = `
+    • Denominação (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
+    • Produzido e engarrafado por (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
+    • Exportador (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
+    • Importador (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+    • Distribuidor (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+    • Ingredientes e aditivos alimentares (Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”)
+    • Prazo de validade e conservação do produto (Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”)
+    • Conteúdo líquido (A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”)
+    • Graduação alcoólica (Exemplo: “13,5% Vol.”)
+    • Safra (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
+    • País de origem (Informar o país de origem)
+    • EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
+    • “NÃO CONTÉM GLÚTEN”
+    • “PROIBIDA A VENDA PARA MENORES DE 18 ANOS”
+    • Lote (Exemplo: “Lote: XXXXX. Lote: vide garrafa”)
+    • Marca (Incluir a marca do produto)
+    • Símbolo de Grávida com o “r” de proibido
+    • Símbolo de retorno/reciclável`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',

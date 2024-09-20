@@ -30,6 +30,7 @@ import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } f
 import { sanitizeJson } from '@/utils/jsonUtils';
 import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
+import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1064,14 +1065,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const processNextChecklist = async () => {
+    setLoading(true);
     const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
 
     if (filesWithChecklist.length === 0) {
-      executeComplianceCheck(filesMapping());
+      await executeComplianceCheck(filesMapping());
       return;
     }
 
-    setLoading(true);
     setIsNextChecklistButtonDisabled(true);
 
     const fileMap = filesWithChecklist[currentChecklistNumber()];
@@ -1121,7 +1122,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
 
-      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
 
       const conferences = jsonData['conferências'];
@@ -1144,17 +1144,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       if (currentChecklistNumber() === filesWithChecklist.length) {
-        executeComplianceCheck(filesMapping());
+        await executeComplianceCheck(filesMapping());
       }
     } catch (error) {
       console.info('Current data:', result);
       console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
 
-      setLoading(false);
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
     } finally {
       setIsNextChecklistButtonDisabled(false);
+      setLoading(false);
     }
   };
 
@@ -1162,7 +1162,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (!checkImportLicenseDocuments(filledChecklists)) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
-    pairwiseCompareDocuments(filledChecklists, async (firstFile: FileMapping, secondFile: FileMapping) => {
+
+    await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages, async (firstFile: FileMapping, secondFile: FileMapping) => {
       const crossValidationPrompt = `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
         secondFile.type,
       )} ${JSON.stringify(secondFile.content)}`;
@@ -1170,7 +1171,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       const extractedJson = validationResponse.text.replace(/```json|```/g, '');
     });
-    setLoading(false);
   };
 
   return (
@@ -1290,7 +1290,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       />
                     )}
                     {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && message.message === '' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

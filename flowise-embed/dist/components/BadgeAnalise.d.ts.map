@@ -1,0 +1,1 @@
+{"version":3,"file":"BadgeAnalise.d.ts","sourceRoot":"","sources":["../../src/components/BadgeAnalise.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,yCAAyC,CAAC;AAGtE,KAAK,KAAK,GAAG;IACX,MAAM,CAAC,EAAE,WAAW,CAAC;IACrB,YAAY,EAAE,cAAc,GAAG,SAAS,CAAC;IACzC,kBAAkB,CAAC,EAAE,MAAM,CAAC;IAC5B,oBAAoB,CAAC,EAAE,MAAM,CAAC;CAC/B,CAAC;AAIF,eAAO,MAAM,KAAK,UAAW,KAAK,mCA+DjC,CAAC"}

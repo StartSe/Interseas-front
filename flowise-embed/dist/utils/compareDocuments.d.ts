@@ -16,8 +16,8 @@ export default class CompareDocuments {
     private checkFilesInPairs;
     private comparePairForSpecificCompliance;
     private analyseFilesWithAI;
-    private verifyValues;
+    private unifyDifferentValues;
     private convertToNaturalLanguage;
     private sendMessageToChat;
 }
-//# sourceMappingURL=pairwiseComparisonUtils.d.ts.map
+//# sourceMappingURL=compareDocuments.d.ts.map

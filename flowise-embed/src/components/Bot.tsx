@@ -1083,7 +1083,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const checklistPrompt = `CHECKLIST\n${fileMap.checklist}`;
     const result = await sendBackgroundMessage(checklistPrompt, urls);
-
     try {
       let jsonData = JSON.parse(result.text);
       jsonData = sanitizeJson(jsonData);
@@ -1141,10 +1140,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       } else {
         updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
       }
-
-      if (currentChecklistNumber() === filesWithChecklist.length) {
-        await executeComplianceCheck(filesMapping());
-      }
     } catch (error) {
       console.info('Current data:', result);
       console.error(error);
@@ -1153,6 +1148,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
     } finally {
       setIsNextChecklistButtonDisabled(false);
+      setLoading(false);
+    }
+
+    try {
+      setLoading(true);
+
+      if (currentChecklistNumber() === filesWithChecklist.length) {
+        await executeComplianceCheck(filesMapping());
+      }
+    } catch {
+      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
+      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+    } finally {
       setLoading(false);
     }
   };

@@ -22,29 +22,27 @@ export default class CompareDocuments {
       this.separateFilesInPairs();
 
       await this.processDocuments();
+
+      await this.convertToNaturalLanguage();
     } catch (err) {
-      console.log(err);
+      throw new Error();
     }
   }
 
   private separateFilesInPairs(): void {
-    try {
-      this.dependencies.fileMappings.forEach((firstFileMappingToCompare, index) => {
-        for (let nextIndex = index + 1; nextIndex < this.dependencies.fileMappings.length; nextIndex++) {
-          const secondFileMappingToCompare = this.dependencies.fileMappings[nextIndex];
-          const pairKey = this.generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
+    this.dependencies.fileMappings.forEach((firstFileMappingToCompare, index) => {
+      for (let nextIndex = index + 1; nextIndex < this.dependencies.fileMappings.length; nextIndex++) {
+        const secondFileMappingToCompare = this.dependencies.fileMappings[nextIndex];
+        const pairKey = this.generatePairKey(firstFileMappingToCompare, secondFileMappingToCompare);
 
-          const documentsToCompare = { key: pairKey, firstDocument: firstFileMappingToCompare, secondDocument: secondFileMappingToCompare };
-          if (this.processedPairs.find((d) => d.key === documentsToCompare.key)) {
-            continue;
-          }
-
-          this.processedPairs.push(documentsToCompare);
+        const documentsToCompare = { key: pairKey, firstDocument: firstFileMappingToCompare, secondDocument: secondFileMappingToCompare };
+        if (this.processedPairs.find((d) => d.key === documentsToCompare.key)) {
+          continue;
         }
-      });
-    } catch (err) {
-      console.log(err);
-    }
+
+        this.processedPairs.push(documentsToCompare);
+      }
+    });
   }
 
   private generatePairKey(firstFileMappingToCompare: FileMapping, secondFileMappingToCompare: FileMapping): string {
@@ -54,18 +52,13 @@ export default class CompareDocuments {
   private async processDocuments(): Promise<void> {
     await Promise.all(
       this.processedPairs.map(async ({ firstDocument, secondDocument }) => {
-        try {
-          await this.checkFilesInPairs(firstDocument, secondDocument);
-        } catch (err) {
-          console.log(err);
-        }
+        await this.checkFilesInPairs(firstDocument, secondDocument);
       }),
     );
   }
 
   private async checkFilesInPairs(firstFile: FileMapping, secondFile: FileMapping) {
     const prompt = this.comparePairForSpecificCompliance(firstFile, secondFile);
-
     await this.analyseFilesWithAI(prompt);
     if (prompt.includes('Specific compliance')) {
       this.sendMessageToChat(this.parsedJsonExtractResponse);
@@ -73,8 +66,6 @@ export default class CompareDocuments {
     }
 
     this.unifyDifferentValues();
-
-    await this.convertToNaturalLanguage();
   }
 
   private comparePairForSpecificCompliance(firstFile: FileMapping, secondFile: FileMapping): string {

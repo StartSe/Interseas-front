@@ -27,11 +27,6 @@ import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
-import { sanitizeJson } from '@/utils/jsonUtils';
-import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
-import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
-import { log } from 'console';
-import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -392,20 +387,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
       return messages;
     });
 
-    // if (urls && urls.length > 0) body.uploads = urls;
-
-    // if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-
-    // if (leadEmail()) body.leadEmail = leadEmail();
-
-    // if (action) body.action = action;
-
-    // if (isChatFlowAvailableToStream()) {
-    //   body.socketIOClientId = socketIOClientId();
-    // } else {
-    //   setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-    // }
-
     const generateItemToPrint = (key: string, value: string) => {
       const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
       const hasValue = value !== 'null' && value !== null;
@@ -420,6 +401,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
     try {
       const jsonResult = JSON.parse(result.text);
+      setJsonResponseCriticalAnalysis(jsonResult);
 
       let checklistMessage = `<b>Dados Análise Crítica:</b><br>`;
 
@@ -881,22 +863,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
     setFilesMapping(filesMap);
 
-    let message = '';
-
-    message = 'MESSAGEM AQUI: ' + messageUtils.ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE;
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        message: message,
-        type: 'apiMessage',
-      },
-    ]);
-
-    // TODO: send alert message if needed
-
-    // processFilesWithoutChecklist();
-
     await processNextChecklist();
 
     setDocumentsUploaded(true);
@@ -918,45 +884,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     return urls;
   };
 
-  // const processFilesWithoutChecklist = async () => {
-  //   for (const fileMap of filesMapping()) {
-  //     if (fileMap.checklist) {
-  //       continue;
-  //     }
-
-  //     console.log('Processando arquivo sem checklist:', fileMap.file.name);
-
-  //     console.info('Processing file without checklist:', fileMap.file.name);
-
-  //     const file = fileMap.file;
-  //     const urls = await processFileToSend(file.file);
-
-  //     const extractionPrompt = `EXTRACTION`;
-  //     const resultData = await sendBackgroundMessage(extractionPrompt, urls);
-  //     log('Aquiiii');
-
-  //     try {
-  //       let jsonData = JSON.parse(resultData.text);
-  //       jsonData = sanitizeJson(jsonData);
-  //       console.log('Entrou no try:', jsonData);
-
-  //       if (jsonData['Máquina/Equipamento'] === 'true' || jsonData['Possui Ex-tarifário'] === 'true') {
-  //         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-  //       }
-
-  //       if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-  //         throw new Error(jsonData.error);
-  //       }
-
-  //       fileMap.content = jsonData;
-  //       console.info(`Extraction of file ${fileMap.file.name} complete`, jsonData);
-  //     } catch (error) {
-  //       console.info('Current data:', resultData);
-  //       console.error(error);
-  //     }
-  //   }
-  // };
-
   const processNextChecklist = async () => {
     setLoading(true);
     const files = filesMapping().filter((item) => !!item);
@@ -970,32 +897,32 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    // const checklistPrompt = `VERIFICAR DADOS ANALISE CRITICA`;
-    // const result = await sendBackgroundMessage(checklistPrompt, urls);
-    const result = {
-      text: '{"NCM":"8479","INCOTERM e Local":"não encontrado","Peso bruto estimado":"15.345,000","M3 estimada/quantidade de volumes e dimensões":"25,000","País de origem/fabricação":"não encontrado","País de embarque":"ALEMANHA","Estado do Importador":"LUIS"}',
-      question: 'VERIFICAR DADOS ANALISE CRITICA',
-      chatId: '324bba96-fd00-45de-bddc-51f4b7f38a81',
-      chatMessageId: 'b47a7408-c8cc-4995-9236-b7db120be831',
-      sessionId: '324bba96-fd00-45de-bddc-51f4b7f38a81',
-      sourceDocuments: [],
-      fileAnnotations: [],
-      action: {},
-      agentReasoning: [
-        { agentName: 'step-identification', messages: ['critical-analysis'], nodeName: 'seqCondition', nodeId: 'seqCondition_0' },
-        {
-          agentName: 'critical-analysis',
-          messages: [
-            '{"NCM":"8479","INCOTERM e Local":"não encontrado","Peso bruto estimado":"15.345,000","M3 estimada/quantidade de volumes e dimensões":"25,000","País de origem/fabricação":"não encontrado","País de embarque":"ALEMANHA","Estado do Importador":"LUIS"}',
-          ],
-          usedTools: [null],
-          sourceDocuments: [null],
-          state: {},
-          nodeName: 'seqAgent',
-          nodeId: 'seqAgent_4',
-        },
-      ],
-    };
+    const checklistPrompt = `VERIFICAR DADOS ANALISE CRITICA`;
+    const result = await sendBackgroundMessage(checklistPrompt, urls);
+    // const result = {
+    //   text: '{"NCM":"8479","INCOTERM e Local":"não encontrado","Peso bruto estimado":"15.345,000","M3 estimada/quantidade de volumes e dimensões":"25,000","País de origem/fabricação":"não encontrado","País de embarque":"ALEMANHA","Estado do Importador":"LUIS"}',
+    //   question: 'VERIFICAR DADOS ANALISE CRITICA',
+    //   chatId: '324bba96-fd00-45de-bddc-51f4b7f38a81',
+    //   chatMessageId: 'b47a7408-c8cc-4995-9236-b7db120be831',
+    //   sessionId: '324bba96-fd00-45de-bddc-51f4b7f38a81',
+    //   sourceDocuments: [],
+    //   fileAnnotations: [],
+    //   action: {},
+    //   agentReasoning: [
+    //     { agentName: 'step-identification', messages: ['critical-analysis'], nodeName: 'seqCondition', nodeId: 'seqCondition_0' },
+    //     {
+    //       agentName: 'critical-analysis',
+    //       messages: [
+    //         '{"NCM":"8479","INCOTERM e Local":"não encontrado","Peso bruto estimado":"15.345,000","M3 estimada/quantidade de volumes e dimensões":"25,000","País de origem/fabricação":"não encontrado","País de embarque":"ALEMANHA","Estado do Importador":"LUIS"}',
+    //       ],
+    //       usedTools: [null],
+    //       sourceDocuments: [null],
+    //       state: {},
+    //       nodeName: 'seqAgent',
+    //       nodeId: 'seqAgent_4',
+    //     },
+    //   ],
+    // };
 
     try {
       const jsonData = JSON.parse(result.text);

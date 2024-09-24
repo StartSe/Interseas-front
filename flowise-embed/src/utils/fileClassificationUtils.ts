@@ -164,27 +164,6 @@ Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
 Tipo de frete = "Collect"`;
 
-export const checklistConhecimentoMawb = `
-• Shipper (nome, endereço)
-• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ)
-• Notify (razão social, endereço e CNPJ)
-• Valor do Frete
-• Moeda do Frete
-• Tipo de Frete
-• Aeroporto de Partida
-• Aeroporto de Destino
-• Peso Bruto
-• Peso Taxado
-• Quantidade de Volumes
-• Informação "Wooden Packing"
-• Descrição resumida das mercadorias
-Se mercadoria é máquina ou equipamento
-• Nº de Série
-• Se INCOTERM de responsabilidade do exportador:
-Tipo de frete = "Prepaid"
-• Se INCOTERM de responsabilidade do importador:
-Tipo de frete = "Collect"`;
-
 export const checklistCRT = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço)
 • Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)

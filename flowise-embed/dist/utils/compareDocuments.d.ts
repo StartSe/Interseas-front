@@ -4,12 +4,13 @@ export default class CompareDocuments {
     private processedPairs;
     private listDifferentKeys;
     private parsedJsonExtractResponse;
+    private lastMessage;
     constructor(dependencies: {
         fileMappings: FileMapping[];
         sendBackgroundMessage: (value: string, url: any) => Promise<any>;
         setMessages: (value: any) => void;
     });
-    execute(): Promise<void>;
+    execute(): Promise<any>;
     private separateFilesInPairs;
     private generatePairKey;
     private processDocuments;

@@ -9,6 +9,8 @@ export default class CompareDocuments {
 
   private parsedJsonExtractResponse: any;
 
+  private lastMessage: any;
+
   constructor(
     private dependencies: {
       fileMappings: FileMapping[];
@@ -17,13 +19,15 @@ export default class CompareDocuments {
     },
   ) {}
 
-  public async execute(): Promise<void> {
+  public async execute(): Promise<any> {
     try {
       this.separateFilesInPairs();
 
       await this.processDocuments();
 
       await this.convertToNaturalLanguage();
+
+      return this.lastMessage;
     } catch (err) {
       throw new Error();
     }
@@ -59,7 +63,9 @@ export default class CompareDocuments {
 
   private async checkFilesInPairs(firstFile: FileMapping, secondFile: FileMapping) {
     const prompt = this.comparePairForSpecificCompliance(firstFile, secondFile);
+
     await this.analyseFilesWithAI(prompt);
+
     if (prompt.includes('Specific compliance')) {
       this.sendMessageToChat(this.parsedJsonExtractResponse);
       return;
@@ -108,7 +114,7 @@ export default class CompareDocuments {
     const response = await this.dependencies.sendBackgroundMessage(prompt, []);
 
     if (prompt.includes('Specific compliance')) {
-      this.parsedJsonExtractResponse = response.text;
+      this.parsedJsonExtractResponse = response;
       return;
     }
 
@@ -148,19 +154,21 @@ export default class CompareDocuments {
     if (this.listDifferentKeys.length > 0) {
       const listDifferentKeysPrompt = `LIST_DIFFERENT_KEYS\n${JSON.stringify(this.listDifferentKeys)}`;
       const listDifferentKeysResponse = await this.dependencies.sendBackgroundMessage(listDifferentKeysPrompt, []);
-      const extractedDifferentKeysResponse = listDifferentKeysResponse.text.replace(/```json|```|\n|"|\\/g, '');
+      listDifferentKeysResponse.text = listDifferentKeysResponse.text.replace(/```json|```|\n|"|\\/g, '');
 
-      this.sendMessageToChat(extractedDifferentKeysResponse);
+      this.sendMessageToChat(listDifferentKeysResponse);
     }
   }
 
-  private sendMessageToChat(message: string): void {
+  private sendMessageToChat(message: any): void {
     this.dependencies.setMessages((prevMessages: any) => [
       ...prevMessages,
       {
-        message: message,
+        message: message.text,
         type: 'apiMessage',
       },
     ]);
+
+    this.lastMessage = message;
   }
 }

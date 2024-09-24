@@ -1175,7 +1175,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       sendBackgroundMessage,
       setMessages,
     });
-    await compareDocuments.execute();
+    const lastMessage = await compareDocuments.execute();
+
+    updateLastMessage(
+      '',
+      lastMessage?.sourceDocuments,
+      lastMessage?.fileAnnotations,
+      lastMessage?.agentReasoning,
+      lastMessage?.action,
+      lastMessage.text,
+    );
   };
 
   return (

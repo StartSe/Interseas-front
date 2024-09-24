@@ -28,9 +28,8 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
-import { pairwiseCompareDocuments } from '@/utils/pairwiseComparisonUtils';
+import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
-import { set } from 'lodash';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1084,7 +1083,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const checklistPrompt = `CHECKLIST\n${fileMap.checklist}`;
     const result = await sendBackgroundMessage(checklistPrompt, urls);
-
     try {
       let jsonData = JSON.parse(result.text);
       jsonData = sanitizeJson(jsonData);
@@ -1142,10 +1140,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       } else {
         updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
       }
-
-      if (currentChecklistNumber() === filesWithChecklist.length) {
-        await executeComplianceCheck(filesMapping());
-      }
     } catch (error) {
       console.info('Current data:', result);
       console.error(error);
@@ -1156,6 +1150,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setIsNextChecklistButtonDisabled(false);
       setLoading(false);
     }
+
+    try {
+      setLoading(true);
+
+      if (currentChecklistNumber() === filesWithChecklist.length) {
+        await executeComplianceCheck(filesMapping());
+      }
+    } catch {
+      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
+      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
@@ -1163,14 +1170,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
     }
 
-    await pairwiseCompareDocuments(filledChecklists, sendBackgroundMessage, setMessages, async (firstFile: FileMapping, secondFile: FileMapping) => {
-      const crossValidationPrompt = `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
-        secondFile.type,
-      )} ${JSON.stringify(secondFile.content)}`;
-      const validationResponse = await sendBackgroundMessage(crossValidationPrompt, []);
-
-      const extractedJson = validationResponse.text.replace(/```json|```/g, '');
+    const compareDocuments = new CompareDocuments({
+      fileMappings: filledChecklists,
+      sendBackgroundMessage,
+      setMessages,
     });
+    await compareDocuments.execute();
   };
 
   return (
@@ -1291,7 +1296,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                     )}
                     {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
                     {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

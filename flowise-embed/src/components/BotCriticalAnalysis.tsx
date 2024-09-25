@@ -347,119 +347,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     scrollToBottom();
   };
 
-  const promptClick = (prompt: string) => {
-    handleSubmit(prompt);
-  };
-
-  const handleSubmit = async (inputValue: string, action?: IAction | null) => {
-    try {
-      setUserInput(inputValue);
-      const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
-
-      setLoading(true);
-      scrollToBottom();
-      clearPreviews();
-
-      const fileUploads = getFileUploads();
-      const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
-
-      updateMessages(inputValue, fileUploads);
-      await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
-
-      setLoading(false);
-      setUserInput('');
-      scrollToBottom();
-    } catch (error) {
-      console.error('Error in handleSubmit:', error);
-      handleError();
-    }
-  };
-
-  const getFileUploads = () => {
-    return previews().map((item) => ({
-      data: item.data,
-      type: item.type,
-      name: item.name,
-      mime: item.mime,
-    }));
-  };
-
-  const updateMessages = (inputValue: string, fileUploads: any[]) => {
-    setMessages((prevMessages) => {
-      const newMessages: MessageType[] = [...prevMessages, { message: inputValue, type: 'userMessage', fileUploads }];
-      addChatMessage(newMessages);
-      return newMessages;
-    });
-  };
-
-  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
-    try {
-      const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
-      setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
-      console.log('JSON Aqui: ', jsonDataCriticalAnalysis);
-
-      let criticalAnalysisMessage = `<b>Dados Análise Crítica:</b><br>`;
-      for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
-        criticalAnalysisMessage += generateItemToPrint(key, value as string);
-      }
-
-      setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
-      if (criticalAnalysisMessage.includes('não encontrado')) {
-        setDisableInput(false);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { message: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos:', type: 'apiMessage' },
-        ]);
-      }
-
-      if (!isChatFlowAvailableToStream()) {
-        updateLastMessage(
-          criticalAnalysisMessage,
-          jsonCriticalAnalysisUpdate?.sourceDocuments,
-          jsonCriticalAnalysisUpdate?.fileAnnotations,
-          jsonCriticalAnalysisUpdate?.agentReasoning,
-          jsonCriticalAnalysisUpdate?.action,
-          criticalAnalysisMessage,
-        );
-      } else {
-        updateLastMessage(
-          '',
-          jsonCriticalAnalysisUpdate?.sourceDocuments,
-          jsonCriticalAnalysisUpdate?.fileAnnotations,
-          jsonCriticalAnalysisUpdate?.agentReasoning,
-          jsonCriticalAnalysisUpdate?.action,
-          criticalAnalysisMessage,
-        );
-      }
-    } catch (error) {
-      console.error('Error processing critical analysis update:', error);
-      throw error;
-    }
-  };
-
-  const generateItemToPrint = (key: string, value: string) => {
-    const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-    const hasValue = value !== 'null' && value !== null;
-    let criticalAnalysisItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-    criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
-    return criticalAnalysisItem;
-  };
-
-  const handleActionClick = async (label: string, action: IAction | undefined | null) => {
-    setUserInput(label);
-    setMessages((data) => {
-      const updated = data.map((item, i) => {
-        if (i === data.length - 1) {
-          return { ...item, action: null };
-        }
-        return item;
-      });
-      addChatMessage(updated);
-      return [...updated];
-    });
-    handleSubmit(label, action);
-  };
-
   const clearChat = () => {
     try {
       removeLocalStorageChatHistory(props.chatflowid);
@@ -838,6 +725,141 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     }
   };
 
+  const promptClick = (prompt: string) => {
+    handleSubmit(prompt);
+  };
+
+  const handleSubmit = async (inputValue: string, action?: IAction | null) => {
+    try {
+      setUserInput(inputValue);
+      const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+
+      setLoading(true);
+      scrollToBottom();
+      clearPreviews();
+
+      const fileUploads = getFileUploads();
+      const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+
+      updateMessages(inputValue, fileUploads);
+      await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+
+      setLoading(false);
+      setUserInput('');
+      scrollToBottom();
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      handleError();
+    }
+  };
+
+  const getFileUploads = () => {
+    return previews().map((item) => ({
+      data: item.data,
+      type: item.type,
+      name: item.name,
+      mime: item.mime,
+    }));
+  };
+
+  const updateMessages = (inputValue: string, fileUploads: any[]) => {
+    setMessages((prevMessages) => {
+      const newMessages: MessageType[] = [...prevMessages, { message: inputValue, type: 'userMessage', fileUploads }];
+      addChatMessage(newMessages);
+      return newMessages;
+    });
+  };
+
+  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
+    try {
+      const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
+      console.log('JSON Aqui: ', jsonDataCriticalAnalysis);
+
+      let criticalAnalysisMessage = `<b>Dados Análise Crítica:</b><br>`;
+      for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
+        criticalAnalysisMessage += generateItemToPrint(key, value as string);
+      }
+
+      setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
+      if (criticalAnalysisMessage.includes('não encontrado')) {
+        setDisableInput(false);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { message: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos:', type: 'apiMessage' },
+        ]);
+      } else {
+        fetch('https://n8n.startse.com/webhook-test/a96d9f14-3835-4e08-b8a7-a77f3b754886', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jsonCriticalAnalysisUpdate.text),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.log('Deu ruim');
+
+              throw new Error('response was not ok');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log('Webhook response:', data);
+          })
+          .catch((error) => console.error('Error:', error));
+
+        setMessages((prevMessages) => [...prevMessages, { message: 'Dados da análise crítica encontrados com sucesso!', type: 'apiMessage' }]);
+      }
+
+      if (!isChatFlowAvailableToStream()) {
+        updateLastMessage(
+          criticalAnalysisMessage,
+          jsonCriticalAnalysisUpdate?.sourceDocuments,
+          jsonCriticalAnalysisUpdate?.fileAnnotations,
+          jsonCriticalAnalysisUpdate?.agentReasoning,
+          jsonCriticalAnalysisUpdate?.action,
+          criticalAnalysisMessage,
+        );
+      } else {
+        updateLastMessage(
+          '',
+          jsonCriticalAnalysisUpdate?.sourceDocuments,
+          jsonCriticalAnalysisUpdate?.fileAnnotations,
+          jsonCriticalAnalysisUpdate?.agentReasoning,
+          jsonCriticalAnalysisUpdate?.action,
+          criticalAnalysisMessage,
+        );
+      }
+    } catch (error) {
+      console.error('Error processing critical analysis update:', error);
+      throw error;
+    }
+  };
+
+  const generateItemToPrint = (key: string, value: string) => {
+    const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+    const hasValue = value !== 'null' && value !== null;
+    let criticalAnalysisItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+    criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
+    return criticalAnalysisItem;
+  };
+
+  const handleActionClick = async (label: string, action: IAction | undefined | null) => {
+    setUserInput(label);
+    setMessages((data) => {
+      const updated = data.map((item, i) => {
+        if (i === data.length - 1) {
+          return { ...item, action: null };
+        }
+        return item;
+      });
+      addChatMessage(updated);
+      return [...updated];
+    });
+    handleSubmit(label, action);
+  };
+
   const startProcessingFiles = async (files: UploadFile[]) => {
     setIsUploadModalOpen(false);
     setDisableInput(true);
@@ -892,90 +914,14 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    // const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
-    // const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
-    const dataFoundCriticalAnalysis = {
-      text: '{"NCM":"8479","INCOTERM e Local":"não encontrado","Peso bruto estimado":"15.345,000","M3 estimada/quantidade de volumes e dimensões":"25,000","País de origem/fabricação":"não encontrado","País de embarque":"ALEMANHA","Estado do Importador":"LUIS"}',
-      question: 'VERIFICAR DADOS ANALISE CRITICA',
-      chatId: '324bba96-fd00-45de-bddc-51f4b7f38a81',
-      chatMessageId: 'b47a7408-c8cc-4995-9236-b7db120be831',
-      sessionId: '324bba96-fd00-45de-bddc-51f4b7f38a81',
-      sourceDocuments: [],
-      fileAnnotations: [],
-      action: {},
-      agentReasoning: [
-        { agentName: 'step-identification', messages: ['critical-analysis'], nodeName: 'seqCondition', nodeId: 'seqCondition_0' },
-        {
-          agentName: 'critical-analysis',
-          messages: [
-            '{"NCM":"8479","INCOTERM e Local":"não encontrado","Peso bruto estimado":"15.345,000","M3 estimada/quantidade de volumes e dimensões":"25,000","País de origem/fabricação":"não encontrado","País de embarque":"ALEMANHA","Estado do Importador":"LUIS"}',
-          ],
-          usedTools: [null],
-          sourceDocuments: [null],
-          state: {},
-          nodeName: 'seqAgent',
-          nodeId: 'seqAgent_4',
-        },
-      ],
-    };
+    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
+    const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
 
-    try {
-      const jsonDataFoundCriticalAnalysis = JSON.parse(dataFoundCriticalAnalysis.text);
-      setJsonResponseCriticalAnalysis(jsonDataFoundCriticalAnalysis);
+    await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
 
-      const generateItemToPrint = (key: string, value: string) => {
-        const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-        const hasValue = value !== 'null' && value !== null;
-        let criticalAnalysisItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-        criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
-
-        return criticalAnalysisItem;
-      };
-
-      let criticalAnalysisMessage = `<b>Dados Análise Crítica:</b><br>`;
-
-      for (const [key, value] of Object.entries(jsonDataFoundCriticalAnalysis)) {
-        criticalAnalysisMessage += generateItemToPrint(key, value as string);
-      }
-
-      setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
-      if (criticalAnalysisMessage.includes('não encontrado')) {
-        setDisableInput(false);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { message: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos:', type: 'apiMessage' },
-        ]);
-      }
-
-      if (!isChatFlowAvailableToStream()) {
-        updateLastMessage(
-          criticalAnalysisMessage,
-          dataFoundCriticalAnalysis?.sourceDocuments,
-          dataFoundCriticalAnalysis?.fileAnnotations,
-          dataFoundCriticalAnalysis?.agentReasoning,
-          dataFoundCriticalAnalysis?.action,
-          criticalAnalysisMessage,
-        );
-      } else {
-        updateLastMessage(
-          '',
-          dataFoundCriticalAnalysis?.sourceDocuments,
-          dataFoundCriticalAnalysis?.fileAnnotations,
-          dataFoundCriticalAnalysis?.agentReasoning,
-          dataFoundCriticalAnalysis?.action,
-          criticalAnalysisMessage,
-        );
-      }
-    } catch (error) {
-      console.info('Current data:', dataFoundCriticalAnalysis);
-      console.error(error);
-      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
-      console.log('Erro:', errorMessage);
-
-      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
+    setUserInput('');
+    scrollToBottom();
   };
 
   return (
@@ -1204,8 +1150,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                   textColor={props.textInput?.textColor}
                   placeholder={props.textInput?.placeholder}
                   sendButtonColor={props.textInput?.sendButtonColor}
-                  maxChars={props.textInput?.maxChars}
-                  maxCharsWarningMessage={props.textInput?.maxCharsWarningMessage}
+                  maxChars={200}
                   autoFocus={props.textInput?.autoFocus}
                   fontSize={props.fontSize}
                   disabled={getInputDisabled() || disableInput()}

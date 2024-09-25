@@ -1,7 +1,7 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
-import { TextInput } from '@/components/inputs/textInput';
+import { TextInput } from '@/components/inputs/textInputCriticalAnalysis';
 import { GuestBubble } from '@/components/bubbles/GuestBubble';
 import { BotBubble } from '@/components/bubbles/BotBubble';
 import { LoadingBubble } from '@/components/bubbles/LoadingBubble';
@@ -13,8 +13,7 @@ import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
 import { NewItemButton } from '@/components/buttons/SendButton';
-import { CircleDotIcon, TrashIcon } from '@/components/icons';
-import { cancelAudioRecording, startAudioRecording } from '@/utils/audioRecording';
+import { TrashIcon } from '@/components/icons';
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
@@ -132,8 +131,6 @@ export type LeadsConfig = {
 };
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
-const defaultBackgroundColor = '#ffffff';
-const defaultTextColor = '#303235';
 
 export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -173,12 +170,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   // TODO: fix this type
   const [previews, setPreviews] = createSignal<FilePreview[]>([]);
 
-  // audio recording
-  const [elapsedTime, setElapsedTime] = createSignal('00:00');
-  const [isRecording, setIsRecording] = createSignal(false);
-  const [recordingNotSupported, setRecordingNotSupported] = createSignal(false);
-  const [isLoadingRecording, setIsLoadingRecording] = createSignal(false);
-
   // drag & drop
   // const [isDragActive, setIsDragActive] = createSignal(false);
 
@@ -197,8 +188,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
       typeof observeUserInput === 'function' &&
         // eslint-disable-next-line solid/reactivity
         createMemo(() => {
-          console.log('eis me aqui');
-
           observeUserInput(userInput());
         });
       typeof observeLoading === 'function' &&
@@ -243,39 +232,12 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
-  // Define the audioRef
-  let audioRef: HTMLAudioElement | undefined;
-  // CDN link for default receive sound
-  const defaultReceiveSound = 'https://cdn.jsdelivr.net/gh/FlowiseAI/FlowiseChatEmbed@latest/src/assets/receive_message.mp3';
-  const playReceiveSound = () => {
-    if (props.textInput?.receiveMessageSound) {
-      let audioSrc = defaultReceiveSound;
-      if (props.textInput?.receiveSoundLocation) {
-        audioSrc = props.textInput?.receiveSoundLocation;
-      }
-      audioRef = new Audio(audioSrc);
-      audioRef.play();
-    }
-  };
-
-  let hasSoundPlayed = false;
   // TODO: this has the bug where first message is not showing: https://github.com/FlowiseAI/FlowiseChatEmbed/issues/158
   // The solution is to use SSE
-  const updateLastMessage = (
-    text: string,
-    sourceDocuments: any,
-    fileAnnotations: any,
-    agentReasoning: IAgentReasoning[] = [],
-    action: IAction,
-    resultText: string,
-  ) => {
+  const updateLastMessage = (text: string, sourceDocuments: any, fileAnnotations: any, agentReasoning: IAgentReasoning[] = [], action: IAction) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
         if (i === data.length - 1) {
-          if (resultText && !hasSoundPlayed) {
-            playReceiveSound();
-            hasSoundPlayed = true;
-          }
           return { ...item, message: item.message + text, sourceDocuments, fileAnnotations, agentReasoning, action };
         }
         return item;
@@ -283,11 +245,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
       addChatMessage(updated);
       return [...updated];
     });
-
-    // Set hasSoundPlayed to false if resultText exists
-    if (resultText) {
-      hasSoundPlayed = false;
-    }
   };
 
   const updateLastMessageSourceDocuments = (sourceDocuments: any) => {
@@ -403,11 +360,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
       if (chatMessage.chatId) setChatId(chatMessage.chatId);
-      const savedLead = chatMessage.lead;
-      if (savedLead) {
-        setIsLeadSaved(!!savedLead);
-        setLeadEmail(savedLead.email);
-      }
       const loadedMessages: MessageType[] =
         chatMessage?.chatHistory?.length > 0
           ? chatMessage.chatHistory?.map((message: MessageType) => {
@@ -527,31 +479,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     return newSourceDocuments;
   };
 
-  const addRecordingToPreviews = (blob: Blob) => {
-    let mimeType = '';
-    const pos = blob.type.indexOf(';');
-    if (pos === -1) {
-      mimeType = blob.type;
-    } else {
-      mimeType = blob.type.substring(0, pos);
-    }
-
-    // read blob and add to previews
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onloadend = () => {
-      const base64data = reader.result as FilePreviewData;
-      const upload: FilePreview = {
-        data: base64data,
-        preview: '../assets/wave-sound.jpg',
-        type: 'audio',
-        name: `audio_${Date.now()}.wav`,
-        mime: mimeType,
-      };
-      setPreviews((prevPreviews) => [...prevPreviews, upload]);
-    };
-  };
-
   const isFileAllowedForUpload = (file: File) => {
     let acceptFile = false;
     if (uploadsConfig() && uploadsConfig()?.isImageUploadAllowed && uploadsConfig()?.imgUploadSizeAndTypes) {
@@ -612,17 +539,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     setPreviews(previews().filter((item) => item !== itemToDelete));
   };
 
-  const onMicrophoneClicked = () => {
-    setIsRecording(true);
-    startAudioRecording(setIsRecording, setRecordingNotSupported, setElapsedTime);
-  };
-
-  const onRecordingCancelled = () => {
-    if (!recordingNotSupported) cancelAudioRecording();
-    setIsRecording(false);
-    setRecordingNotSupported(false);
-  };
-
   const getInputDisabled = (): boolean => {
     const messagesArray = messages();
     const disabled =
@@ -635,23 +551,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     }
     return false;
   };
-
-  createEffect(
-    // listen for changes in previews
-    on(previews, (uploads) => {
-      // wait for audio recording to load and then send
-      const containsAudio = uploads.filter((item) => item.type === 'audio').length > 0;
-      if (uploads.length >= 1 && containsAudio) {
-        setIsRecording(false);
-        setRecordingNotSupported(false);
-        promptClick('');
-      }
-
-      return () => {
-        setPreviews([]);
-      };
-    }),
-  );
 
   const readImagesUrls = (imagesToUpload: any[]) => {
     // Logic from handleSubmit function
@@ -774,9 +673,8 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     try {
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
-      console.log('JSON Aqui: ', jsonDataCriticalAnalysis);
 
-      let criticalAnalysisMessage = `<b>Dados Análise Crítica:</b><br>`;
+      let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
       for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }
@@ -789,7 +687,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
           { message: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos:', type: 'apiMessage' },
         ]);
       } else {
-        fetch('https://n8n.startse.com/webhook-test/a96d9f14-3835-4e08-b8a7-a77f3b754886', {
+        fetch('https://n8n.startse.com/webhook/a96d9f14-3835-4e08-b8a7-a77f3b754886', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -798,18 +696,16 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
         })
           .then((response) => {
             if (!response.ok) {
-              console.log('Deu ruim');
-
               throw new Error('response was not ok');
             }
             return response.json();
           })
           .then((data) => {
-            console.log('Webhook response:', data);
+            setMessages((prevMessages) => [...prevMessages, { message: data.output, type: 'apiMessage' }]);
           })
           .catch((error) => console.error('Error:', error));
 
-        setMessages((prevMessages) => [...prevMessages, { message: 'Dados da análise crítica encontrados com sucesso!', type: 'apiMessage' }]);
+        setMessages((prevMessages) => [...prevMessages, { message: 'Dados enviados para análise crítica!', type: 'apiMessage' }]);
       }
 
       if (!isChatFlowAvailableToStream()) {
@@ -819,7 +715,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
           jsonCriticalAnalysisUpdate?.fileAnnotations,
           jsonCriticalAnalysisUpdate?.agentReasoning,
           jsonCriticalAnalysisUpdate?.action,
-          criticalAnalysisMessage,
         );
       } else {
         updateLastMessage(
@@ -828,7 +723,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
           jsonCriticalAnalysisUpdate?.fileAnnotations,
           jsonCriticalAnalysisUpdate?.agentReasoning,
           jsonCriticalAnalysisUpdate?.action,
-          criticalAnalysisMessage,
         );
       }
     } catch (error) {
@@ -952,7 +846,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
             <div style={{ flex: 1 }} />
             <div style={{ 'padding-right': '0.625rem' }}>
               <NewItemButton
-                newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL}
+                newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL + ' 44'}
                 sendButtonColor={props.bubbleTextColor}
                 type="button"
                 isDisabled={messages().length === 1}
@@ -1109,61 +1003,22 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
               filesMapping().filter((item) => !!item.checklist).length > 1 &&
               filesMapping().filter((item) => !!item.checklist).length > currentChecklistNumber()}
             {(startUploadingDocument() && documentsUploaded()) || !startUploadingDocument() ? (
-              isRecording() ? (
-                <>
-                  {recordingNotSupported() ? (
-                    <div class="w-full flex items-center justify-between p-4 border border-[#eeeeee]">
-                      <div class="w-full flex items-center justify-between gap-3">
-                        <span class="text-base">To record audio, use modern browsers like Chrome or Firefox that support audio recording.</span>
-                        <button
-                          class="py-2 px-4 justify-center flex items-center bg-red-500 text-white rounded-md"
-                          type="button"
-                          onClick={() => onRecordingCancelled()}
-                        >
-                          Okay
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      class="h-[58px] flex items-center justify-between chatbot-input border border-[#eeeeee]"
-                      data-testid="input"
-                      style={{
-                        margin: 'auto',
-                        'background-color': props.textInput?.backgroundColor ?? defaultBackgroundColor,
-                        color: props.textInput?.textColor ?? defaultTextColor,
-                      }}
-                    >
-                      <div class="flex items-center gap-3 px-4 py-2">
-                        <span>
-                          <CircleDotIcon color="red" />
-                        </span>
-                        <span>{elapsedTime() || '00:00'}</span>
-                        {isLoadingRecording() && <span class="ml-1.5">Sending...</span>}
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <TextInput
-                  backgroundColor={props.textInput?.backgroundColor}
-                  textColor={props.textInput?.textColor}
-                  placeholder={props.textInput?.placeholder}
-                  sendButtonColor={props.textInput?.sendButtonColor}
-                  maxChars={200}
-                  autoFocus={props.textInput?.autoFocus}
-                  fontSize={props.fontSize}
-                  disabled={getInputDisabled() || disableInput()}
-                  defaultValue={userInput()}
-                  onSubmit={handleSubmit}
-                  uploadsConfig={uploadsConfig()}
-                  setPreviews={setPreviews}
-                  onMicrophoneClicked={onMicrophoneClicked}
-                  handleFileChange={handleFileChange}
-                  sendMessageSound={props.textInput?.sendMessageSound}
-                  sendSoundLocation={props.textInput?.sendSoundLocation}
-                />
-              )
+              <TextInput
+                backgroundColor={props.textInput?.backgroundColor}
+                textColor={props.textInput?.textColor}
+                placeholder={props.textInput?.placeholder}
+                sendButtonColor={props.textInput?.sendButtonColor}
+                maxChars={200}
+                autoFocus={props.textInput?.autoFocus}
+                fontSize={props.fontSize}
+                disabled={getInputDisabled() || disableInput()}
+                defaultValue={userInput()}
+                onSubmit={handleSubmit}
+                uploadsConfig={uploadsConfig()}
+                setPreviews={setPreviews}
+                handleFileChange={handleFileChange}
+                sendSoundLocation={props.textInput?.sendSoundLocation}
+              />
             ) : (
               <>
                 <UploadButton

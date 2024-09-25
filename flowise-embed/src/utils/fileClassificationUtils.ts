@@ -6,16 +6,16 @@ Conferências:
 export const checklistCeMercante = `
 • Número do conhecimento de embarque
 • NCM
-• Dados do Importador - também chamado de Consignee (Razão social e CNPJ)
-• Dados do Adquirente - também chamado de Notify (Razão social)
-• Peso Bruto
+• Dados do Importador - também chamado de Consignee (Razão social, CNPJ e CEP)
+• Dados do Adquirente - também chamado de Notify (Razão social, CNPJ e CEP)
+• Peso Bruto (G.W)
 • Cubagem
 • Data de emissão
 • Porto de origem
 • Porto de descarregamento
-• Valor do frete total (Prepaid/Collect; moeda; valor)
+• Valor do frete total (Prepaid/Collect; moeda; valor) (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
 • Componentes do frete (Prepaid/Collect; moeda; valor)
-• Quantidade de containers
+• Quantidade de containers 
 • Número dos containers (no formato <3 letras>U<7 números>)`;
 
 export const checklistCertificadoOrigem = `
@@ -25,31 +25,31 @@ export const checklistCertificadoOrigem = `
 • Acordo
 • Fatura Comercial
 • Valor da mercadoria
-• Quantidade
+• Quantidade (trazer no formato quantidade x mercadoria)
 • NCM
 Se operação por Conta e Ordem:
-• Dados do Adquirente (no campo Observações)`;
+• Dados do Adquirente (no campo Observações)(Razão social, CNPJ e CEP) `;
 
 export const checklistCommercialInvoice = `
 • Número do documento
 • Nome do documento
 • Data
-• Assinatura à mão
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
-• Dados do Adquirente - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
+• Assinatura
+• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Adquirente - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda) - (Razão social, CNPJ e CEP)
 • Dados do Exportador (nome, endereço, NIF)
 • Dados do Fabricante (nome, endereço, NIF)
 • Marca
 • Numeração
 • Número de referência dos volumes
-• Descrição
+• Descrição (Trazer todos os nomes de produtos diferentes na descrição)
 • Referência
-• Quantidade
+• Quantidade (trazer no formato quantidade x mercadoria)
 • Unidade Comercializada
 • Valor Unitário (não zerado)
 • Valor Total (não zerado)
 • Moeda
-• Forma/Condições de Pagamento
+• Forma/Condições de Pagamento (true/false)
 • Dados Bancários Exportador
 • Porto de Embarque
 • Porto de Desembarque
@@ -58,12 +58,12 @@ export const checklistCommercialInvoice = `
 • País de Aquisição
 • INCOTERM
 • Local do INCOTERM
-• Valor do Frete (se prepaid)
+• Valor do Frete (se prepaid: total prepaid, etc) (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
 • Valor do Seguro (se prepaid)
-• Peso Líquido Total
-• Peso Bruto Total
-• Quantidade de Volumes
-• Tipo de Volumes
+• Peso Líquido Total (N.W)
+• Peso Bruto Total (G.W)
+• Quantidade de Volumes (crate/box/pallets/etc)
+• Tipo de Volumes (crate/box/pallets/etc)
 • Descrição EX-tarifário (no formato "EX-[número]")
 Se mercadoria é máquina ou equipamento
 • Nº de Série
@@ -74,26 +74,26 @@ Conferências:
 • Somatório dos itens = valor total informado`;
 
 export const checklistConhecimentoBL = `
-• Shipper (nome, endereço)
-• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ)
-• Notify (razão social, endereço e CNPJ)
-• Valor do Frete
+• Shipper (nome, endereço, CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ, CEP)
+• Notify (razão social, endereço, CNPJ e CEP)
+• Valor do Frete (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
 • Moeda do Frete
-• Tipo de Frete
+• Tipo de Frete (Prepaid/Collect)
 • Número dos containers (no formato <3 letras>U<7 números>)
 • Número dos lacres dos containers (seal)
 • Local de Recebimento
 • Porto de Embarque
 • Porto de Desembarque
 • Local de Destino
-• Peso Bruto
+• Peso Bruto (G.W)
 • Cubagem
-• Quantidade de Volumes
-• Tipo de Volumes
-• Informação "Wooden Packing"
-• Descrição resumida das mercadorias
+• Quantidade de Volumes (crate/box/pallets)
+• Tipo de Volumes (crate/box/pallets)
+• Informação "Wooden Packing" (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
+• Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM (primeiros 4 dígitos)
-• Valor da Capatazia (THC)
+• Valor da Capatazia (THC ou DTHC)
 • Descrição EX-tarifário (no formato "EX-[número]")
 Se mercadoria é máquina ou equipamento
 • Nº de Série
@@ -111,18 +111,18 @@ Dados de compliance:
 
 export const checklistConhecimentoHawb = `
 • Shipper (nome, endereço)
-• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ)
-• Notify (razão social, endereço e CNPJ)
-• Valor do Frete
+• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ, CEP)
+• Notify (razão social, endereço, CNPJ e CEP)
+• Valor do Frete (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
 • Moeda do Frete
-• Tipo de Frete
+• Tipo de Frete(Prepaid/Collect)
 • Aeroporto de Partida
 • Aeroporto de Destino
-• Peso Bruto
+• Peso Bruto (G.W)
 • Peso Taxado
-• Quantidade de Volumes
-• Informação "Wooden Packing"
-• Descrição resumida das mercadorias
+• Quantidade de Volumes (crate/box/pallets)
+• Informação "Wooden Packing" (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
+• Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 • Se INCOTERM de responsabilidade do exportador:
@@ -133,30 +133,30 @@ Dados de Compliance:
 • Número do HAWB
 • Data de emissão do HAWB
 • Final Destination (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
-• Nº of Pieces (Quantidade de volumes)
+• Nº of Pieces (Quantidade de volumes (crate/box/pallets))
 • Description of Goods (Descrição resumida e completa das mercadorias)
 • Forma de pagamento (Collect/Prepaid, por peso/valor ou outros encargos)
 • Shipper (Embarcador estrangeiro)
 • País do Shipper
 • CNPJ do Consignee (Consignatário/Identificação)
 • MAWB/AWB associados
-• Valor total do frete que consta no HAWB
+• Valor total do frete que consta no HAWB (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
 `;
 
 export const checklistConhecimentoMawb = `
 • Shipper (nome, endereço)
-• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ)
-• Notify (razão social, endereço e CNPJ)
-• Valor do Frete
-• Moeda do Frete
-• Tipo de Frete
+• Dados do Importador - também chamado de Consignee (razão social, endereço, CNPJ e CEP)
+• Notify (razão social, endereço, CNPJ e CEP)
 • Aeroporto de Partida
 • Aeroporto de Destino
-• Peso Bruto
+• Peso Bruto (G.W)
 • Peso Taxado
-• Quantidade de Volumes
-• Informação "Wooden Packing"
-• Descrição resumida das mercadorias
+• Quantidade de Volumes (crate/box/pallets)
+• Informação "Wooden Packing" (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
+• Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
+• Valor do Frete (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
+• Moeda do Frete
+• Tipo de Frete
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 • Se INCOTERM de responsabilidade do exportador:
@@ -166,21 +166,21 @@ Tipo de frete = "Collect"`;
 
 export const checklistCRT = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço)
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
-• Dados do Destinatário (razão social, endereço e CNPJ)
+• Dados do Importador - também chamado de Consignee (Razão social, endereço, CNPJ e CEP)
+• Dados do Destinatário (razão social, endereço, CNPJ e CEP)
 • Notificar
-• Frete (valor e moeda)
-• Tipo de Frete
+• Total do Frete (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
+• Tipo de Frete (Prepaid/Collect)
 • Declarações e observações - detalhamento do frete internacional e nacional
 • Declaração valor das mercadorias
 • Local de embarque
 • Local de Destino Final
-• Peso Bruto
-• Peso Líquido
-• Quantidade de Volumes
-• Tipo de Volumes
+• Peso Bruto (G.W)
+• Peso Líquido (N.W)
+• Quantidade de Volumes (crate/box/pallets)
+• Tipo de Volumes (crate/box/pallets)
 • Informação "Wooden Packing" (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
-• Descrição resumida das mercadorias
+• Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM (4 dígitos a 8 dígitos de cada NCM)
 • Valor da mercadoria (pode estar em numeral ou por extenso)
 • Documentos anexos
@@ -202,15 +202,15 @@ Conferências:
 
 export const checklistPackingList = `
 • Referência à Ordem de Compra (OC) ou Fatura Comercial
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
-• Dados do Adquirente ou Encomendante - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
+• Dados do Importador - também chamado de Consignee (Razão social, endereço, CNPJ e CEP)
+• Dados do Adquirente ou Encomendante - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda) - (Razão social, CNPJ e CEP)
 • Dados do Exportador (nome, endereço, NIF)
-• Descrição ou referência
+• Descrição ou referência (Trazer todos os nomes de produtos diferentes na descrição)
 • Espécie dos volumes
 • Quantidade total de Volumes
-• Peso Líquido por volume
-• Peso Líquido total
-• Peso Bruto total
+• Peso Líquido por volume (N.W per volume)
+• Peso Líquido total (N.W)
+• Peso Bruto total (G.W) 
 • Cubagem total`;
 
 export const ChecklistProformaInvoice = `
@@ -218,23 +218,23 @@ export const ChecklistProformaInvoice = `
 • Nome do documento
 • Data do documento
 • Assinatura
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ)
-• Dados do Adquirente - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
+• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ) - Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
+• Dados do Adquirente - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda) - (Razão social, CNPJ e CEP)
 • Dados do Exportador (nome, endereço)
 • País de origem
-• Descrição da mercadoria
+• Descrição da mercadoria (Trazer todos os nomes de produtos diferentes na descrição)
 • Quantidade
 • Unidade comercializada
 • Valor unitário de cada espécie de mercadoria
 • Valor total de cada espécie de mercadoria
 • Moeda de pagamento
-• Condições de pagamento
+• Condições de pagamento? true:false
 • Dados bancários do exportador
 • INCOTERM
 • Local do INCOTERM
-• Peso estimado
-• Quntidade de volumes estimada
-• Dimensão estimada dos volumes
+• Peso Total
+• Quantidade de volumes estimada (crate/box/pallets)
+• Dimensão estimada dos volumes (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
 • Multiplicação do valor unitário = quantidade comercializada de cada item
 • Somatório dos itens = valor total informado`;
@@ -245,11 +245,11 @@ const checklistCCTAereo = `
 • Aeroporto de origem
 • Aeroporto de destino
 • Recinto aduaneiro de destino
-• Quantidade de volumes
-• Peso bruto
+• Quantidade de volumes (crate/box/pallets)
+• Peso bruto (G.W)
 • Presença de peças de madeira maciça - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
-• Descrição resumida das mercadorias
-• Descrição da mercadoria
+• Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
+• Descrição da mercadoria (Trazer todos os nomes de produtos diferentes na descrição)
 • Moeda de origem
 • Frete por item de carga (somatório)
 • Forma de pagamento (por peso/valor)
@@ -267,17 +267,17 @@ const checklistMicDta = `
 • Moeda da mercadoria
 • País de origem
 • Valor da mercadoria
-• Valor do frete
+• Valor do frete (Exemplos: Ocean Freight, Air Freight, etc. Podem vir em formato de sigla seguido do valor pago ou como frete total)
 • Valor do seguro
 • Número do CRT
 • Local de embarque
 • Local de destino Final
-• Peso Bruto
+• Peso Bruto (G.W)
 • Documentos anexos
-• Quantidade de Volumes
-• Tipo de Volumes
+• Quantidade de Volumes (crate/box/pallets)
+• Tipo de Volumes (crate/box/pallets)
 • Informação "Wooden Packing" (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
-• Descrição resumida das mercadorias
+• Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM (4 dígitos a 8 dígitos de cada NCM)
 • Placa do veículo
 • Placa do reboque/semireboque

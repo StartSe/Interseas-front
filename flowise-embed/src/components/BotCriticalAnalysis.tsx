@@ -24,7 +24,7 @@ import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
-
+import ApiRequester from '@/utils/ApiRequesterUtils';
 export type FileEvent<T = EventTarget> = {
   target: T;
 };
@@ -687,23 +687,11 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
           { message: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos:', type: 'apiMessage' },
         ]);
       } else {
-        fetch('https://n8n.startse.com/webhook/a96d9f14-3835-4e08-b8a7-a77f3b754886', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(jsonCriticalAnalysisUpdate.text),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('response was not ok');
-            }
-            return response.json();
-          })
-          .then((data) => {
-            setMessages((prevMessages) => [...prevMessages, { message: data.output, type: 'apiMessage' }]);
-          })
-          .catch((error) => console.error('Error:', error));
+        const apiRequester = new ApiRequester();
+
+        apiRequester.makeRequests(jsonCriticalAnalysisUpdate, (message) => {
+          setMessages((prevMessages) => [...prevMessages, message]);
+        });
 
         setMessages((prevMessages) => [...prevMessages, { message: 'Dados enviados para análise crítica!', type: 'apiMessage' }]);
       }

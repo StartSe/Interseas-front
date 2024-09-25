@@ -846,7 +846,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
             <div style={{ flex: 1 }} />
             <div style={{ 'padding-right': '0.625rem' }}>
               <NewItemButton
-                newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL + ' 44'}
+                newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL}
                 sendButtonColor={props.bubbleTextColor}
                 type="button"
                 isDisabled={messages().length === 1}

@@ -104,9 +104,11 @@ export default class CompareDocuments {
     } else if (CRTxCOMERCIAL_INVOICE) {
       return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CRT;
     } else {
-      return `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
-        secondFile.type,
-      )} ${JSON.stringify(secondFile.content)}`;
+      return `
+        CROSS_VALIDATION\n
+        ${firstFile.file.name} ${JSON.stringify(firstFile.content)}\n
+        ${secondFile.file.name} ${JSON.stringify(secondFile.content)}
+      `;
     }
   }
 

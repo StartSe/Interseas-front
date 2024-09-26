@@ -1,20 +1,30 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
-import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQueryAnalise';
-import { GuestBubble } from '@/components/bubblesCriticalAnalysis/GuestBubble';
-import { BotBubble } from '@/components/bubblesCriticalAnalysis/BotBubble';
-import { SourceBubble } from '@/components/bubblesCriticalAnalysis/SourceBubble';
+import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
+import { TextInput } from '@/components/inputs/textInputCriticalAnalysis';
+import { GuestBubble } from '@/components/bubbles/GuestBubble';
+import { BotBubble } from '@/components/bubbles/BotBubble';
+import { LoadingBubble } from '@/components/bubbles/LoadingBubble';
+import { SourceBubble } from '@/components/bubbles/SourceBubble';
+import { StarterPromptBubble } from '@/components/bubbles/StarterPromptBubble';
 import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme } from '@/features/bubble/types';
-import { Badge } from '@/components/BadgeAnalise';
+import { Badge } from '@/components/Badge';
 import socketIOClient from 'socket.io-client';
+import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
 import { NewItemButton } from '@/components/buttons/SendButton';
-import { LeadCaptureBubble } from '@/components/bubblesCriticalAnalysis/LeadCaptureBubble';
+import { TrashIcon } from '@/components/icons';
+import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
 import { messageUtils } from '@/utils/messageUtils';
-import { FileUploadModal } from '@/features/modalCriticalAnalysis/FileUploadModal';
-
+import { FileUploadModal } from '@/features/modal/FileUploadModal';
+import { UploadFile } from '@solid-primitives/upload';
+import { isImage } from '@/utils/isImage';
+import { FileMapping } from '@/utils/fileUtils';
+import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
+import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 export type FileEvent<T = EventTarget> = {
   target: T;
 };
@@ -130,7 +140,10 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   let botContainer: HTMLDivElement | undefined;
 
   const [userInput, setUserInput] = createSignal('');
+  const [jsonResponseCriticalAnalysis, setJsonResponseCriticalAnalysis] = createSignal({});
   const [loading, setLoading] = createSignal(false);
+  const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
+  const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
     [
       {
@@ -146,18 +159,27 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   const [chatId, setChatId] = createSignal(
     (props.chatflowConfig?.vars as any)?.customerId ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}` : uuidv4(),
   );
+  const [starterPrompts, setStarterPrompts] = createSignal<string[]>([], { equals: false });
   const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
+  const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
   const [leadsConfig, setLeadsConfig] = createSignal<LeadsConfig>();
   const [isLeadSaved, setIsLeadSaved] = createSignal(false);
   const [leadEmail, setLeadEmail] = createSignal('');
-  const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
 
   // drag & drop file input
   // TODO: fix this type
   const [previews, setPreviews] = createSignal<FilePreview[]>([]);
 
+  // drag & drop
+  // const [isDragActive, setIsDragActive] = createSignal(false);
+
   // document uploading
+  const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
+  const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = createSignal(false);
+  const [disableInput, setDisableInput] = createSignal(false);
+  const [filesMapping, setFilesMapping] = createSignal<FileMapping[]>([]);
+  const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
   const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
 
   onMount(() => {
@@ -212,14 +234,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
   // TODO: this has the bug where first message is not showing: https://github.com/FlowiseAI/FlowiseChatEmbed/issues/158
   // The solution is to use SSE
-  const updateLastMessage = (
-    text: string,
-    sourceDocuments: any,
-    fileAnnotations: any,
-    agentReasoning: IAgentReasoning[] = [],
-    action: IAction,
-    resultText: string,
-  ) => {
+  const updateLastMessage = (text: string, sourceDocuments: any, fileAnnotations: any, agentReasoning: IAgentReasoning[] = [], action: IAction) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
         if (i === data.length - 1) {
@@ -289,141 +304,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     scrollToBottom();
   };
 
-  // Handle form submission
-  const handleSubmit = async (value: string, action?: IAction | undefined | null) => {
-    setUserInput(value);
-
-    if (value.trim() === '') {
-      const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
-      if (!(previews().length >= 1 && containsAudio)) {
-        return;
-      }
-    }
-
-    setLoading(true);
-    scrollToBottom();
-
-    const urls = previews().map((item) => {
-      return {
-        data: item.data,
-        type: item.type,
-        name: item.name,
-        mime: item.mime,
-      };
-    });
-
-    clearPreviews();
-
-    setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: urls }];
-      addChatMessage(messages);
-      return messages;
-    });
-
-    const body: IncomingInput = {
-      question: value,
-      chatId: chatId(),
-    };
-
-    if (urls && urls.length > 0) body.uploads = urls;
-
-    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-
-    if (leadEmail()) body.leadEmail = leadEmail();
-
-    if (action) body.action = action;
-
-    if (isChatFlowAvailableToStream()) {
-      body.socketIOClientId = socketIOClientId();
-    } else {
-      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-    }
-
-    const result = await sendMessageQuery({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
-      body,
-    });
-
-    if (result.data) {
-      const data = result.data;
-      const question = data.question;
-      if (value === '' && question) {
-        setMessages((data) => {
-          const messages = data.map((item, i) => {
-            if (i === data.length - 2) {
-              return { ...item, message: question };
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (urls && urls.length > 0) {
-        setMessages((data) => {
-          const messages = data.map((item, i) => {
-            if (i === data.length - 2) {
-              if (item.fileUploads) {
-                const fileUploads = item?.fileUploads.map((file) => ({
-                  type: file.type,
-                  name: file.name,
-                  mime: file.mime,
-                }));
-                return { ...item, fileUploads };
-              }
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (!isChatFlowAvailableToStream()) {
-        let text = '';
-        if (data.text) text = data.text;
-        else if (data.json) text = JSON.stringify(data.json, null, 2);
-        else text = JSON.stringify(data, null, 2);
-
-        updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
-      } else {
-        updateLastMessage('', data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
-      }
-      setLoading(false);
-      setUserInput('');
-      scrollToBottom();
-    }
-    if (result.error) {
-      const error = result.error;
-      console.error(error);
-      if (typeof error === 'object') {
-        handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
-        return;
-      }
-      if (typeof error === 'string') {
-        handleError(error);
-        return;
-      }
-      handleError();
-      return;
-    }
-  };
-
-  const handleActionClick = async (label: string, action: IAction | undefined | null) => {
-    setUserInput(label);
-    setMessages((data) => {
-      const updated = data.map((item, i) => {
-        if (i === data.length - 1) {
-          return { ...item, action: null };
-        }
-        return item;
-      });
-      addChatMessage(updated);
-      return [...updated];
-    });
-    handleSubmit(label, action);
-  };
-
   const clearChat = () => {
     try {
       removeLocalStorageChatHistory(props.chatflowid);
@@ -444,18 +324,42 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
       console.error(`error: ${errorData}`);
     }
+
+    if (startUploadingDocument()) {
+      setDocumentsUploaded(false);
+      setCurrentChecklistNumber(0);
+      setFilesMapping([]);
+    }
   };
+
+  createEffect(() => {
+    if (props.starterPrompts && props.starterPrompts.length > 0) {
+      const prompts = Object.values(props.starterPrompts).map((prompt) => prompt);
+
+      return setStarterPrompts(prompts.filter((prompt) => prompt !== ''));
+    }
+  });
+
+  // Auto scroll chat to bottom
+  createEffect(() => {
+    if (messages()) {
+      if (messages().length > 1) {
+        setTimeout(() => {
+          chatContainer?.scrollTo(0, chatContainer.scrollHeight);
+        }, 400);
+      }
+    }
+  });
+
+  createEffect(() => {
+    if (props.fontSize && botContainer) botContainer.style.fontSize = `${props.fontSize}px`;
+  });
 
   // eslint-disable-next-line solid/reactivity
   createEffect(async () => {
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
       if (chatMessage.chatId) setChatId(chatMessage.chatId);
-      const savedLead = chatMessage.lead;
-      if (savedLead) {
-        setIsLeadSaved(!!savedLead);
-        setLeadEmail(savedLead.email);
-      }
       const loadedMessages: MessageType[] =
         chatMessage?.chatHistory?.length > 0
           ? chatMessage.chatHistory?.map((message: MessageType) => {
@@ -495,9 +399,19 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
     if (result.data) {
       const chatbotConfig = result.data;
+      if ((!props.starterPrompts || props.starterPrompts?.length === 0) && chatbotConfig.starterPrompts) {
+        const prompts: string[] = [];
+        Object.getOwnPropertyNames(chatbotConfig.starterPrompts).forEach((key) => {
+          prompts.push(chatbotConfig.starterPrompts[key].prompt);
+        });
+        setStarterPrompts(prompts.filter((prompt) => prompt !== ''));
+      }
       if (chatbotConfig.chatFeedback) {
         const chatFeedbackStatus = chatbotConfig.chatFeedback.status;
         setChatFeedbackStatus(chatFeedbackStatus);
+      }
+      if (chatbotConfig.uploads) {
+        setUploadsConfig(chatbotConfig.uploads);
       }
       if (chatbotConfig.leads) {
         setLeadsConfig(chatbotConfig.leads);
@@ -565,9 +479,332 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     return newSourceDocuments;
   };
 
-  const startProcessingFiles = () => {
-    console.log('Processing files');
+  const isFileAllowedForUpload = (file: File) => {
+    let acceptFile = false;
+    if (uploadsConfig() && uploadsConfig()?.isImageUploadAllowed && uploadsConfig()?.imgUploadSizeAndTypes) {
+      const fileType = file.type;
+      const sizeInMB = file.size / 1024 / 1024;
+      uploadsConfig()?.imgUploadSizeAndTypes.map((allowed) => {
+        if (allowed.fileTypes.includes(fileType) && sizeInMB <= allowed.maxUploadSize) {
+          acceptFile = true;
+        }
+      });
+    }
+    if (!acceptFile) {
+      alert(`Cannot upload file. Kindly check the allowed file types and maximum allowed size.`);
+    }
+    return acceptFile;
+  };
+
+  const handleFileChange = async (event: FileEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+    const filesList = [];
+    for (const file of files) {
+      if (isFileAllowedForUpload(file) === false) {
+        return;
+      }
+      const reader = new FileReader();
+      const { name } = file;
+      filesList.push(
+        new Promise((resolve) => {
+          reader.onload = (evt) => {
+            if (!evt?.target?.result) {
+              return;
+            }
+            const { result } = evt.target;
+            resolve({
+              data: result,
+              preview: URL.createObjectURL(file),
+              type: 'file',
+              name: name,
+              mime: file.type,
+            });
+          };
+          reader.readAsDataURL(file);
+        }),
+      );
+    }
+
+    const newFiles = await Promise.all(filesList);
+    setPreviews((prevPreviews) => [...prevPreviews, ...(newFiles as FilePreview[])]);
+  };
+
+  const handleDeletePreview = (itemToDelete: FilePreview) => {
+    if (itemToDelete.type === 'file') {
+      URL.revokeObjectURL(itemToDelete.preview); // Clean up for file
+    }
+    setPreviews(previews().filter((item) => item !== itemToDelete));
+  };
+
+  const getInputDisabled = (): boolean => {
+    const messagesArray = messages();
+    const disabled =
+      loading() ||
+      !props.chatflowid ||
+      (leadsConfig()?.status && !isLeadSaved()) ||
+      (messagesArray[messagesArray.length - 1].action && Object.keys(messagesArray[messagesArray.length - 1].action as any).length > 0);
+    if (disabled) {
+      return true;
+    }
+    return false;
+  };
+
+  const readImagesUrls = (imagesToUpload: any[]) => {
+    // Logic from handleSubmit function
+    const urls = imagesToUpload.map((item) => {
+      return {
+        data: item.data,
+        type: item.type,
+        name: item.name,
+        mime: item.mime,
+      };
+    });
+    return urls;
+  };
+
+  const setImagesToBeUploaded = async (images: File[]): Promise<FilePreview[]> => {
+    // Logic from handleFileChange function
+    const filesList = [];
+    for (const file of images) {
+      const reader = new FileReader();
+      const { name } = file;
+      filesList.push(
+        new Promise((resolve) => {
+          reader.onload = (evt) => {
+            if (!evt?.target?.result) {
+              return;
+            }
+            const { result } = evt.target;
+            resolve({
+              data: result,
+              preview: URL.createObjectURL(file),
+              type: 'file',
+              name: name,
+              mime: file.type,
+            });
+          };
+          reader.readAsDataURL(file);
+        }),
+      );
+    }
+
+    const newFiles = await Promise.all(filesList);
+
+    return newFiles as FilePreview[];
+  };
+
+  const sendBackgroundMessage = async (value: string, urls: any[]) => {
+    const body: IncomingInput = {
+      question: value,
+      chatId: chatId(),
+    };
+
+    if (urls && urls.length > 0) body.uploads = urls;
+
+    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+
+    const result = await sendMessageQuery({
+      chatflowid: props.chatflowid,
+      apiHost: props.apiHost,
+      body,
+    });
+
+    if (result.data) {
+      const data = result.data;
+
+      return data;
+    }
+    if (result.error) {
+      const error = result.error;
+      console.error(error);
+      return;
+    }
+  };
+
+  const promptClick = (prompt: string) => {
+    handleSubmit(prompt);
+  };
+
+  const handleSubmit = async (inputValue: string, action?: IAction | null) => {
+    try {
+      setUserInput(inputValue);
+      const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+
+      setLoading(true);
+      scrollToBottom();
+      clearPreviews();
+
+      const fileUploads = getFileUploads();
+      const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+
+      updateMessages(inputValue, fileUploads);
+      await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+
+      setLoading(false);
+      setUserInput('');
+      scrollToBottom();
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      handleError();
+    }
+  };
+
+  const getFileUploads = () => {
+    return previews().map((item) => ({
+      data: item.data,
+      type: item.type,
+      name: item.name,
+      mime: item.mime,
+    }));
+  };
+
+  const updateMessages = (inputValue: string, fileUploads: any[]) => {
+    setMessages((prevMessages) => {
+      const newMessages: MessageType[] = [...prevMessages, { message: inputValue, type: 'userMessage', fileUploads }];
+      addChatMessage(newMessages);
+      return newMessages;
+    });
+  };
+
+  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
+    try {
+      const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
+
+      let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
+      for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
+        criticalAnalysisMessage += generateItemToPrint(key, value as string);
+      }
+
+      setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
+      if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
+        setDisableInput(false);
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
+      } else {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
+        setLoading(true);
+
+        const parallelApiExecutor = new ParallelApiExecutor({
+          jsonCriticalAnalysisUpdate,
+          setMessages,
+        });
+
+        await parallelApiExecutor.execute();
+
+        setLoading(false);
+      }
+
+      if (!isChatFlowAvailableToStream()) {
+        updateLastMessage(
+          criticalAnalysisMessage,
+          jsonCriticalAnalysisUpdate?.sourceDocuments,
+          jsonCriticalAnalysisUpdate?.fileAnnotations,
+          jsonCriticalAnalysisUpdate?.agentReasoning,
+          jsonCriticalAnalysisUpdate?.action,
+        );
+      } else {
+        updateLastMessage(
+          '',
+          jsonCriticalAnalysisUpdate?.sourceDocuments,
+          jsonCriticalAnalysisUpdate?.fileAnnotations,
+          jsonCriticalAnalysisUpdate?.agentReasoning,
+          jsonCriticalAnalysisUpdate?.action,
+        );
+      }
+    } catch (error) {
+      console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
+      throw error;
+    }
+  };
+
+  const generateItemToPrint = (key: string, value: string) => {
+    const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+    const hasValue = value !== 'null' && value !== null;
+    let criticalAnalysisItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+    criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
+    return criticalAnalysisItem;
+  };
+
+  const handleActionClick = async (label: string, action: IAction | undefined | null) => {
+    setUserInput(label);
+    setMessages((data) => {
+      const updated = data.map((item, i) => {
+        if (i === data.length - 1) {
+          return { ...item, action: null };
+        }
+        return item;
+      });
+      addChatMessage(updated);
+      return [...updated];
+    });
+    handleSubmit(label, action);
+  };
+
+  const startProcessingFiles = async (files: UploadFile[]) => {
     setIsUploadModalOpen(false);
+    setDisableInput(true);
+    setIsUploadButtonDisabled(true);
+
+    const filesMap: FileMapping[] = [];
+
+    files.forEach((file) => {
+      const fileMap = {
+        file: file,
+      } as FileMapping;
+      const docType = identifyDocumentType(fileMap.file.file.name);
+      if (docType) {
+        fileMap.type = docType;
+        const checklist = identifyDocumentChecklist(docType);
+        if (checklist) {
+          fileMap.checklist = checklist.concat(conferencesDefault);
+        }
+      }
+      filesMap.push(fileMap);
+    });
+
+    setFilesMapping(filesMap);
+
+    await processFileCriticalAnalysis();
+
+    setDocumentsUploaded(true);
+    setIsUploadButtonDisabled(false);
+  };
+
+  const processFileToSend = async (file: File) => {
+    let imagesList: File[] = [];
+
+    if (isImage(file.name)) {
+      imagesList.push(file);
+    } else {
+      const pdfImages = await convertPdfToMultipleImages(file);
+      imagesList = [...imagesList, ...pdfImages];
+    }
+
+    const imagesToUpload = await setImagesToBeUploaded(imagesList);
+    const urls = readImagesUrls(imagesToUpload);
+    return urls;
+  };
+
+  const processFileCriticalAnalysis = async () => {
+    setLoading(true);
+    const files = filesMapping().filter((item) => !!item);
+    const fileMap = files[currentChecklistNumber()];
+    const file = fileMap.file;
+    const urls = await processFileToSend(file.file);
+
+    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
+
+    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
+    const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
+
+    await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
+
+    setLoading(false);
+    setUserInput('');
+    scrollToBottom();
   };
 
   return (
@@ -645,7 +882,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                         chatFeedbackStatus={chatFeedbackStatus()}
                         fontSize={props.fontSize}
                         isLoading={loading() && index() === messages().length - 1}
-                        showAgentMessages={props.showAgentMessages}
+                        showAgentMessages={false}
                         handleActionClick={(label, action) => handleActionClick(label, action)}
                       />
                     )}
@@ -667,6 +904,9 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                         setLeadEmail={setLeadEmail}
                       />
                     )}
+                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>
@@ -677,7 +917,12 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                                 pageContent={URL ? URL.pathname : src.pageContent}
                                 metadata={src.metadata}
                                 onSourceClick={() => {
-                                  window.open(src.metadata.source, '_blank');
+                                  if (URL) {
+                                    window.open(src.metadata.source, '_blank');
+                                  } else {
+                                    setSourcePopupSrc(src);
+                                    setSourcePopupOpen(true);
+                                  }
                                 }}
                               />
                             );
@@ -690,8 +935,80 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
               }}
             </For>
           </div>
+          <Show when={messages().length === 1}>
+            <Show when={starterPrompts().length > 0}>
+              <div class="w-full flex flex-row flex-wrap px-5 py-[10px] gap-2">
+                <For each={[...starterPrompts()]}>
+                  {(key) => (
+                    <StarterPromptBubble
+                      prompt={key}
+                      onPromptClick={() => promptClick(key)}
+                      starterPromptFontSize={botProps.starterPromptFontSize} // Pass it here as a number
+                    />
+                  )}
+                </For>
+              </div>
+            </Show>
+          </Show>
+          <Show when={previews().length > 0}>
+            <div class="w-full flex items-center justify-start gap-2 px-5 pt-2 border-t border-[#eeeeee]">
+              <For each={[...previews()]}>
+                {(item) => (
+                  <>
+                    {item.mime.startsWith('image/') ? (
+                      <button
+                        class="group w-12 h-12 flex items-center justify-center relative rounded-[10px] overflow-hidden transition-colors duration-200"
+                        onClick={() => handleDeletePreview(item)}
+                      >
+                        <img class="w-full h-full bg-cover" src={item.data as string} />
+                        <span class="absolute hidden group-hover:flex items-center justify-center z-10 w-full h-full top-0 left-0 bg-black/10 rounded-[10px] transition-colors duration-200">
+                          <TrashIcon />
+                        </span>
+                      </button>
+                    ) : (
+                      <div
+                        class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
+                        style={{
+                          width: `${
+                            chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'
+                          }px`,
+                        }}
+                      >
+                        <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
+                        <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
+                          <TrashIcon color="white" />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </For>
+            </div>
+          </Show>
           <div class="w-full px-5 pt-2 pb-1">
-            {
+            {startUploadingDocument() &&
+              documentsUploaded() &&
+              disableInput() &&
+              filesMapping().filter((item) => !!item.checklist).length > 1 &&
+              filesMapping().filter((item) => !!item.checklist).length > currentChecklistNumber()}
+            {(startUploadingDocument() && documentsUploaded()) || !startUploadingDocument() ? (
+              <TextInput
+                backgroundColor={props.textInput?.backgroundColor}
+                textColor={props.textInput?.textColor}
+                placeholder={props.textInput?.placeholder}
+                sendButtonColor={props.textInput?.sendButtonColor}
+                maxChars={200}
+                autoFocus={props.textInput?.autoFocus}
+                fontSize={props.fontSize}
+                disabled={getInputDisabled() || disableInput()}
+                defaultValue={userInput()}
+                onSubmit={handleSubmit}
+                uploadsConfig={uploadsConfig()}
+                setPreviews={setPreviews}
+                handleFileChange={handleFileChange}
+                sendSoundLocation={props.textInput?.sendSoundLocation}
+              />
+            ) : (
               <>
                 <UploadButton
                   onClick={() => setIsUploadModalOpen(true)}
@@ -708,7 +1025,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                   errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
                 />
               </>
-            }
+            )}
           </div>
           <Badge
             footer={props.footer}
@@ -718,6 +1035,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
           />
         </div>
       </div>
+      {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
     </>
   );
 };

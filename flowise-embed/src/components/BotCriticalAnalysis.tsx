@@ -24,7 +24,7 @@ import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
-import ApiRequester from '@/utils/ApiRequesterUtils';
+import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 export type FileEvent<T = EventTarget> = {
   target: T;
 };
@@ -680,20 +680,21 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
       }
 
       setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
-      if (criticalAnalysisMessage.includes('não encontrado')) {
+      if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setDisableInput(false);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { message: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos:', type: 'apiMessage' },
-        ]);
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
       } else {
-        const apiRequester = new ApiRequester();
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
+        setLoading(true);
 
-        apiRequester.makeRequests(jsonCriticalAnalysisUpdate, (message) => {
-          setMessages((prevMessages) => [...prevMessages, message]);
+        const parallelApiExecutor = new ParallelApiExecutor({
+          jsonCriticalAnalysisUpdate,
+          setMessages,
         });
 
-        setMessages((prevMessages) => [...prevMessages, { message: 'Dados enviados para análise crítica!', type: 'apiMessage' }]);
+        await parallelApiExecutor.execute();
+
+        setLoading(false);
       }
 
       if (!isChatFlowAvailableToStream()) {
@@ -714,7 +715,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
         );
       }
     } catch (error) {
-      console.error('Error processing critical analysis update:', error);
+      console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
       throw error;
     }
   };

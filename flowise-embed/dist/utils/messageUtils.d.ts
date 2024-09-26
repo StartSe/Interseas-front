@@ -13,5 +13,9 @@ export declare const messageUtils: {
     CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: string;
     EX_TARIFF_CHECK_ALERT_MESSAGE: string;
     IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: string;
+    CRITICAL_ANALYSIS_MISSING_DATA: string;
+    CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: string;
+    CRITICAL_ANALYSIS_PROCESSING_ERROR: string;
+    DATA_NOT_FOUND: string;
 };
 //# sourceMappingURL=messageUtils.d.ts.map

@@ -1,9 +1,6 @@
-import { MessageType } from '@/components/Bot';
+import { MessageType } from '@/components/BotCriticalAnalysis';
 export default class ParallelApiExecutor {
-  n8nUrls = [
-    'https://n8n.startse.com/webhook/a96d9f14-3835-4e08-b8a7-a77f3b754886',
-    'https://n8n.startse.com/webhook/0164614d-e044-4c3f-9ef9-9212407bf402',
-  ];
+  n8nUrls = ['https://n8n.startse.com/webhook/a96d9f14-3835-4e08-b8a7-a77f3b754886'];
 
   constructor(
     private dependencies: {

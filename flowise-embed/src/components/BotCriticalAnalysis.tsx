@@ -25,6 +25,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
+
 export type FileEvent<T = EventTarget> = {
   target: T;
 };

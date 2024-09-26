@@ -227,12 +227,12 @@ export const ChecklistProformaInvoice = `
 • Dados do Exportador (nome, endereço, NIF)
 • País de origem
 • Descrição resumida das mercadorias (Trazer todos os nomes de produtos diferentes na descrição)
-• Quantidade
+• Quantidade (trazer no formato quantidade x mercadoria)
 • Unidade comercializada
 • Valor unitário de cada espécie de mercadoria
 • Valor total de cada espécie de mercadoria
 • Moeda de pagamento
-• Condições de pagamento? true:false
+• Forma/Condições de Pagamento (true/false)
 • Dados bancários do exportador
 • INCOTERM
 • Local do INCOTERM

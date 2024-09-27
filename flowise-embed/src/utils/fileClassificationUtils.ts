@@ -1,3 +1,68 @@
+export const defaultChecklist = `
+• Número do documento
+• Nome do documento
+• Data da emissão
+• Assinatura
+• Dados do Remetente - Shipper (nome, endereço, CNPJ, CEP)
+• Dados do Exportador (nome, endereço, NIF)
+• Dados do Importador - Consignee (Razão social, endereço, CNPJ, CEP)
+• Dados do Adquirente - Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
+• Dados do Consignatário (se houver)
+• Dados do Destinatário (razão social, endereço, CNPJ e CEP)
+• País de origem
+• País de Procedência
+• País de Aquisição
+• Tipo de Frete - (Prepaid/Collect)
+• Moeda do Frete
+• Valor do frete (Total Prepaid; Total Collect; Total Freight)
+• Componentes do frete (Prepaid/Collect; moeda; valor)
+• Forma/Condições de Pagamento (true/false)
+• Frete por item de carga (somatório)
+• Valor do Seguro (se prepaid)
+• Quantidade de containers
+• Número dos containers (formato <3 letras>U<7 números>)
+• Número dos lacres dos containers (seal)
+• Peso Líquido (N.W)
+• Peso Líquido por volume (N.W per volume)
+• Peso Bruto (G.W)
+• Peso Taxado
+• Cubagem (m³)
+• Quantidade de Volumes (crate/box/pallets/etc)
+• Tipo de Volumes (crate/box/pallets/etc)
+• Dimensão estimada dos volumes (volume x altura x largura)
+• Nº de Série (se mercadoria é máquina ou equipamento)
+• Informação Wooden Packing (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
+• NCM (4 a 8 dígitos de cada NCM)
+• Valor unitário de cada espécie de mercadoria
+• Valor total de cada espécie de mercadoria
+• Quantidade (formato quantidade x mercadoria)
+• Unidade Comercializada
+• Descrição resumida das mercadorias (todos os nomes de produtos diferentes)
+• Referência à Ordem de Compra (OC) ou Fatura Comercial
+• Marca e Numeração (Referência dos volumes)
+• Porto de Embarque
+• Porto de Desembarque
+• Local de Recebimento
+• Local de Destino Final
+• Aeroporto de Partida
+• Aeroporto de Destino
+• Declaração valor das mercadorias
+• Declarações e observações - detalhamento do frete internacional e nacional
+• Valor da Capatazia (THC ou DTHC)
+• Descrição EX-tarifário (formato "EX-[número]")
+Conferências:
+• Máquina/Equipamento - (true/false)
+• Marca (se mercadoria é máquina ou equipamento)
+• Modelo (se mercadoria é máquina ou equipamento)
+• Possui Ex-tarifário - (true/false)
+• Multiplicação de valor unitário = quantidade comercializada de cada item
+• Somatório dos itens = valor total informado
+• Se importação direta: Notify = Importador
+• Se importação por Conta e Ordem: Notify = Adquirente ou Importador
+• Se INCOTERM de responsabilidade do exportador: Tipo de frete = "Prepaid"
+• Se INCOTERM de responsabilidade do importador: Tipo de frete = "Collect"
+`;
+
 export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento - (true/false)

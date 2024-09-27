@@ -1,4 +1,4 @@
-export const checklistGeral = `
+export const defaultChecklist = `
 • Número do documento
 • Nome do documento
 • Data da emissão

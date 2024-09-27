@@ -26,7 +26,7 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { checklistGeral, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
@@ -982,7 +982,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       } else {
         fileMap.type = 'Documento sem checklist';
-        fileMap.checklist = checklistGeral;
+        fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);
     });

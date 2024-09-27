@@ -3,9 +3,9 @@ import type { BubblePropsCriticalAnalysis } from './features/bubbleCriticalAnaly
 export declare const defaultBotProps: BubbleProps;
 export declare const defaultBotPropsAnalise: BubblePropsCriticalAnalysis;
 export declare const constants: {
-  apiUtilsUrl: string;
-  n8nDomain: string;
-  n8nFirstStep: string;
-  n8nSecondStep: string;
+    apiUtilsUrl: string;
+    n8nDomain: string;
+    n8nFirstStep: string;
+    n8nFourthStep: string;
 };
 //# sourceMappingURL=constants.d.ts.map

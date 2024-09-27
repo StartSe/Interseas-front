@@ -30,6 +30,7 @@ import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identi
 import { sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
+import { pdfToText } from '@/service/aiUtilsApi';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1007,17 +1008,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
-
+    let textContent = '';
     if (isImage(file.name)) {
       imagesList.push(file);
     } else {
       const pdfImages = await convertPdfToMultipleImages(file);
       imagesList = [...imagesList, ...pdfImages];
     }
-
     const imagesToUpload = await setImagesToBeUploaded(imagesList);
+    const textContentResponse = await pdfToText(file);
+    if (textContentResponse.ok) {
+      const textContentJsonResponse = await textContentResponse.json();
+      textContent = textContentJsonResponse.data;
+    }
+
     const urls = readImagesUrls(imagesToUpload);
-    return urls;
+    return { urls, textContent };
   };
 
   const processNextChecklist = async () => {
@@ -1033,12 +1039,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
-    const urls = await processFileToSend(file.file);
+    const { urls, textContent } = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}`;
+    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
     const result = await sendBackgroundMessage(checklistPrompt, urls);
     try {
       let jsonData = JSON.parse(result.text);

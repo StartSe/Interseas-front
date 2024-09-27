@@ -1,4 +1,4 @@
-import { constants } from "@/constants";
+import { constants } from '@/constants';
 
 const apiHost = constants.apiUtilsUrl;
 export const pdfToText = async (file: Blob): Promise<Response> => {

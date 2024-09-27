@@ -26,7 +26,7 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import { checklistGeral, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
@@ -980,32 +980,24 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (checklist) {
           fileMap.checklist = checklist.concat(conferencesDefault);
         }
+      } else {
+        fileMap.type = 'Documento sem checklist';
+        fileMap.checklist = checklistGeral;
       }
       filesMap.push(fileMap);
     });
 
     setFilesMapping(filesMap);
 
-    const anyFileWithoutChecklist = filesMap.some((file) => !file.checklist);
-    let message = '';
-
-    if (anyFileWithoutChecklist) {
-      message = messageUtils.ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE;
-    } else {
-      message = messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE;
-    }
-
     setMessages((prevMessages) => [
       ...prevMessages,
       {
-        message: message,
+        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
         type: 'apiMessage',
       },
     ]);
 
     // TODO: send alert message if needed
-
-    processFilesWithoutChecklist();
 
     await processNextChecklist();
 
@@ -1028,53 +1020,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     return urls;
   };
 
-  const processFilesWithoutChecklist = async () => {
-    for (const fileMap of filesMapping()) {
-      if (fileMap.checklist) {
-        continue;
-      }
-
-      console.info('Processing file without checklist:', fileMap.file.name);
-
-      const file = fileMap.file;
-      const urls = await processFileToSend(file.file);
-
-      const extractionPrompt = `EXTRACTION`;
-      const resultData = await sendBackgroundMessage(extractionPrompt, urls);
-
-      try {
-        let jsonData = JSON.parse(resultData.text);
-        jsonData = sanitizeJson(jsonData);
-
-        if (jsonData['Máquina/Equipamento'] === 'true' || jsonData['Possui Ex-tarifário'] === 'true') {
-          setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-        }
-
-        if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-          throw new Error(jsonData.error);
-        }
-
-        fileMap.content = jsonData;
-        console.info(`Extraction of file ${fileMap.file.name} complete`, jsonData);
-      } catch (error) {
-        console.info('Current data:', resultData);
-        console.error(error);
-      }
-    }
-  };
-
   const processNextChecklist = async () => {
     setLoading(true);
-    const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
+    const files = filesMapping();
 
-    if (filesWithChecklist.length === 0) {
+    if (files.length === 0) {
       await executeComplianceCheck(filesMapping());
       return;
     }
 
     setIsNextChecklistButtonDisabled(true);
 
-    const fileMap = filesWithChecklist[currentChecklistNumber()];
+    const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
@@ -1154,7 +1111,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     try {
       setLoading(true);
 
-      if (currentChecklistNumber() === filesWithChecklist.length) {
+      if (currentChecklistNumber() === files.length) {
         await executeComplianceCheck(filesMapping());
       }
     } catch {

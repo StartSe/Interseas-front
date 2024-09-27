@@ -16,3 +16,7 @@ export const defaultBotPropsAnalise: BubblePropsCriticalAnalysis = {
   theme: undefined,
   observersConfig: undefined,
 };
+
+export const constants = {
+  apiUtilsUrl: 'https://ca-ai-utils-api-prod-eastus2-001.bravepond-9830b784.eastus2.azurecontainerapps.io',
+};

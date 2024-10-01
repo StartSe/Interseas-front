@@ -5,7 +5,7 @@ export const defaultChecklist = `
 • Assinatura
 • Dados do Remetente - Shipper (nome, endereço, CNPJ, CEP)
 • Dados do Exportador (nome, endereço, NIF)
-• Dados do Importador - Consignee (Razão social, endereço, CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço, CNPJ, CEP)
 • Dados do Adquirente - Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Dados do Consignatário - (se houver)
 • Dados do Destinatário - (razão social, endereço, CNPJ e CEP)
@@ -71,7 +71,7 @@ Conferências:
 export const checklistCeMercante = `
 • Número do conhecimento de embarque
 • NCM
-• Dados do Importador - também chamado de Consignee (Razão social, endereço, CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
 • Dados do Adquirente - também chamado de Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Peso Bruto - (G.W)
 • Cubagem (m³)
@@ -87,7 +87,7 @@ export const checklistCeMercante = `
 
 export const checklistCertificadoOrigem = `
 • Dados do Exportador - (nome, endereço, NIF)
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Consignatário
 • Acordo
 • Fatura Comercial
@@ -102,7 +102,7 @@ export const checklistCommercialInvoice = `
 • Nome do documento
 • Data
 • Assinatura
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Adquirente - também chamado de Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
 • Dados do Fabricante - (nome, endereço, NIF)
@@ -144,7 +144,7 @@ Conferências:
 
 export const checklistConhecimentoBL = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Adquirente - também chamado de Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
@@ -180,7 +180,7 @@ Dados de compliance:
 
 export const checklistConhecimentoHawb = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee (razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (razão social, endereço e CNPJ, CEP)
 • Notify - (razão social, endereço, CNPJ e CEP)
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
@@ -213,7 +213,7 @@ Dados de Compliance:
 
 export const checklistConhecimentoMawb = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Adquirente - também chamado de Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Aeroporto de Partida
 • Aeroporto de Destino
@@ -234,7 +234,7 @@ Tipo de frete = "Collect"`;
 
 export const checklistCRT = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Destinatário - (razão social, endereço, CNPJ e CEP)
 • Notificar
 • Tipo de Frete - (Prepaid/Collect)
@@ -271,7 +271,7 @@ Conferências:
 
 export const checklistPackingList = `
 • Referência à Ordem de Compra (OC) ou Fatura Comercial
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Adquirente - também chamado de Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
@@ -287,7 +287,7 @@ export const ChecklistProformaInvoice = `
 • Nome do documento
 • Data do documento
 • Assinatura
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP) - Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP) - Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
 • Dados do Adquirente - também chamado de Notify ou Buyer (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
 • País de origem
@@ -326,12 +326,12 @@ const checklistCCTAereo = `
 • Totais na moeda de origem
 • Embarcador estrangeiro
 • País
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • MAWB/AWB associados`;
 
 const checklistMicDta = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Destinatário - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
 • Moeda da mercadoria
 • País de origem
@@ -417,16 +417,16 @@ export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',
   COMMERCIAL_INVOICE = 'COMMERCIAL INVOICE',
   PACKING_LIST = 'PACKING LIST',
-  CONHECIMENTO_BL = 'CONHECIMENTO - B/L',
+    CONHECIMENTO_BL = 'CONHECIMENTO - B/L',
   CONHECIMENTO_HAWB = 'HAWB',
-  CONHECIMENTO_MAWB = 'CONHECIMENTO - MAWB',
-  CONHECIMENTO_CRT = 'CONHECIMENTO - CRT',
-  CONHECIMENTO_MIC_DTA = 'CONHECIMENTO - MIC/DTA',
+    CONHECIMENTO_MAWB = 'CONHECIMENTO - MAWB',
+    CONHECIMENTO_CRT = 'CONHECIMENTO - CRT',
+    CONHECIMENTO_MIC_DTA = 'CONHECIMENTO - MIC/DTA',
   CE_MERCANTE = 'CE MERCANTE',
   CCT = 'CCT',
   INSTRUCAO_DE_EMBARQUE = 'INSTRUÇÃO DE EMBARQUE',
   DUIMP = 'DUIMP',
-  DUE = 'DU-E',
+    DUE = 'DU-E',
   DECLARACAO_DE_IMPORTACAO = 'DECLARAÇÃO DE IMPORTAÇÃO',
   RESUMO_DA_DECLARACAO_DE_IMPORTACAO = 'RESUMO DA DECLARAÇÃO DE IMPORTAÇÃO',
   LICENCA_DE_IMPORTACAO = 'LICENÇA DE IMPORTAÇÃO',
@@ -480,37 +480,37 @@ const documentNameAndTypeMapping = {
   LPCO: DocumentTypes.LPCO,
   'DOWNPAYMENT[_-\\s]INVOICE|DOWNPAYMENT': DocumentTypes.DOWNPAYMENT_INVOICE,
   PROPOSTA: DocumentTypes.PROPOSTA,
-  'ORDEM[_-\\s]DE[_-\\s]COMPRA[_-\\s]DO[_-\\s]IMPORTADOR|PURCHASE[_-\\s]ORDER[_-\\s]PO|PO': DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR,
-  'SALES[_-\\s]ORDER[_-\\s]DOCUMENT|SALES[_-\\s]ORDER[_-\\s]ACKNOWLEDGMENT': DocumentTypes.SALES_ORDER_DOCUMENT,
-  'CONFIRMATION[_-\\s]OF[_-\\s]ORDER': DocumentTypes.CONFIRMATION_OF_ORDER,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DIGITAL': DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM': DocumentTypes.CERTIFICADO_DE_ORIGEM,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
-  'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE': DocumentTypes.TEST_REPORT,
-  'LABELS|LABEL|CONTRA[_-\\s]ROTULO': DocumentTypes.LABELS,
-  'ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL':
+    'ORDEM[_-\\s]DE[_-\\s]COMPRA[_-\\s]DO[_-\\s]IMPORTADOR|PURCHASE[_-\\s]ORDER[_-\\s]PO|PO': DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR,
+    'SALES[_-\\s]ORDER[_-\\s]DOCUMENT|SALES[_-\\s]ORDER[_-\\s]ACKNOWLEDGMENT': DocumentTypes.SALES_ORDER_DOCUMENT,
+    'CONFIRMATION[_-\\s]OF[_-\\s]ORDER': DocumentTypes.CONFIRMATION_OF_ORDER,
+    'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DIGITAL': DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL,
+    'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM': DocumentTypes.CERTIFICADO_DE_ORIGEM,
+    'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
+    'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE': DocumentTypes.TEST_REPORT,
+    'LABELS|LABEL|CONTRA[_-\\s]ROTULO': DocumentTypes.LABELS,
+    'ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL':
     DocumentTypes.ANEXO_IX,
-  'ANEXO[_-\\s]XI|COMPROVACAO[_-\\s]OFICIAL[_-\\s]DE[_-\\s]TIPICIDADE[_-\\s]E[_-\\s]REGIONALIDADE[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]ALCOOLICAS[ ,-_]VINHOS[ ,-_]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]IMPORTACAO[_-\\s]PELO[_-\\s]BRASIL':
+    'ANEXO[_-\\s]XI|COMPROVACAO[_-\\s]OFICIAL[_-\\s]DE[_-\\s]TIPICIDADE[_-\\s]E[_-\\s]REGIONALIDADE[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]ALCOOLICAS[ ,-_]VINHOS[ ,-_]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]IMPORTACAO[_-\\s]PELO[_-\\s]BRASIL':
     DocumentTypes.ANEXO_XI,
-  'CERTIFICADO[_-\\s]DE[_-\\s]INSPEÇÃO[_-\\s]DE[_-\\s]IMPORTAÇÃO[_-\\s]DE[_-\\s]BEBIDAS[ ,-_]FERMENTADOS[ ,-_]ACÉTICOS[ ,-_]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO':
+    'CERTIFICADO[_-\\s]DE[_-\\s]INSPEÇÃO[_-\\s]DE[_-\\s]IMPORTAÇÃO[_-\\s]DE[_-\\s]BEBIDAS[ ,-_]FERMENTADOS[ ,-_]ACÉTICOS[ ,-_]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO':
     DocumentTypes.CERTIFICADO_DE_INSPECAO,
-  'CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE[_-\\s]ORGANICA|DECLARACION[_-\\s]ADICIONAL[_-\\s]SOBRE[_-\\s]MEMORANDUM[_-\\s]DE[_-\\s]ACUERDO[_-\\s]CHILE[_-\\s]BRASIL':
+    'CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE[_-\\s]ORGANICA|DECLARACION[_-\\s]ADICIONAL[_-\\s]SOBRE[_-\\s]MEMORANDUM[_-\\s]DE[_-\\s]ACUERDO[_-\\s]CHILE[_-\\s]BRASIL':
     DocumentTypes.CERTIFICADO_DE_CONFORMIDADE_ORGANICA,
-  'DECLARACAO[_-\\s]DE[_-\\s]TRANSACAO[_-\\s]COMERCIAL|CERTIFICADO[_-\\s]TRANSACCION[_-\\s]PARA[_-\\s]PRODUCTOS[_-\\s]IMPORTADOS':
+    'DECLARACAO[_-\\s]DE[_-\\s]TRANSACAO[_-\\s]COMERCIAL|CERTIFICADO[_-\\s]TRANSACCION[_-\\s]PARA[_-\\s]PRODUCTOS[_-\\s]IMPORTADOS':
     DocumentTypes.DECLARACAO_DE_TRANSACAO_COMERCIAL,
-  'ATESTADO[_-\\s]DE[_-\\s]INEXISTENCIA[_-\\s]DE[_-\\s]PRODUCAO[_-\\s]ESTADUAL': DocumentTypes.ATESTADO_DE_INEXISTENCIA_DE_PRODUCAO_ESTADUAL,
-  'CATALOGO[_-\\s]DE[_-\\s]EQUIPAMENTO': DocumentTypes.CATALOGO_DE_EQUIPAMENTO,
-  'CERTIFICADO[_-\\s]DE[_-\\s]COMPLIANCE|CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE': DocumentTypes.CERTIFICADO_DE_COMPLIANCE,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ESTERILIZACAO': DocumentTypes.CERTIFICADO_DE_ESTERILIZACAO,
-  'DECLARACAO[_-\\s]DO[_-\\s]DETENTOR[_-\\s]DA[_-\\s]REGULARIZACAO[_-\\s]DO[_-\\s]PRODUTO[_-\\s]AUTORIZANDO[_-\\s]A[_-\\s]IMPORTACAO[_-\\s]POR[_-\\s]TERCEIRO':
+    'ATESTADO[_-\\s]DE[_-\\s]INEXISTENCIA[_-\\s]DE[_-\\s]PRODUCAO[_-\\s]ESTADUAL': DocumentTypes.ATESTADO_DE_INEXISTENCIA_DE_PRODUCAO_ESTADUAL,
+    'CATALOGO[_-\\s]DE[_-\\s]EQUIPAMENTO': DocumentTypes.CATALOGO_DE_EQUIPAMENTO,
+    'CERTIFICADO[_-\\s]DE[_-\\s]COMPLIANCE|CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE': DocumentTypes.CERTIFICADO_DE_COMPLIANCE,
+    'CERTIFICADO[_-\\s]DE[_-\\s]ESTERILIZACAO': DocumentTypes.CERTIFICADO_DE_ESTERILIZACAO,
+    'DECLARACAO[_-\\s]DO[_-\\s]DETENTOR[_-\\s]DA[_-\\s]REGULARIZACAO[_-\\s]DO[_-\\s]PRODUTO[_-\\s]AUTORIZANDO[_-\\s]A[_-\\s]IMPORTACAO[_-\\s]POR[_-\\s]TERCEIRO':
     DocumentTypes.DECLARACAO_DO_DETENTOR_DA_REGULARIZACAO,
-  'MSDS|MATERIAL[_-\\s]SAFETY[_-\\s]DATA[_-\\s]SHEET|SAFETY[_-\\s]DATA[_-\\s]SHEET': DocumentTypes.MSDS,
-  'FICHA[_-\\s]DE[_-\\s]EMERGENCIA': DocumentTypes.FICHA_DE_EMERGENCIA,
-  'FISPQ|FICHA[_-\\s]DE[_-\\s]INFORMACOES[_-\\s]DE[_-\\s]SEGURANCA[_-\\s]DE[_-\\s]PRODUTOS[_-\\s]QUIMICOS': DocumentTypes.FISPQ,
-  'SHIPPERS[_-\\s]DECLARATION[_-\\s]FOR[_-\\s]DANGEROUS[_-\\s]GOODS': DocumentTypes.SHIPPERS_DECLARATION,
-  'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
-  'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
-  'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
+    'MSDS|MATERIAL[_-\\s]SAFETY[_-\\s]DATA[_-\\s]SHEET|SAFETY[_-\\s]DATA[_-\\s]SHEET': DocumentTypes.MSDS,
+    'FICHA[_-\\s]DE[_-\\s]EMERGENCIA': DocumentTypes.FICHA_DE_EMERGENCIA,
+    'FISPQ|FICHA[_-\\s]DE[_-\\s]INFORMACOES[_-\\s]DE[_-\\s]SEGURANCA[_-\\s]DE[_-\\s]PRODUTOS[_-\\s]QUIMICOS': DocumentTypes.FISPQ,
+    'SHIPPERS[_-\\s]DECLARATION[_-\\s]FOR[_-\\s]DANGEROUS[_-\\s]GOODS': DocumentTypes.SHIPPERS_DECLARATION,
+    'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
+    'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
+    'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
 };
 
 export const checklistTypeMapping = {

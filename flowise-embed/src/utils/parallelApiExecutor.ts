@@ -5,6 +5,7 @@ export default class ParallelApiExecutor {
     constants.n8nDomain + '/webhook/' + constants.n8nFirstStep,
     constants.n8nDomain + '/webhook/' + constants.n8nFourthStep,
     constants.n8nDomain + '/webhook/' + constants.n8nSeventhStep,
+    constants.n8nDomain + '/webhook/' + constants.n8nSixthStep,
   ];
 
   constructor(

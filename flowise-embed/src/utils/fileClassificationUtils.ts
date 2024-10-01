@@ -1,4 +1,4 @@
-// PATTERN: 
+// PATTERN:
 // LABEL - VARIANTS (FORMAT)
 
 export const defaultChecklist = `
@@ -17,7 +17,7 @@ export const defaultChecklist = `
 • País de Aquisição
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Componentes do frete - (Prepaid/Collect; moeda; valor)
 • Forma/Condições de Pagamento - (true/false)
 • Frete por item de carga - (somatório)
@@ -83,7 +83,7 @@ export const checklistCeMercante = `
 • Porto de descarregamento
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Componentes do frete - (Prepaid/Collect; moeda; valor)
 • Quantidade de containers 
 • Número dos containers - (no formato <3 letras>U<7 números>)`;
@@ -130,7 +130,7 @@ export const checklistCommercialInvoice = `
 • Local do INCOTERM
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Valor do Seguro - (se prepaid)
 • Peso Líquido - (N.W)
 • Peso Bruto - (G.W)
@@ -151,7 +151,7 @@ export const checklistConhecimentoBL = `
 • Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Número dos containers - (no formato <3 letras>U<7 números>)
 • Número dos lacres dos containers - (seal)
 • Local de Recebimento
@@ -187,7 +187,7 @@ export const checklistConhecimentoHawb = `
 • Notify - (razão social, endereço, CNPJ e CEP)
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Aeroporto de Partida
 • Aeroporto de Destino
 • Peso Bruto - (G.W)
@@ -211,7 +211,7 @@ Dados de Compliance:
 • País do Shipper
 • CNPJ do Consignee - (Consignatário/Identificação)
 • MAWB/AWB associados
-• Valor total do frete que consta no HAWB - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor total do frete que consta no HAWB - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
 `;
 
 export const checklistConhecimentoMawb = `
@@ -227,7 +227,7 @@ export const checklistConhecimentoMawb = `
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 • Se INCOTERM de responsabilidade do exportador:
@@ -242,7 +242,7 @@ export const checklistCRT = `
 • Notificar
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Declarações e observações - detalhamento do frete internacional e nacional
 • Declaração valor das mercadorias
 • Local de embarque
@@ -341,7 +341,7 @@ const checklistMicDta = `
 • Valor da mercadoria
 • Tipo de Frete - (Prepaid/Collect)
 • Moeda do Frete
-• Valor do frete - (Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
+• Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Valor do seguro
 • Número do CRT
 • Local de embarque

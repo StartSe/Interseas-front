@@ -51,7 +51,7 @@ export const defaultChecklist = `
 • Aeroporto de Destino
 • Declaração valor das mercadorias
 • Declarações e observações - detalhamento do frete internacional e nacional
-• Valor da Capatazia - (THC ou DTHC)
+• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Descrição EX-tarifário - (formato "EX-[número]")
 Conferências:
 • Máquina/Equipamento - (true/false)
@@ -86,6 +86,7 @@ export const checklistCeMercante = `
 • Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Componentes do frete - (Prepaid/Collect; moeda; valor)
 • Quantidade de containers 
+• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Número dos containers - (no formato <3 letras>U<7 números>)`;
 
 export const checklistCertificadoOrigem = `
@@ -165,7 +166,7 @@ export const checklistConhecimentoBL = `
 • Informação Wooden Packing - (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM - (primeiros 4 dígitos)
-• Valor da Capatazia - (THC ou DTHC)
+• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Descrição EX-tarifário - (no formato "EX-[número]")
 Se mercadoria é máquina ou equipamento
 • Nº de Série

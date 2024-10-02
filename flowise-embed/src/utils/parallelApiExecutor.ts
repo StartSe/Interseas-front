@@ -4,6 +4,7 @@ export default class ParallelApiExecutor {
   n8nUrls = [
     constants.n8nDomain + '/webhook/' + constants.n8nFirstStep,
     constants.n8nDomain + '/webhook/' + constants.n8nSecondStep,
+    constants.n8nDomain + '/webhook/' + constants.n8nThirdStep,
     constants.n8nDomain + '/webhook/' + constants.n8nFourthStep,
     constants.n8nDomain + '/webhook/' + constants.n8nSixthStep,
     constants.n8nDomain + '/webhook/' + constants.n8nSeventhStep,

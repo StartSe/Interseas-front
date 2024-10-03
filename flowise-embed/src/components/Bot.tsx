@@ -897,7 +897,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return {
         data: item.data,
         type: item.type,
-        name: item.name.split('.')[0] + (index) + '.' + item.name.split('.')[1],
+        name: item.name.split('.')[0] + index + '.' + item.name.split('.')[1],
         mime: item.mime,
       };
     });

@@ -555,11 +555,11 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
   const readImagesUrls = (imagesToUpload: any[]) => {
     // Logic from handleSubmit function
-    const urls = imagesToUpload.map((item) => {
+    const urls = imagesToUpload.map((item, index) => {
       return {
         data: item.data,
         type: item.type,
-        name: item.name,
+        name: item.name.split('.')[0] + index + '.' + item.name.split('.')[1],
         mime: item.mime,
       };
     });

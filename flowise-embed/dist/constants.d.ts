@@ -7,6 +7,7 @@ export declare const constants: {
     n8nDomain: string;
     n8nFirstStep: string;
     n8nSecondStep: string;
+    n8nThirdStep: string;
     n8nFourthStep: string;
     n8nSixthStep: string;
     n8nSeventhStep: string;

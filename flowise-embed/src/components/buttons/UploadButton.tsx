@@ -13,7 +13,7 @@ type UploadButtonProps = {
 
 export const UploadButton = (props: UploadButtonProps) => {
   const DefaultButtonValues = {
-    backgroundColor: '#002F6C',
+    backgroundColor: '#136FEE',
     border: 'none',
     color: '#ffffff',
     text: '',

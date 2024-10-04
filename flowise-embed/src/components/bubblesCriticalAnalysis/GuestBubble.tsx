@@ -15,7 +15,7 @@ type Props = {
   fontSize?: number;
 };
 
-const defaultBackgroundColor = '#3B81F6';
+const defaultBackgroundColor = '#136FEE';
 const defaultTextColor = '#ffffff';
 const defaultFontSize = 16;
 
@@ -36,7 +36,7 @@ export const GuestBubble = (props: Props) => {
         class="max-w-full flex flex-col justify-center items-start chatbot-guest-bubble px-4 py-2 gap-2 mr-2"
         data-testid="guest-bubble"
         style={{
-          'background-color': props.backgroundColor ?? defaultBackgroundColor,
+          'background-color': defaultBackgroundColor,
           color: props.textColor ?? defaultTextColor,
           'border-radius': '6px',
         }}

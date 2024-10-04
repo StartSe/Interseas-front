@@ -26,10 +26,11 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import { sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
+import { pdfToText } from '@/service/aiUtilsApi';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -892,11 +893,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const readImagesUrls = (imagesToUpload: any[]) => {
     // Logic from handleSubmit function
-    const urls = imagesToUpload.map((item) => {
+    const urls = imagesToUpload.map((item, index) => {
       return {
         data: item.data,
         type: item.type,
-        name: item.name,
+        name: item.name.split('.')[0] + index + '.' + item.name.split('.')[1],
         mime: item.mime,
       };
     });
@@ -980,32 +981,24 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (checklist) {
           fileMap.checklist = checklist.concat(conferencesDefault);
         }
+      } else {
+        fileMap.type = 'Documento sem checklist';
+        fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);
     });
 
     setFilesMapping(filesMap);
 
-    const anyFileWithoutChecklist = filesMap.some((file) => !file.checklist);
-    let message = '';
-
-    if (anyFileWithoutChecklist) {
-      message = messageUtils.ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE;
-    } else {
-      message = messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE;
-    }
-
     setMessages((prevMessages) => [
       ...prevMessages,
       {
-        message: message,
+        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
         type: 'apiMessage',
       },
     ]);
 
     // TODO: send alert message if needed
-
-    processFilesWithoutChecklist();
 
     await processNextChecklist();
 
@@ -1015,73 +1008,43 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
-
+    let textContent = '';
     if (isImage(file.name)) {
       imagesList.push(file);
     } else {
       const pdfImages = await convertPdfToMultipleImages(file);
       imagesList = [...imagesList, ...pdfImages];
     }
-
     const imagesToUpload = await setImagesToBeUploaded(imagesList);
-    const urls = readImagesUrls(imagesToUpload);
-    return urls;
-  };
-
-  const processFilesWithoutChecklist = async () => {
-    for (const fileMap of filesMapping()) {
-      if (fileMap.checklist) {
-        continue;
-      }
-
-      console.info('Processing file without checklist:', fileMap.file.name);
-
-      const file = fileMap.file;
-      const urls = await processFileToSend(file.file);
-
-      const extractionPrompt = `EXTRACTION`;
-      const resultData = await sendBackgroundMessage(extractionPrompt, urls);
-
-      try {
-        let jsonData = JSON.parse(resultData.text);
-        jsonData = sanitizeJson(jsonData);
-
-        if (jsonData['Máquina/Equipamento'] === 'true' || jsonData['Possui Ex-tarifário'] === 'true') {
-          setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-        }
-
-        if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-          throw new Error(jsonData.error);
-        }
-
-        fileMap.content = jsonData;
-        console.info(`Extraction of file ${fileMap.file.name} complete`, jsonData);
-      } catch (error) {
-        console.info('Current data:', resultData);
-        console.error(error);
-      }
+    const textContentResponse = await pdfToText(file);
+    if (textContentResponse.ok) {
+      const textContentJsonResponse = await textContentResponse.json();
+      textContent = textContentJsonResponse.data;
     }
+
+    const urls = readImagesUrls(imagesToUpload);
+    return { urls, textContent };
   };
 
   const processNextChecklist = async () => {
     setLoading(true);
-    const filesWithChecklist = filesMapping().filter((item) => !!item.checklist);
+    const files = filesMapping();
 
-    if (filesWithChecklist.length === 0) {
+    if (files.length === 0) {
       await executeComplianceCheck(filesMapping());
       return;
     }
 
     setIsNextChecklistButtonDisabled(true);
 
-    const fileMap = filesWithChecklist[currentChecklistNumber()];
+    const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
-    const urls = await processFileToSend(file.file);
+    const { urls, textContent } = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}`;
+    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
     const result = await sendBackgroundMessage(checklistPrompt, urls);
     try {
       let jsonData = JSON.parse(result.text);
@@ -1101,7 +1064,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const generateChecklistItemToPrint = (key: string, value: string) => {
         const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
         const hasValue = value !== null;
-        let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+        const checkboxStyle = hasValue ? 'color: white; background-color: background: #136FEE; ' : '';
+
+        let checklistItem = `<input type="checkbox" ${
+          hasValue ? 'checked' : ''
+        } readonly onclick="return false;" style="${checkboxStyle}"> <b>${key}</b>:<br>`;
         checklistItem += hasValue ? spacedText(value) : spacedText(`N/A`);
 
         return checklistItem;
@@ -1154,7 +1121,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     try {
       setLoading(true);
 
-      if (currentChecklistNumber() === filesWithChecklist.length) {
+      if (currentChecklistNumber() === files.length) {
         await executeComplianceCheck(filesMapping());
       }
     } catch {

@@ -16,8 +16,8 @@ type UploadButtonProps = {
 export const NextChecklistButton = (props: UploadButtonProps) => {
   const DefaultButtonValues = {
     backgroundColor: '#ffffff',
-    border: '2px solid #002F6C',
-    color: '#002F6C',
+    border: '2px solid #136FEE',
+    color: '#136FEE',
     text: '',
   };
   return (

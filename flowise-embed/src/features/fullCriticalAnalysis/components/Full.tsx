@@ -3,7 +3,7 @@ import { Bot, BotPropsCriticalAnalysis } from '@/components/BotCriticalAnalysis'
 import { BubbleParams } from '@/features/bubbleCriticalAnalysis/types';
 import { createSignal, onCleanup, onMount, Show } from 'solid-js';
 
-const defaultButtonColor = '#002F6C';
+const defaultColor = '#136FEE';
 const defaultIconColor = 'white';
 
 export type FullProps = BotPropsCriticalAnalysis & BubbleParams;
@@ -58,7 +58,7 @@ export const FullCriticalAnalysis = (props: FullProps, { element }: { element: H
         >
           <Bot
             badgeBackgroundColor={props.theme?.chatWindow?.backgroundColor}
-            bubbleBackgroundColor={props.theme?.button?.backgroundColor ?? defaultButtonColor}
+            bubbleBackgroundColor={defaultColor}
             bubbleTextColor={props.theme?.button?.iconColor ?? defaultIconColor}
             showTitle={props.theme?.chatWindow?.showTitle}
             showAgentMessages={props.theme?.chatWindow?.showAgentMessages}

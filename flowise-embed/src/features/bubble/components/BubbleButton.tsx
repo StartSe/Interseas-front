@@ -12,7 +12,7 @@ type Props = ButtonTheme & {
   autoOpenOnMobile?: boolean; // Optional parameter for opening on mobile
 };
 
-const defaultButtonColor = '#3B81F6';
+const defaultButtonColor = '#136FEE';
 const defaultIconColor = 'white';
 const defaultBottom = 20;
 const defaultRight = 20;
@@ -91,7 +91,7 @@ export const BubbleButton = (props: Props) => {
         onMouseDown={onMouseDown}
         class={`fixed shadow-md rounded-full hover:scale-110 active:scale-95 transition-transform duration-200 flex justify-center items-center animate-fade-in`}
         style={{
-          'background-color': props.backgroundColor ?? defaultButtonColor,
+          'background-color': defaultButtonColor,
           'z-index': 42424242,
           right: `${position().right}px`,
           bottom: `${position().bottom}px`,

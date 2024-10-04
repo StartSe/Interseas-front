@@ -1064,7 +1064,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const generateChecklistItemToPrint = (key: string, value: string) => {
         const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
         const hasValue = value !== null;
-        let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} 
+        const check = value !== 'Não consta' && value !== null;
+        let checklistItem = `<input type="checkbox" ${check ? 'checked' : ''} 
           disabled> <b>${key}</b>:<br>`;
         checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: #c53030;">Não identificado</span>`);
         return checklistItem;

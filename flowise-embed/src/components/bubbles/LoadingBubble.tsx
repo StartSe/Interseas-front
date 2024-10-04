@@ -6,13 +6,13 @@ export const LoadingBubble = () => (
     <Avatar />
     <div
       style={{
-        'margin-left': '8px',
-        padding: '16px',
+        'margin-left': '0.5rem',
+        padding: '1rem',
         display: 'flex',
         'flex-direction': 'column',
         background: '#F7F8FF',
         'text-align': 'center',
-        'border-radius': '6px',
+        'border-radius': '0.375rem',
       }}
       class="flex justify-start mb-2 items-center animate-fade-in host-container"
     >

@@ -6,7 +6,7 @@ import { Bot, BotPropsCriticalAnalysis } from '../../../components/BotCriticalAn
 import Tooltip from './Tooltip';
 import { getBubbleButtonSize } from '@/utils';
 
-const defaultColor = '#136FEE';
+const defaultButtonColor = '#3B81F6';
 const defaultIconColor = 'white';
 
 export type BubblePropsCriticalAnalysis = BotPropsCriticalAnalysis & BubbleParams;
@@ -121,7 +121,7 @@ export const BubbleAnalise = (props: BubblePropsCriticalAnalysis) => {
             </Show>
             <Bot
               badgeBackgroundColor={bubbleProps.theme?.chatWindow?.backgroundColor}
-              bubbleBackgroundColor={defaultColor}
+              bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
               bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}
               showTitle={bubbleProps.theme?.chatWindow?.showTitle}
               showAgentMessages={bubbleProps.theme?.chatWindow?.showAgentMessages}

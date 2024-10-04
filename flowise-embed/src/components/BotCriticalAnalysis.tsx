@@ -1002,7 +1002,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                 textColor={props.textInput?.textColor}
                 placeholder={props.textInput?.placeholder}
                 sendButtonColor={props.textInput?.sendButtonColor}
-                maxChars={200}
+                maxChars={props.textInput?.maxChars}
                 autoFocus={props.textInput?.autoFocus}
                 fontSize={props.fontSize}
                 disabled={getInputDisabled() || disableInput()}

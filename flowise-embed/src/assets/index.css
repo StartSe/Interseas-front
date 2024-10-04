@@ -11,13 +11,13 @@
   --chatbot-container-font-family: "Inter";
   --chatbot-container-font-family-secondary: "IBM Plex Sans";
 
-  --chatbot-button-bg-color: #0042da;
+  --chatbot-button-bg-color: #136FEE;
   --chatbot-button-color: #ffffff;
 
   --chatbot-host-bubble-bg-color: #f7f8ff;
   --chatbot-host-bubble-color: #303235;
 
-  --chatbot-guest-bubble-bg-color: #3B81F6;
+  --chatbot-guest-bubble-bg-color: #136FEE;
   --chatbot-guest-bubble-color: #ffffff;
 
   --chatbot-input-bg-color: #ffffff;
@@ -36,7 +36,7 @@
   /* Phone input */
   --PhoneInputCountryFlag-borderColor: transparent;
   --PhoneInput-color--focus: transparent;
-  --primary-color: #002F6C;
+  --primary-color: #136FEE;
   --secondary-color: #0042da;
   --terciary-color: #3B81F6;
   --background-color: #f7f8ff;

@@ -740,7 +740,11 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   const generateItemToPrint = (key: string, value: string) => {
     const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
     const hasValue = value !== 'null' && value !== null;
-    let criticalAnalysisItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+    const checkboxStyle = hasValue ? 'color: white; background-color: background: #136FEE; ' : '';
+
+    let criticalAnalysisItem = `<input type="checkbox" ${
+      hasValue ? 'checked' : ''
+    } readonly onclick="return false;" style="${checkboxStyle}"> <b>${key}</b>:<br>`;
     criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
     return criticalAnalysisItem;
   };

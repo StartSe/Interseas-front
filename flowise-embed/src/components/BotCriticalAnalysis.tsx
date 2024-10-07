@@ -144,6 +144,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   const [userInput, setUserInput] = createSignal('');
   const [jsonResponseCriticalAnalysis, setJsonResponseCriticalAnalysis] = createSignal({});
   const [loading, setLoading] = createSignal(false);
+  const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -673,6 +674,8 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
   const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
     try {
+      console.log('jsonCriticalAnalysisUpdate:', jsonCriticalAnalysisUpdate);
+
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
 
       for (const key in jsonDataCriticalAnalysis) {
@@ -810,16 +813,46 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   };
 
   const processFileCriticalAnalysis = async () => {
+    setUploading(true);
     setLoading(true);
     const files = filesMapping().filter((item) => !!item);
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
-
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
-
-    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
-    const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    // const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
+    // const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
+    const dataFoundCriticalAnalysis = {
+      text: '{"NCM":null,"INCOTERM":null,"Local_INCOTERM":null,"Peso_bruto_estimado":null,"M3_estimada_quantidade_volumes_dimensoes":"30.00 CBM","País_origem_fabricação":"África do Sul","País_embarque":"Brasil","Estado_Importador":"SC"}',
+      question: 'VERIFICAR DADOS ANALISE CRITICA',
+      chatId: '7fbad502-89f3-4c27-aeee-3c632a9a3546',
+      chatMessageId: '77ff99ad-4d42-4d13-bb49-07757b67b253',
+      sessionId: '7fbad502-89f3-4c27-aeee-3c632a9a3546',
+      agentReasoning: [
+        {
+          agentName: 'step-identification',
+          messages: ['critical-analysis'],
+          nodeName: 'seqCondition',
+          nodeId: 'seqCondition_0',
+        },
+        {
+          agentName: 'critical-analysis',
+          messages: [
+            '{"NCM":null,"INCOTERM":null,"Local_INCOTERM":null,"Peso_bruto_estimado":null,"M3_estimada_quantidade_volumes_dimensoes":"30.00 CBM","País_origem_fabricação":"África do Sul","País_embarque":"Brasil","Estado_Importador":"SC"}',
+          ],
+          usedTools: [null],
+          sourceDocuments: [null],
+          artifacts: [null],
+          state: {},
+          nodeName: 'seqAgent',
+          nodeId: 'seqAgent_4',
+        },
+      ],
+    };
+    console.log('dataFoundCriticalAnalysis', dataFoundCriticalAnalysis);
 
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
 
@@ -925,8 +958,18 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                         setLeadEmail={setLeadEmail}
                       />
                     )}
-                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'userMessage' && loading() && uploading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="upload" />
+                    )}
+                    {message.type === 'apiMessage' && loading() && uploading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="upload" />
+                    )}
+                    {message.type === 'userMessage' && loading() && uploading() === false && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="typing" />
+                    )}
+                    {message.type === 'apiMessage' && loading() && uploading() === false && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="typing" />
+                    )}
 
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>

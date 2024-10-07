@@ -151,6 +151,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const [userInput, setUserInput] = createSignal('');
   const [loading, setLoading] = createSignal(false);
+  const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -368,6 +369,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     setLoading(true);
+    setUploading(false);
     scrollToBottom();
 
     const urls = previews().map((item) => {
@@ -381,6 +383,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     clearPreviews();
 
+    setUploading(false);
     setMessages((prevMessages) => {
       const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: urls }];
       addChatMessage(messages);
@@ -1028,7 +1031,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const processNextChecklist = async () => {
+    setUploading(true);
     setLoading(true);
+    console.log('1');
+
     const files = filesMapping();
 
     if (files.length === 0) {
@@ -1043,6 +1049,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const { urls, textContent } = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
+    console.log('2');
+    setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     const extractChecklist = async () => {
@@ -1283,8 +1291,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         setLeadEmail={setLeadEmail}
                       />
                     )}
-                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'userMessage' && loading() && uploading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="upload" />
+                    )}
+                    {message.type === 'apiMessage' && loading() && uploading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="upload" />
+                    )}
+                    {message.type === 'userMessage' && loading() && uploading() === false && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="typing" />
+                    )}
+                    {message.type === 'apiMessage' && loading() && uploading() === false && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading="typing" />
+                    )}
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

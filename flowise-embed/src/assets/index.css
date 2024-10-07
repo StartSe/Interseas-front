@@ -15,7 +15,7 @@
   --chatbot-button-color: #ffffff;
 
   --chatbot-host-bubble-bg-color: #f7f8ff;
-  --chatbot-host-bubble-color: #303235;
+  --chatbot-host-bubble-color: #136FEE;
 
   --chatbot-guest-bubble-bg-color: #136FEE;
   --chatbot-guest-bubble-color: #ffffff;
@@ -39,7 +39,7 @@
   --primary-color: #136FEE;
   --secondary-color: #0042da;
   --terciary-color: #3B81F6;
-  --background-color: #f7f8ff;
+  --background-color: #ECECEC;
   --text-color: #303235;
   --placeholder-color: #9095a0;
   --accent-color: #16bed7;
@@ -97,7 +97,7 @@ pre {
 .bubble2,
 .bubble3 {
   background-color: var(--chatbot-host-bubble-color);
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
 .bubble1 {
@@ -184,7 +184,8 @@ textarea {
 
 .chatbot-host-bubble {
   color: var(--chatbot-host-bubble-color);
-  background-color: var(--background-color)
+  background-color: var(--background-color);
+  border-radius: 6px;
 }
 
 .chatbot-host-bubble > .bubble-typing {

@@ -27,7 +27,7 @@ import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
-import { booleanData, sanitizeJson } from '@/utils/jsonUtils';
+import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 import { pdfToText } from '@/service/aiUtilsApi';
@@ -1065,8 +1065,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const generateChecklistItemToPrint = (key: string, value: string) => {
         const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
         const hasValue = value !== null;
-        const hasCheck = ![booleanData.BOOLEAN_DATA_NOT_FOUND.toString(), null].includes(value);
-        let checklistItem = `<input type="checkbox" ${hasCheck ? 'checked' : ''} 
+        const shouldBeChecked = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+        let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''} 
           disabled> <b>${key}</b>:<br>`;
         checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
         return checklistItem;

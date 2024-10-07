@@ -986,7 +986,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           fileMap.checklist = checklist.concat(conferencesDefault);
         }
       } else {
-        fileMap.type = 'Documento sem checklist';
+        fileMap.type = messageUtils.DOCUMENT_WITHOUT_CHECKLIST_MESSAGE;
         fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);

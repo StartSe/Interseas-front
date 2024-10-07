@@ -6,6 +6,7 @@ export const messageUtils = {
   UPLOADING_LABEL: 'Fazendo upload do documento',
   NEXT_CHECKLIST_BUTTON_LABEL: 'Próximo checklist',
   NEW_CHAT_BUTTON_LABEL: 'Novo documento',
+  DOCUMENT_WITHOUT_CHECKLIST_MESSAGE: 'Documento sem checklist',
 
   ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE:
     'Um ou mais arquivos não puderam ter seu checklist identificado, mas os demais serão processados normalmente.',

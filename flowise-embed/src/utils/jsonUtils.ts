@@ -1,3 +1,8 @@
+export enum booleanData {
+  BOOLEAN_DATA_NOT_FOUND = 'Não consta',
+  BOOLEAN_DATA_FOUND = 'Consta',
+}
+
 export function sanitizeJson<T>(json: T): T {
   const sanitizedJson = { ...json };
 
@@ -7,9 +12,9 @@ export function sanitizeJson<T>(json: T): T {
     if (isObject(keyValue)) {
       sanitizedJson[key] = sanitizeJson(keyValue);
     } else if (keyValue === 'true' || keyValue === true) {
-      (sanitizedJson[key] as any) = 'Consta';
+      (sanitizedJson[key] as any) = booleanData.BOOLEAN_DATA_FOUND;
     } else if (keyValue === 'false' || keyValue === false) {
-      (sanitizedJson[key] as any) = 'Não consta';
+      (sanitizedJson[key] as any) = booleanData.BOOLEAN_DATA_NOT_FOUND;
     } else if (shouldReplaceWithNull(keyValue)) {
       (sanitizedJson[key] as any) = null;
     }

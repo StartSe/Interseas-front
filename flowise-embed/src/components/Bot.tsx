@@ -1045,76 +1045,90 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
-    const result = await sendBackgroundMessage(checklistPrompt, urls);
-    try {
-      let jsonData = JSON.parse(result.text);
-      jsonData = sanitizeJson(jsonData);
+    const extractChecklist = async () => {
+      let attempt = 0;
+      let result;
 
-      if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-        throw new Error(jsonData.error);
-      }
+      while (attempt < 3) {
+        try {
+          attempt++;
 
-      fileMap.content = jsonData;
-      fileMap.filledChecklist = jsonData;
+          const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
+          result = await sendBackgroundMessage(checklistPrompt, urls);
 
-      if (!Object.keys(jsonData).includes('checklist')) {
-        throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
-      }
+          let jsonData = JSON.parse(result.text);
+          jsonData = sanitizeJson(jsonData);
 
-      const generateChecklistItemToPrint = (key: string, value: string) => {
-        const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-        const hasValue = value !== null;
-        const shouldBeChecked = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
-        let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''} 
-          disabled> <b>${key}</b>:<br>`;
-        checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
-        return checklistItem;
-      };
+          if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
+            throw new Error(jsonData.error);
+          }
 
-      let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+          fileMap.content = jsonData;
+          fileMap.filledChecklist = jsonData;
 
-      for (const [key, value] of Object.entries(jsonData.checklist)) {
-        checklistMessage += generateChecklistItemToPrint(key, value as string);
-      }
+          if (!Object.keys(jsonData).includes('checklist')) {
+            throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
+          }
 
-      if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
-        checklistMessage += `<br><b>Conferências:</b><br>`;
-        for (const [key, value] of Object.entries(jsonData['conferências'])) {
-          checklistMessage += generateChecklistItemToPrint(key, value as string);
+          const generateChecklistItemToPrint = (key: string, value: string) => {
+            const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+            const hasValue = value !== null;
+            const shouldBeChecked = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+            let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
+            return checklistItem;
+          };
+
+          let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+
+          for (const [key, value] of Object.entries(jsonData.checklist)) {
+            checklistMessage += generateChecklistItemToPrint(key, value as string);
+          }
+
+          if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
+            checklistMessage += `<br><b>Conferências:</b><br>`;
+            for (const [key, value] of Object.entries(jsonData['conferências'])) {
+              checklistMessage += generateChecklistItemToPrint(key, value as string);
+            }
+          }
+
+          setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+
+          const conferences = jsonData['conferências'];
+
+          if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+            setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
+          }
+
+          if (!isChatFlowAvailableToStream()) {
+            updateLastMessage(
+              checklistMessage,
+              result?.sourceDocuments,
+              result?.fileAnnotations,
+              result?.agentReasoning,
+              result?.action,
+              checklistMessage,
+            );
+          } else {
+            updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
+          }
+
+          break;
+        } catch (error) {
+          if (attempt >= 3) {
+            const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+            setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        } finally {
+          setIsNextChecklistButtonDisabled(false);
+          setLoading(false);
         }
       }
+    };
 
-      setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-
-      const conferences = jsonData['conferências'];
-
-      if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-      }
-
-      if (!isChatFlowAvailableToStream()) {
-        updateLastMessage(
-          checklistMessage,
-          result?.sourceDocuments,
-          result?.fileAnnotations,
-          result?.agentReasoning,
-          result?.action,
-          checklistMessage,
-        );
-      } else {
-        updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
-      }
-    } catch (error) {
-      console.info('Current data:', result);
-      console.error(error);
-      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
-
-      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
-    } finally {
-      setIsNextChecklistButtonDisabled(false);
-      setLoading(false);
-    }
+    await extractChecklist();
 
     try {
       setLoading(true);

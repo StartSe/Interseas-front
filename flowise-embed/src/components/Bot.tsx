@@ -125,7 +125,7 @@ export type BotProps = {
   bubbleBackgroundColor?: string;
   bubbleTextColor?: string;
   showTitle?: boolean;
-  flow: 'compliance' | 'critical_analysis' | 'cost_estimate';
+  flow: 'compliance' | 'critical_analysis' | 'cost_estimate' | '';
   showAgentMessages?: boolean;
   title?: string;
   titleAvatarSrc?: string;

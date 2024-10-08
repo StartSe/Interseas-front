@@ -1089,7 +1089,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       const conferences = jsonData['conferências'];
 
-      if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+      if (
+        conferences &&
+        ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
+          (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
+      ) {
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
       }
 

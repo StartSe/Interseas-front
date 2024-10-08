@@ -1114,7 +1114,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           }
           break;
         } catch (error) {
-          if (attempt > maxAttempts) {
+          if (attempt === maxAttempts) {
             const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
             setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
           }

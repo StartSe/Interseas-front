@@ -1121,11 +1121,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             break;
           }
           await new Promise((resolve) => setTimeout(resolve, 2000));
-        } finally {
-          setIsNextChecklistButtonDisabled(false);
-          setLoading(false);
         }
       }
+      setIsNextChecklistButtonDisabled(false);
+      setLoading(false);
     };
 
     await extractChecklist();

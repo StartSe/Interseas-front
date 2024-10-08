@@ -84,7 +84,7 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
     - Conhecimento BL - NCM: [VALOR DO BL]
 
 - Dados do Importador (Consignee) - Razão social e CNPJ: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Dados do importador (Consignee): [VALOR DO BL]
+    - Conhecimento BL - Dados do Consignatário (Consignee): [VALOR DO BL]
 
 - Dados do Adquirente (Notify) - Razão social: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Dados do adquirente (Notify): [VALOR DO BL]

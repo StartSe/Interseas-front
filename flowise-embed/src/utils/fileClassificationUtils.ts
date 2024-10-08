@@ -86,7 +86,7 @@ export const checklistCeMercante = `
 • Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)
 • Componentes do frete - (Prepaid/Collect; moeda; valor)
 • Quantidade de containers 
-• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
+• Valor da Capatazia - CAPATAZIA NO DESTINO (THD)
 • Número dos containers - (no formato <3 letras>U<7 números>)`;
 
 export const checklistCertificadoOrigem = `
@@ -148,8 +148,8 @@ Conferências:
 
 export const checklistConhecimentoBL = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Consignatário - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
+• Dados do Adquirente - também chamado de Notify, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Tipo de Frete - pode ser 'Prepaid', 'Collect' ou 'Prepaid/Collect' quando houver os dois. Sempre verifique se há os dois tipos de frete.
 • Moeda do Frete
 • Valor do frete - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges (todos os valores separados por \n com o formato: label: value)

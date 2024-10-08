@@ -27,11 +27,11 @@ import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
-import { sanitizeJson } from '@/utils/jsonUtils';
+import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 import { pdfToText } from '@/service/aiUtilsApi';
-import { set } from 'lodash';
+import { colorTheme } from '@/utils/colorUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1033,8 +1033,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const processNextChecklist = async () => {
     setUploading(true);
     setLoading(true);
-    console.log('1');
-
     const files = filesMapping();
 
     if (files.length === 0) {
@@ -1097,7 +1095,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       const conferences = jsonData['conferências'];
 
-      if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+      if (
+        conferences &&
+        ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
+          (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
+      ) {
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
       }
 
@@ -1130,8 +1132,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (currentChecklistNumber() === files.length) {
         await executeComplianceCheck(filesMapping());
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
+
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
     } finally {
       setLoading(false);
@@ -1150,14 +1154,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
     const lastMessage = await compareDocuments.execute();
 
-    updateLastMessage(
-      '',
-      lastMessage?.sourceDocuments,
-      lastMessage?.fileAnnotations,
-      lastMessage?.agentReasoning,
-      lastMessage?.action,
-      lastMessage.text,
-    );
+    if (lastMessage) {
+      updateLastMessage(
+        '',
+        lastMessage?.sourceDocuments,
+        lastMessage?.fileAnnotations,
+        lastMessage?.agentReasoning,
+        lastMessage?.action,
+        lastMessage.text,
+      );
+    }
   };
 
   return (

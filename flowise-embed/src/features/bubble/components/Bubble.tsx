@@ -124,7 +124,7 @@ export const Bubble = (props: BubbleProps) => {
               bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
               bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}
               showTitle={bubbleProps.theme?.chatWindow?.showTitle}
-              flow={bubbleProps.theme?.chatWindow?.flow || 'compliance'}
+              flow={bubbleProps.theme?.chatWindow?.flow || ''}
               showAgentMessages={bubbleProps.theme?.chatWindow?.showAgentMessages}
               title={bubbleProps.theme?.chatWindow?.title}
               titleAvatarSrc={bubbleProps.theme?.chatWindow?.titleAvatarSrc}

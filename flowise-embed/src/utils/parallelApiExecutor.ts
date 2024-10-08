@@ -1,4 +1,4 @@
-import { MessageType } from '@/components/BotCriticalAnalysis';
+import { MessageType } from '@/components/Bot';
 import { constants } from '@/constants';
 export default class ParallelApiExecutor {
   n8nUrls = [

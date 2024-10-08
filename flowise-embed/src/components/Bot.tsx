@@ -38,6 +38,7 @@ import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 import { pdfToText } from '@/service/aiUtilsApi';
 import { colorTheme } from '@/utils/colorUtils';
+import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -124,6 +125,7 @@ export type BotProps = {
   bubbleBackgroundColor?: string;
   bubbleTextColor?: string;
   showTitle?: boolean;
+  flow: 'compliance' | 'critical_analysis' | 'cost_estimate';
   showAgentMessages?: boolean;
   title?: string;
   titleAvatarSrc?: string;
@@ -156,6 +158,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   let botContainer: HTMLDivElement | undefined;
 
   const [userInput, setUserInput] = createSignal('');
+  const [jsonResponseCriticalAnalysis, setJsonResponseCriticalAnalysis] = createSignal({});
   const [loading, setLoading] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
@@ -279,7 +282,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     fileAnnotations: any,
     agentReasoning: IAgentReasoning[] = [],
     action: IAction,
-    resultText: string,
+    resultText?: string,
   ) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -363,126 +366,152 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
   };
 
-  // Handle form submission
-  const handleSubmit = async (value: string, action?: IAction | undefined | null) => {
-    setUserInput(value);
+  const handleSubmit = async (inputValue: string, action?: IAction | null) => {
+    try {
+      setUserInput(inputValue);
+      setLoading(true);
+      scrollToBottom();
+      clearPreviews();
 
-    if (value.trim() === '') {
-      const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
-      if (!(previews().length >= 1 && containsAudio)) {
-        return;
-      }
-    }
+      const fileUploads = getFileUploads();
 
-    setLoading(true);
-    setUploading(false);
-    scrollToBottom();
-
-    const urls = previews().map((item) => {
-      return {
-        data: item.data,
-        type: item.type,
-        name: item.name,
-        mime: item.mime,
-      };
-    });
-
-    clearPreviews();
-
-    setUploading(false);
-    setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: urls }];
-      addChatMessage(messages);
-      return messages;
-    });
-
-    const body: IncomingInput = {
-      question: value,
-      chatId: chatId(),
-    };
-
-    if (urls && urls.length > 0) body.uploads = urls;
-
-    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-
-    if (leadEmail()) body.leadEmail = leadEmail();
-
-    if (action) body.action = action;
-
-    if (isChatFlowAvailableToStream()) {
-      body.socketIOClientId = socketIOClientId();
-    } else {
-      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-    }
-
-    const result = await sendMessageQuery({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
-      body,
-    });
-
-    if (result.data) {
-      const data = result.data;
-      const question = data.question;
-      if (value === '' && question) {
-        setMessages((data) => {
-          const messages = data.map((item, i) => {
-            if (i === data.length - 2) {
-              return { ...item, message: question };
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (urls && urls.length > 0) {
-        setMessages((data) => {
-          const messages = data.map((item, i) => {
-            if (i === data.length - 2) {
-              if (item.fileUploads) {
-                const fileUploads = item?.fileUploads.map((file) => ({
-                  type: file.type,
-                  name: file.name,
-                  mime: file.mime,
-                }));
-                return { ...item, fileUploads };
-              }
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (!isChatFlowAvailableToStream()) {
-        let text = '';
-        if (data.text) text = data.text;
-        else if (data.json) text = JSON.stringify(data.json, null, 2);
-        else text = JSON.stringify(data, null, 2);
-
-        updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
+      if (props.flow === 'critical_analysis') {
+        const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+        const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+        updateMessages(inputValue, fileUploads);
+        await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
       } else {
-        updateLastMessage('', data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
+        updateMessages(inputValue, fileUploads);
+        const body: IncomingInput = {
+          question: inputValue,
+          chatId: chatId(),
+        };
+        if (fileUploads && fileUploads.length > 0) body.uploads = fileUploads;
+        if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+        if (leadEmail()) body.leadEmail = leadEmail();
+        if (action) body.action = action;
+        if (isChatFlowAvailableToStream()) {
+          body.socketIOClientId = socketIOClientId();
+        } else {
+          setUploading(false);
+          setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
+        }
+        const result = await sendMessageQuery({
+          chatflowid: props.chatflowid,
+          apiHost: props.apiHost,
+          body,
+        });
+        if (result.data) {
+          const data = result.data;
+          let text = '';
+          if (data.text) text = data.text;
+          else if (data.json) text = JSON.stringify(data.json, null, 2);
+          else text = JSON.stringify(data, null, 2);
+          updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
+        }
+        if (result.error) {
+          const error = result.error;
+          console.error(error);
+          if (typeof error === 'object') {
+            handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
+            return;
+          }
+          if (typeof error === 'string') {
+            handleError(error);
+            return;
+          }
+          handleError();
+          return;
+        }
       }
+
       setLoading(false);
       setUserInput('');
       scrollToBottom();
-    }
-    if (result.error) {
-      const error = result.error;
-      console.error(error);
-      if (typeof error === 'object') {
-        handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
-        return;
-      }
-      if (typeof error === 'string') {
-        handleError(error);
-        return;
-      }
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
       handleError();
-      return;
     }
+  };
+
+  const getFileUploads = () => {
+    return previews().map((item) => ({
+      data: item.data,
+      type: item.type,
+      name: item.name,
+      mime: item.mime,
+    }));
+  };
+
+  const updateMessages = (inputValue: string, fileUploads: any[]) => {
+    setMessages((prevMessages) => {
+      const newMessages: MessageType[] = [...prevMessages, { message: inputValue, type: 'userMessage', fileUploads }];
+      addChatMessage(newMessages);
+      return newMessages;
+    });
+  };
+
+  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
+    try {
+      const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
+
+      let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
+      for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
+        criticalAnalysisMessage += generateItemToPrint(key, value as string);
+      }
+
+      setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
+      if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
+        setDisableInput(false);
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
+      } else {
+        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
+        setLoading(true);
+
+        const parallelApiExecutor = new ParallelApiExecutor({
+          jsonCriticalAnalysisUpdate,
+          setMessages,
+        });
+
+        await parallelApiExecutor.execute();
+
+        setLoading(false);
+      }
+
+      if (!isChatFlowAvailableToStream()) {
+        updateLastMessage(
+          criticalAnalysisMessage,
+          jsonCriticalAnalysisUpdate?.sourceDocuments,
+          jsonCriticalAnalysisUpdate?.fileAnnotations,
+          jsonCriticalAnalysisUpdate?.agentReasoning,
+          jsonCriticalAnalysisUpdate?.action,
+        );
+      } else {
+        updateLastMessage(
+          '',
+          jsonCriticalAnalysisUpdate?.sourceDocuments,
+          jsonCriticalAnalysisUpdate?.fileAnnotations,
+          jsonCriticalAnalysisUpdate?.agentReasoning,
+          jsonCriticalAnalysisUpdate?.action,
+        );
+      }
+    } catch (error) {
+      console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
+      throw error;
+    }
+  };
+
+  const generateItemToPrint = (key: string, value: string) => {
+    const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+    const hasValue = value !== 'null' && value !== null;
+    const checkboxStyle = hasValue ? 'color: white; background-color: background: #136FEE; ' : '';
+
+    let criticalAnalysisItem = `<input type="checkbox" ${
+      hasValue ? 'checked' : ''
+    } readonly onclick="return false;" style="${checkboxStyle}"> <b>${key}</b>:<br>`;
+    criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
+    return criticalAnalysisItem;
   };
 
   const handleActionClick = async (label: string, action: IAction | undefined | null) => {
@@ -1009,9 +1038,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     ]);
 
     // TODO: send alert message if needed
-
-    await processNextChecklist();
-
+    if (props.flow === 'critical_analysis') {
+      await processFileCriticalAnalysis();
+    } else {
+      await processNextChecklist();
+    }
     setDocumentsUploaded(true);
     setIsUploadButtonDisabled(false);
   };
@@ -1019,21 +1050,27 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
     let textContent = '';
+
     if (isImage(file.name)) {
       imagesList.push(file);
     } else {
       const pdfImages = await convertPdfToMultipleImages(file);
       imagesList = [...imagesList, ...pdfImages];
     }
-    const imagesToUpload = await setImagesToBeUploaded(imagesList);
-    const textContentResponse = await pdfToText(file);
-    if (textContentResponse.ok) {
-      const textContentJsonResponse = await textContentResponse.json();
-      textContent = textContentJsonResponse.data;
-    }
 
+    const imagesToUpload = await setImagesToBeUploaded(imagesList);
     const urls = readImagesUrls(imagesToUpload);
-    return { urls, textContent };
+
+    if (props.flow === 'critical_analysis') {
+      return urls;
+    } else {
+      const textContentResponse = await pdfToText(file);
+      if (textContentResponse.ok) {
+        const textContentJsonResponse = await textContentResponse.json();
+        textContent = textContentJsonResponse.data;
+      }
+      return { urls, textContent };
+    }
   };
 
   const processNextChecklist = async () => {
@@ -1050,107 +1087,118 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
-    const { urls, textContent } = await processFileToSend(file.file);
-    setCurrentChecklistNumber(currentChecklistNumber() + 1);
+    const result = await processFileToSend(file.file);
 
-    setUploading(false);
-    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
+    if ('textContent' in result) {
+      const { urls, textContent } = result;
+      setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
-    const extractChecklist = async () => {
-      let result;
-      const maxAttempts = 3;
+      setUploading(false);
+      setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
-          result = await sendBackgroundMessage(checklistPrompt, urls);
-          let jsonData = JSON.parse(result.text);
-          jsonData = sanitizeJson(jsonData);
+      const extractChecklist = async () => {
+        let result;
+        const maxAttempts = 3;
 
-          if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-            throw new Error(jsonData.error);
-          }
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
+            const resultFromBackgroundMessage = await sendBackgroundMessage(checklistPrompt, urls);
+            let jsonData = JSON.parse(resultFromBackgroundMessage.text);
+            jsonData = sanitizeJson(jsonData);
 
-          fileMap.content = jsonData;
-          fileMap.filledChecklist = jsonData;
+            if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
+              throw new Error(jsonData.error);
+            }
 
-          if (!Object.keys(jsonData).includes('checklist')) {
-            throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
-          }
+            fileMap.content = jsonData;
+            fileMap.filledChecklist = jsonData;
 
-          const generateChecklistItemToPrint = (key: string, value: string) => {
-            const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-            const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+            if (!Object.keys(jsonData).includes('checklist')) {
+              throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
+            }
 
-            let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-            checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
-            return checklistItem;
-          };
+            const generateChecklistItemToPrint = (key: string, value: string) => {
+              const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+              const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
 
-          let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+              let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+              checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
+              return checklistItem;
+            };
 
-          for (const [key, value] of Object.entries(jsonData.checklist)) {
-            checklistMessage += generateChecklistItemToPrint(key, value as string);
-          }
+            let checklistMessage = `<b>${fileMap.type}:</b><br>`;
 
-          if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
-            checklistMessage += `<br><b>Conferências:</b><br>`;
-            for (const [key, value] of Object.entries(jsonData['conferências'])) {
+            for (const [key, value] of Object.entries(jsonData.checklist)) {
               checklistMessage += generateChecklistItemToPrint(key, value as string);
             }
-          }
 
-          setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-          const conferences = jsonData['conferências'];
+            if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
+              checklistMessage += `<br><b>Conferências:</b><br>`;
+              for (const [key, value] of Object.entries(jsonData['conferências'])) {
+                checklistMessage += generateChecklistItemToPrint(key, value as string);
+              }
+            }
 
-          if (
-            conferences &&
-            ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
-              (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
-          ) {
-            setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-          }
+            setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
 
-          if (!isChatFlowAvailableToStream()) {
-            updateLastMessage(
-              checklistMessage,
-              result?.sourceDocuments,
-              result?.fileAnnotations,
-              result?.agentReasoning,
-              result?.action,
-              checklistMessage,
-            );
-          } else {
-            updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
-          }
-          break;
-        } catch (error) {
-          if (attempt === maxAttempts) {
-            const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
-            setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+            const conferences = jsonData['conferências'];
+
+            if (
+              conferences &&
+              ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
+                (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
+            ) {
+              setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
+            }
+
+            if (!isChatFlowAvailableToStream()) {
+              updateLastMessage(
+                checklistMessage,
+                resultFromBackgroundMessage?.sourceDocuments,
+                resultFromBackgroundMessage?.fileAnnotations,
+                resultFromBackgroundMessage?.agentReasoning,
+                resultFromBackgroundMessage?.action,
+                checklistMessage,
+              );
+            } else {
+              updateLastMessage(
+                '',
+                resultFromBackgroundMessage?.sourceDocuments,
+                resultFromBackgroundMessage?.fileAnnotations,
+                resultFromBackgroundMessage?.agentReasoning,
+                resultFromBackgroundMessage?.action,
+                checklistMessage,
+              );
+            }
+            break;
+          } catch (error) {
+            if (attempt === maxAttempts) {
+              const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+
+              setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+            }
           }
         }
+
+        setIsNextChecklistButtonDisabled(false);
+        setLoading(false);
+      };
+      await extractChecklist();
+      try {
+        setLoading(true);
+
+        if (currentChecklistNumber() === files.length) {
+          await executeComplianceCheck(filesMapping());
+        }
+      } catch (error) {
+        console.error(error);
+        const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
+
+        setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+      } finally {
+        setLoading(false);
       }
-
-      setIsNextChecklistButtonDisabled(false);
-      setLoading(false);
-    };
-
-    await extractChecklist();
-
-    try {
-      setLoading(true);
-
-      if (currentChecklistNumber() === files.length) {
-        await executeComplianceCheck(filesMapping());
-      }
-    } catch (error) {
-      console.error(error);
-      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
-
-      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -1176,6 +1224,25 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         lastMessage.text,
       );
     }
+  };
+
+  const processFileCriticalAnalysis = async () => {
+    setLoading(true);
+    const files = filesMapping().filter((item) => !!item);
+    const fileMap = files[currentChecklistNumber()];
+    const file = fileMap.file;
+    const urls = await processFileToSend(file.file);
+
+    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls as Partial<FileUpload>[] }]);
+
+    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
+    const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
+
+    await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
+
+    setLoading(false);
+    setUserInput('');
+    scrollToBottom();
   };
 
   return (

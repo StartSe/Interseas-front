@@ -63,7 +63,7 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
             showTitle={props.theme?.chatWindow?.showTitle}
             showAgentMessages={props.theme?.chatWindow?.showAgentMessages}
             title={props.theme?.chatWindow?.title}
-            flow={props.theme?.chatWindow?.flow || 'compliance'}
+            flow={props.theme?.chatWindow?.flow || ''}
             titleAvatarSrc={props.theme?.chatWindow?.titleAvatarSrc}
             welcomeMessage={props.theme?.chatWindow?.welcomeMessage}
             errorMessage={props.theme?.chatWindow?.errorMessage}

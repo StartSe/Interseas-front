@@ -72,6 +72,52 @@ pre {
   word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
+/* Caixa para o marcador */
+input[type="checkbox"] {
+  appearance: none;
+  padding: 4px;
+  position: relative;
+  /* Tamanho */
+  width: 13px;
+  height: 13px;
+  /* Cor do fundo e borda */
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 3px;
+}
+
+/* Características do marcador */
+input[type="checkbox"]:checked::before {
+  content: "";
+  /* Posicionar no meio */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Tamanho do marcador */
+  width: 0.75rem;
+  height: 0.75rem;
+  /* Formato do marcador */
+  clip-path: polygon(41% 52%, 26% 35%, 10% 51%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 91% 33%, 78% 18%);
+  /* Cor do marcador */
+  box-shadow: inset 1rem 1rem #fff;
+}
+
+/* Cor da caixa para o marcador */
+input[type="checkbox"]:checked {
+  background-color: #136FEE;
+  border-color: #136FEE;
+}
+
+/* Características do marcador quando selecionado */
+input[type="checkbox"]:checked::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Características do marcador quando selecionado */
+input[type="checkbox"]:disabled {
+  opacity: 1;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollable-container::-webkit-scrollbar {
   display: none;

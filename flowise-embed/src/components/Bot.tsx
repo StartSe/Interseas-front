@@ -513,7 +513,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     return item;
   };
-
   const handleActionClick = async (label: string, action: IAction | undefined | null) => {
     setUserInput(label);
     setMessages((data) => {
@@ -1108,7 +1107,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
       const extractChecklist = async () => {
-        let result;
         const maxAttempts = 3;
 
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {

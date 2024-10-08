@@ -1066,7 +1066,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
         const hasValue = value !== null;
         const shouldBeChecked = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
-        let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''} 
+        let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''}
           disabled> <b>${key}</b>:<br>`;
         checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
         return checklistItem;
@@ -1122,8 +1122,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (currentChecklistNumber() === files.length) {
         await executeComplianceCheck(filesMapping());
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
+
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
     } finally {
       setLoading(false);
@@ -1142,14 +1144,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
     const lastMessage = await compareDocuments.execute();
 
-    updateLastMessage(
-      '',
-      lastMessage?.sourceDocuments,
-      lastMessage?.fileAnnotations,
-      lastMessage?.agentReasoning,
-      lastMessage?.action,
-      lastMessage.text,
-    );
+    if (lastMessage) {
+      updateLastMessage(
+        '',
+        lastMessage?.sourceDocuments,
+        lastMessage?.fileAnnotations,
+        lastMessage?.agentReasoning,
+        lastMessage?.action,
+        lastMessage.text,
+      );
+    }
   };
 
   return (

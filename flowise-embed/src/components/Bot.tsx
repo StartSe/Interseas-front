@@ -1046,30 +1046,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     const extractChecklist = async () => {
-      let attempt = 0;
       let result;
-
-      while (attempt < 3) {
+      for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          attempt++;
-
           const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
           result = await sendBackgroundMessage(checklistPrompt, urls);
-
           let jsonData = JSON.parse(result.text);
           jsonData = sanitizeJson(jsonData);
-
           if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
             throw new Error(jsonData.error);
           }
-
           fileMap.content = jsonData;
           fileMap.filledChecklist = jsonData;
-
           if (!Object.keys(jsonData).includes('checklist')) {
             throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
           }
-
           const generateChecklistItemToPrint = (key: string, value: string) => {
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
             const hasValue = value !== null;
@@ -1078,28 +1069,25 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
             return checklistItem;
           };
-
           let checklistMessage = `<b>${fileMap.type}:</b><br>`;
-
           for (const [key, value] of Object.entries(jsonData.checklist)) {
             checklistMessage += generateChecklistItemToPrint(key, value as string);
           }
-
           if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
             checklistMessage += `<br><b>Conferências:</b><br>`;
             for (const [key, value] of Object.entries(jsonData['conferências'])) {
               checklistMessage += generateChecklistItemToPrint(key, value as string);
             }
           }
-
           setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-
           const conferences = jsonData['conferências'];
-
-          if (conferences['Máquina/Equipamento'] === 'true' || conferences['Possui Ex-tarifário'] === 'true') {
+          if (
+            conferences &&
+            ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
+              (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
+          ) {
             setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
           }
-
           if (!isChatFlowAvailableToStream()) {
             updateLastMessage(
               checklistMessage,
@@ -1112,21 +1100,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           } else {
             updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
           }
-
           break;
         } catch (error) {
-          if (attempt >= 3) {
+          if (attempt === 2) {
             const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
             setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
-            break;
           }
-          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       }
       setIsNextChecklistButtonDisabled(false);
       setLoading(false);
     };
-
     await extractChecklist();
 
     try {

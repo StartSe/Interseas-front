@@ -50,6 +50,7 @@ export type FeedbackTheme = {
 
 export type ChatWindowTheme = {
   showTitle?: boolean;
+  flow: 'compliance' | 'critical_analysis' | 'cost_estimate';
   showAgentMessages?: boolean; // parameter to show agent reasonings when using agentflows
   title?: string;
   titleAvatarSrc?: string;

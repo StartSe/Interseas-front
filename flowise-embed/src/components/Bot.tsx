@@ -1108,9 +1108,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           }
         }
       }
+
       setIsNextChecklistButtonDisabled(false);
       setLoading(false);
     };
+      
     await extractChecklist();
 
     try {
@@ -1119,8 +1121,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (currentChecklistNumber() === files.length) {
         await executeComplianceCheck(filesMapping());
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
+
       setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
     } finally {
       setLoading(false);
@@ -1139,14 +1143,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
     const lastMessage = await compareDocuments.execute();
 
-    updateLastMessage(
-      '',
-      lastMessage?.sourceDocuments,
-      lastMessage?.fileAnnotations,
-      lastMessage?.agentReasoning,
-      lastMessage?.action,
-      lastMessage.text,
-    );
+    if (lastMessage) {
+      updateLastMessage(
+        '',
+        lastMessage?.sourceDocuments,
+        lastMessage?.fileAnnotations,
+        lastMessage?.agentReasoning,
+        lastMessage?.action,
+        lastMessage.text,
+      );
+    }
   };
 
   return (

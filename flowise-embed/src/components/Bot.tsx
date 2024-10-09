@@ -1124,9 +1124,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             if (!Object.keys(jsonData).includes('checklist')) {
               throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
             }
-            if (!Object.keys(jsonData).includes('checklist')) {
-              throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
-            }
 
             const generateChecklistItemToPrint = (key: string, value: string) => {
               const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;

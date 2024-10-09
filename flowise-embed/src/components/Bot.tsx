@@ -140,6 +140,12 @@ export type LeadsConfig = {
   successMessage?: string;
 };
 
+enum Flow {
+  Compliance = 'compliance',
+  CriticalAnalysis = 'critical_analysis',
+  CostEstimate = 'cost_estimate',
+}
+
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
 const defaultTextColor = '#303235';
@@ -369,7 +375,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       const fileUploads = getFileUploads();
 
-      if (props.flow === 'critical_analysis') {
+      if (props.flow === Flow.CriticalAnalysis) {
         const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
         const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
         updateMessages(inputValue, fileUploads);
@@ -1033,7 +1039,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     ]);
 
     // TODO: send alert message if needed
-    if (props.flow === 'critical_analysis') {
+    if (props.flow === Flow.CriticalAnalysis) {
       await processFileCriticalAnalysis();
     } else {
       await processNextChecklist();
@@ -1056,7 +1062,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const imagesToUpload = await setImagesToBeUploaded(imagesList);
     const urls = readImagesUrls(imagesToUpload);
 
-    if (props.flow === 'critical_analysis') {
+    if (props.flow === Flow.CriticalAnalysis) {
       return urls;
     } else {
       const textContentResponse = await pdfToText(file);

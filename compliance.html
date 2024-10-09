@@ -3,15 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Análise Crítica - Interseas</title>
+    <title>Análise de Compliance - Interseas</title>
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script type="module">
         import Chatbot from './flowise-embed/dist/web.js';
+        import {menuItems} from './js/data.js'
+        Chatbot.initMenu({
+          currentId: 'compliance',
+            items: menuItems,
+          });
         Chatbot.initFull({
-          chatflowid: 'c59bb4ab-f777-496e-a500-697609e0ed8e',
+          chatflowid: '162459a5-b621-464d-9dc9-ae59ccc1077c',
           apiHost: 'https://interseas-flowise.paas.startse.com',
           theme: {
+            checklist: {
+              backgroundColor: '#ff6FEE',
+              color: 'white',
+            },
             button: {
               backgroundColor: '#136FEE',
               right: 20,
@@ -27,10 +36,10 @@
             },
             chatWindow: {
               showTitle: true,
-              flow: 'critical_analysis',
+              flow: 'compliance',
               showAgentMessages: true,
-              title: 'Análise Crítica',
-              welcomeMessage: 'Olá! Sou o assistente de IA da Interseas, especializado em Análise Crítica. Por favor, faça o upload do arquivo com as informações iniciais da operação para que possamos realizar a análise.',
+              title: 'Análise de Compliance',
+              welcomeMessage: 'Olá! Sou o assistente de IA da Interseas, especializado em Análise de Compliance. Por favor, faça o upload dos seus documentos para que possamos iniciar a análise e esclarecer todas as suas dúvidas.',
               errorMessage: 'This is a custom error message',
               backgroundColor: '#ffffff',
               backgroundImage: 'enter image path or link',
@@ -50,7 +59,7 @@
                 backgroundColor: '#ffffff',
                 textColor: '#303235',
                 sendButtonColor: '#136FEE',
-                maxChars: 100,
+                maxChars: 50,
                 maxCharsWarningMessage: 'You exceeded the characters limit. Please input less than 50 characters.',
                 autoFocus: true,
                 sendMessageSound: true,
@@ -69,6 +78,7 @@
           },
         });
       </script>
+       <flowise-menu></flowise-menu>
       <flowise-fullchatbot></flowise-fullchatbot>
   </body>
 </html>

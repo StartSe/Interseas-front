@@ -110,6 +110,13 @@ export type MessageType = {
 type observerConfigType = (accessor: string | boolean | object | MessageType[]) => void;
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 
+export enum Flow {
+  Compliance = 'compliance',
+  CriticalAnalysis = 'critical_analysis',
+  CostEstimate = 'cost_estimate',
+  Empty = '',
+}
+
 export type BotProps = {
   chatflowid: string;
   apiHost?: string;
@@ -145,12 +152,6 @@ export type LeadsConfig = {
   phone?: boolean;
   successMessage?: string;
 };
-
-enum Flow {
-  Compliance = 'compliance',
-  CriticalAnalysis = 'critical_analysis',
-  CostEstimate = 'cost_estimate',
-}
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
@@ -381,7 +382,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       const fileUploads = getFileUploads();
 
-      if (props.flow === Flow.CriticalAnalysis) {
+      if (props.flow === Flow.CriticalAnalysis.toString()) {
         const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
         const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
         updateMessages(inputValue, fileUploads);
@@ -1045,7 +1046,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     ]);
 
     // TODO: send alert message if needed
-    if (props.flow === Flow.CriticalAnalysis) {
+    if (props.flow === Flow.CriticalAnalysis.toString()) {
       await processFileCriticalAnalysis();
     } else {
       await processNextChecklist();
@@ -1068,7 +1069,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const imagesToUpload = await setImagesToBeUploaded(imagesList);
     const urls = readImagesUrls(imagesToUpload);
 
-    if (props.flow === Flow.CriticalAnalysis) {
+    if (props.flow === Flow.CriticalAnalysis.toString()) {
       return urls;
     } else {
       const textContentResponse = await pdfToText(file);

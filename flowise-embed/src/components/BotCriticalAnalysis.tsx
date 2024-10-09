@@ -674,8 +674,6 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
 
   const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
     try {
-      console.log('jsonCriticalAnalysisUpdate:', jsonCriticalAnalysisUpdate);
-
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
 
       for (const key in jsonDataCriticalAnalysis) {
@@ -816,40 +814,12 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-    // const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
-    // const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
-    const dataFoundCriticalAnalysis = {
-      text: '{"NCM":null,"INCOTERM":null,"Local_INCOTERM":null,"Peso_bruto_estimado":null,"M3_estimada_quantidade_volumes_dimensoes":"30.00 CBM","País_origem_fabricação":"África do Sul","País_embarque":"Brasil","Estado_Importador":"SC"}',
-      question: 'VERIFICAR DADOS ANALISE CRITICA',
-      chatId: '7fbad502-89f3-4c27-aeee-3c632a9a3546',
-      chatMessageId: '77ff99ad-4d42-4d13-bb49-07757b67b253',
-      sessionId: '7fbad502-89f3-4c27-aeee-3c632a9a3546',
-      agentReasoning: [
-        {
-          agentName: 'step-identification',
-          messages: ['critical-analysis'],
-          nodeName: 'seqCondition',
-          nodeId: 'seqCondition_0',
-        },
-        {
-          agentName: 'critical-analysis',
-          messages: [
-            '{"NCM":null,"INCOTERM":null,"Local_INCOTERM":null,"Peso_bruto_estimado":null,"M3_estimada_quantidade_volumes_dimensoes":"30.00 CBM","País_origem_fabricação":"África do Sul","País_embarque":"Brasil","Estado_Importador":"SC"}',
-          ],
-          usedTools: [null],
-          sourceDocuments: [null],
-          artifacts: [null],
-          state: {},
-          nodeName: 'seqAgent',
-          nodeId: 'seqAgent_4',
-        },
-      ],
-    };
-    console.log('dataFoundCriticalAnalysis', dataFoundCriticalAnalysis);
+
+    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
+    const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls);
 
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
 

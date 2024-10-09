@@ -1,4 +1,5 @@
 import { observersConfigType } from './components/Bot';
+import { MenuProps } from './features/menu';
 
 /* eslint-disable solid/reactivity */
 type BotProps = {
@@ -26,6 +27,12 @@ export const init = (props: BotProps) => {
   elementUsed = element;
 };
 
+export const initMenu = (props: MenuProps) => {
+  const element = document.querySelector('flowise-menu');
+  if (!element) throw new Error('<flowise-fullchatbot> element not found.');
+  Object.assign(element, props);
+};
+
 export const destroy = () => {
   elementUsed?.remove();
 };
@@ -34,6 +41,7 @@ type Chatbot = {
   initFull: typeof initFull;
   init: typeof init;
   destroy: typeof destroy;
+  initMenu: typeof initMenu;
 };
 
 declare const window:
@@ -46,6 +54,7 @@ export const parseChatbot = () => ({
   initFull,
   init,
   destroy,
+  initMenu,
 });
 
 export const injectChatbotInWindow = (bot: Chatbot) => {

@@ -496,16 +496,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const generateItemToPrint = (key: string, value: string) => {
+  const generateItemToPrint = (key: string, value: string, isChecklistItem: boolean = false) => {
     const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
     const hasValue = value !== 'null' && value !== null;
-    const checkboxStyle = hasValue ? 'color: white; background-color: background: #136FEE; ' : '';
+    const checkboxStyle = hasValue && !isChecklistItem ? 'color: white; background-color: #136FEE; ' : '';
+    const readonlyAttribute = isChecklistItem ? '' : 'readonly onclick="return false;"';
+    const noValueText = isChecklistItem ? 'N/A' : 'Valor não encontrado ou não preenchido.';
 
-    let criticalAnalysisItem = `<input type="checkbox" ${
-      hasValue ? 'checked' : ''
-    } readonly onclick="return false;" style="${checkboxStyle}"> <b>${key}</b>:<br>`;
-    criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
-    return criticalAnalysisItem;
+    let item = `<input type="checkbox" ${hasValue ? 'checked' : ''} ${readonlyAttribute} style="${checkboxStyle}"> <b>${key}</b>:<br>`;
+    item += hasValue ? spacedText(value) : spacedText(noValueText);
+
+    return item;
   };
 
   const handleActionClick = async (label: string, action: IAction | undefined | null) => {
@@ -1107,26 +1108,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
 
-        const generateChecklistItemToPrint = (key: string, value: string) => {
-          const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-          const hasValue = value !== null;
-
-          let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled"> <b>${key}</b>:<br>`;
-          checklistItem += hasValue ? spacedText(value) : spacedText(`N/A`);
-
-          return checklistItem;
-        };
-
         let checklistMessage = `<b>${fileMap.type}:</b><br>`;
 
         for (const [key, value] of Object.entries(jsonData.checklist)) {
-          checklistMessage += generateChecklistItemToPrint(key, value as string);
+          checklistMessage += generateItemToPrint(key, value as string, true);
         }
 
         if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
           checklistMessage += `<br><b>Conferências:</b><br>`;
           for (const [key, value] of Object.entries(jsonData['conferências'])) {
-            checklistMessage += generateChecklistItemToPrint(key, value as string);
+            checklistMessage += generateItemToPrint(key, value as string, true);
           }
         }
 

@@ -1047,7 +1047,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const { urls, textContent } = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
-    console.log('2');
     setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 

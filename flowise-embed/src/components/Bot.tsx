@@ -1050,22 +1050,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
-    const result = await sendBackgroundMessage(checklistPrompt, urls);
-    try {
-      let jsonData = JSON.parse(result.text);
-      jsonData = sanitizeJson(jsonData);
+    const extractChecklist = async () => {
+      let result;
+      const maxAttempts = 3;
 
-      if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-        throw new Error(jsonData.error);
-      }
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
+          result = await sendBackgroundMessage(checklistPrompt, urls);
+          let jsonData = JSON.parse(result.text);
+          jsonData = sanitizeJson(jsonData);
 
-      fileMap.content = jsonData;
-      fileMap.filledChecklist = jsonData;
+          if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
+            throw new Error(jsonData.error);
+          }
 
-      if (!Object.keys(jsonData).includes('checklist')) {
-        throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
-      }
+          fileMap.content = jsonData;
+          fileMap.filledChecklist = jsonData;
 
       const generateChecklistItemToPrint = (key: string, value: string) => {
         const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
@@ -1076,54 +1077,69 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
         return checklistItem;
       };
+          if (!Object.keys(jsonData).includes('checklist')) {
+            throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
+          }
 
-      let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+          const generateChecklistItemToPrint = (key: string, value: string) => {
+            const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+            const hasValue = value !== null;
+            const shouldBeChecked = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+            let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
+            return checklistItem;
+          };
 
-      for (const [key, value] of Object.entries(jsonData.checklist)) {
-        checklistMessage += generateChecklistItemToPrint(key, value as string);
-      }
+          let checklistMessage = `<b>${fileMap.type}:</b><br>`;
 
-      if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
-        checklistMessage += `<br><b>Conferências:</b><br>`;
-        for (const [key, value] of Object.entries(jsonData['conferências'])) {
-          checklistMessage += generateChecklistItemToPrint(key, value as string);
+          for (const [key, value] of Object.entries(jsonData.checklist)) {
+            checklistMessage += generateChecklistItemToPrint(key, value as string);
+          }
+
+          if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
+            checklistMessage += `<br><b>Conferências:</b><br>`;
+            for (const [key, value] of Object.entries(jsonData['conferências'])) {
+              checklistMessage += generateChecklistItemToPrint(key, value as string);
+            }
+          }
+
+          setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+          const conferences = jsonData['conferências'];
+
+          if (
+            conferences &&
+            ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
+              (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
+          ) {
+            setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
+          }
+
+          if (!isChatFlowAvailableToStream()) {
+            updateLastMessage(
+              checklistMessage,
+              result?.sourceDocuments,
+              result?.fileAnnotations,
+              result?.agentReasoning,
+              result?.action,
+              checklistMessage,
+            );
+          } else {
+            updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
+          }
+          break;
+        } catch (error) {
+          if (attempt === maxAttempts) {
+            const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+            setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+          }
         }
       }
 
-      setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-
-      const conferences = jsonData['conferências'];
-
-      if (
-        conferences &&
-        ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
-          (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
-      ) {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-      }
-
-      if (!isChatFlowAvailableToStream()) {
-        updateLastMessage(
-          checklistMessage,
-          result?.sourceDocuments,
-          result?.fileAnnotations,
-          result?.agentReasoning,
-          result?.action,
-          checklistMessage,
-        );
-      } else {
-        updateLastMessage('', result?.sourceDocuments, result?.fileAnnotations, result?.agentReasoning, result?.action, checklistMessage);
-      }
-    } catch (error) {
-      console.info('Current data:', result);
-      console.error(error);
-      const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
-
-      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
-    } finally {
       setIsNextChecklistButtonDisabled(false);
       setLoading(false);
-    }
+    };
+
+    await extractChecklist();
 
     try {
       setLoading(true);

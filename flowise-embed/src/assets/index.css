@@ -208,8 +208,8 @@ textarea {
     'Segoe UI Symbol';
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 16px;
+    gap: 1.5rem;
+    padding: 1rem;
 }
 
 .file-annotation-button {

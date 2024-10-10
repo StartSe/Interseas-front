@@ -26,7 +26,13 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import {
+  defaultChecklist,
+  conferencesDefault,
+  identifyDocumentChecklist,
+  identifyDocumentType,
+  DocumentTypes,
+} from '@/utils/fileClassificationUtils';
 import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
@@ -986,7 +992,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           fileMap.checklist = checklist.concat(conferencesDefault);
         }
       } else {
-        fileMap.type = messageUtils.DOCUMENT_WITHOUT_CHECKLIST_MESSAGE;
+        fileMap.type = DocumentTypes.DOCUMENTO_SEM_CHECKLIST;
         fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);
@@ -1290,17 +1296,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         setLeadEmail={setLeadEmail}
                       />
                     )}
-                    {message.type === 'userMessage' && loading() && uploading() && index() === messages().length - 1 && (
-                      <LoadingBubble typeLoading="upload" />
+                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
                     )}
-                    {message.type === 'apiMessage' && loading() && uploading() && index() === messages().length - 1 && (
-                      <LoadingBubble typeLoading="upload" />
-                    )}
-                    {message.type === 'userMessage' && loading() && uploading() === false && index() === messages().length - 1 && (
-                      <LoadingBubble typeLoading="typing" />
-                    )}
-                    {message.type === 'apiMessage' && loading() && uploading() === false && index() === messages().length - 1 && (
-                      <LoadingBubble typeLoading="typing" />
+                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
                     )}
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>

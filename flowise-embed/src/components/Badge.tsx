@@ -42,15 +42,7 @@ export const Badge = (props: Props) => {
   return (
     <>
       <Show when={props.footer?.showFooter === undefined || props.footer?.showFooter === null || props.footer?.showFooter === true}>
-        <div
-          style={{
-            display: 'flex',
-            'flex-direction': 'row',
-            'justify-content': 'center',
-            'align-items': 'center',
-            padding: '0 0.75rem',
-          }}
-        >
+        <div class="w-full flex justify-center items-center px-3 ">
           <span
             class="w-full px-[10px] pt-[6px] pb-[10px] m-auto text-[13px]"
             style={{

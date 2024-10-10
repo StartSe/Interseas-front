@@ -25,6 +25,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
+import { normalizeLocationNames, translateCountry } from '@/utils/jsonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -670,51 +671,20 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
     });
   };
 
-  const normalizeLocationNames = (input: string): string => {
-    const locationMap: { [key: string]: string } = {
-      AC: 'Acre',
-      AL: 'Alagoas',
-      AP: 'Amapá',
-      AM: 'Amazonas',
-      BA: 'Bahia',
-      CE: 'Ceará',
-      DF: 'Distrito Federal',
-      ES: 'Espírito Santo',
-      GO: 'Goiás',
-      MA: 'Maranhão',
-      MT: 'Mato Grosso',
-      MS: 'Mato Grosso do Sul',
-      MG: 'Minas Gerais',
-      PA: 'Pará',
-      PB: 'Paraíba',
-      PR: 'Paraná',
-      PE: 'Pernambuco',
-      PI: 'Piauí',
-      RJ: 'Rio de Janeiro',
-      RN: 'Rio Grande do Norte',
-      RS: 'Rio Grande do Sul',
-      RO: 'Rondônia',
-      RR: 'Roraima',
-      SC: 'Santa Catarina',
-      SP: 'São Paulo',
-      SE: 'Sergipe',
-      TO: 'Tocantins',
-    };
-
-    return input
-      .replace(
-        /\b(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)\b/gi,
-        (match) => locationMap[match.toUpperCase()],
-      )
-      .replace(/\b(Estados Unidos|USA|United States of America)\b/gi, 'EUA');
-  };
-
   const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
     try {
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
 
       for (const key in jsonDataCriticalAnalysis) {
-        jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key]);
+        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        if (/estado/i.test(normalizedKey)) {
+          jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key]);
+        }
+
+        if (/pais/i.test(normalizedKey)) {
+          jsonDataCriticalAnalysis[key] = translateCountry(jsonDataCriticalAnalysis[key]);
+        }
       }
 
       jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);

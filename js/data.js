@@ -1,14 +1,14 @@
 export const menuItems = [
   {
     id: "compliance",
-    title: "compliance",
-  },
-  {
-    id: "critical_analysis",
-    title: "Analise critica",
+    title: "Análise de Compliance",
   },
   {
     id: "cost_estimate",
-    title: "cost_estimate",
+    title: "Estimativa de Custos",
+  },
+  {
+    id: "critical_analysis",
+    title: "Análise Crítica",
   },
 ];

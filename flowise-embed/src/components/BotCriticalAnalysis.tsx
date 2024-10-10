@@ -25,6 +25,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
+import { locationValues, normalizeLocationNames } from '@/utils/locationUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -674,6 +675,21 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
     try {
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+
+      for (const key in jsonDataCriticalAnalysis) {
+        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        if (/estado/i.test(normalizedKey)) {
+          jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.STATE);
+        }
+
+        if (/pais/i.test(normalizedKey)) {
+          jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.COUNTRY);
+        }
+      }
+
+      jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
+
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
       let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;

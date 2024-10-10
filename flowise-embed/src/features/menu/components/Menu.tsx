@@ -7,9 +7,15 @@ export interface MenuProps {
   currentId: string;
   items: MenuItemProps[];
 }
-
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
+  const [currentId, setCurrentId] = createSignal(localStorage.getItem('currentId') || props.currentId);
+
+  const handleClick = (id: string) => {
+    setCurrentId(id);
+    localStorage.setItem('currentId', id);
+  };
+
   return (
     <>
       <style>{styles}</style>
@@ -18,10 +24,18 @@ export const Menu = (props: MenuProps) => {
           <div class="menu-wrapper">
             <div class="menu-content">
               <div class="menu-header">
-                <LogoInterseas />
+                <div class="logo">
+                  <LogoInterseas />
+                </div>
+                <button class="close-button" onClick={() => setOpen(false)}>
+                  X
+                </button>
               </div>
               <div class="menu-items">
-                <For each={props.items}>{(item) => <MenuItem {...item} selected={item.id === props.currentId} />}</For>
+                <div class="menu-text">Escolha qual tarefa deseja realizar</div>
+                <For each={props.items}>
+                  {(item) => <MenuItem {...item} selected={item.id === currentId()} onClick={() => handleClick(item.id)} />}
+                </For>
               </div>
               <div class="menu-footer">
                 <p>

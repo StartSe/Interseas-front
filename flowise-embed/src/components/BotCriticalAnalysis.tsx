@@ -25,7 +25,7 @@ import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
 import { conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
-import { normalizeLocationNames, translateCountry } from '@/utils/jsonUtils';
+import { normalizeCountryNames, normalizeStateNames } from '@/utils/jsonUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -679,11 +679,11 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
         const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
         if (/estado/i.test(normalizedKey)) {
-          jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key]);
+          jsonDataCriticalAnalysis[key] = normalizeStateNames(jsonDataCriticalAnalysis[key]);
         }
 
         if (/pais/i.test(normalizedKey)) {
-          jsonDataCriticalAnalysis[key] = translateCountry(jsonDataCriticalAnalysis[key]);
+          jsonDataCriticalAnalysis[key] = normalizeCountryNames(jsonDataCriticalAnalysis[key]);
         }
       }
 

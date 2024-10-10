@@ -143,6 +143,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   const [userInput, setUserInput] = createSignal('');
   const [jsonResponseCriticalAnalysis, setJsonResponseCriticalAnalysis] = createSignal({});
   const [loading, setLoading] = createSignal(false);
+  const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -724,6 +725,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   const generateItemToPrint = (key: string, value: string) => {
     const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
     const hasValue = value !== 'null' && value !== null;
+
     let criticalAnalysisItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
     criticalAnalysisItem += hasValue ? spacedText(value) : spacedText(`Valor não encontrado ou não preenchido.`);
     return criticalAnalysisItem;
@@ -790,12 +792,14 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
   };
 
   const processFileCriticalAnalysis = async () => {
+    setUploading(true);
     setLoading(true);
     const files = filesMapping().filter((item) => !!item);
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
 
+    setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
@@ -905,8 +909,12 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                         setLeadEmail={setLeadEmail}
                       />
                     )}
-                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
+                    )}
+                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
+                    )}
 
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
@@ -998,7 +1006,7 @@ export const Bot = (botProps: BotPropsCriticalAnalysis & { class?: string }) => 
                 textColor={props.textInput?.textColor}
                 placeholder={props.textInput?.placeholder}
                 sendButtonColor={props.textInput?.sendButtonColor}
-                maxChars={200}
+                maxChars={props.textInput?.maxChars}
                 autoFocus={props.textInput?.autoFocus}
                 fontSize={props.fontSize}
                 disabled={getInputDisabled() || disableInput()}

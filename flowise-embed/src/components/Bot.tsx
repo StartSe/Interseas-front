@@ -26,7 +26,13 @@ import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
-import { defaultChecklist, conferencesDefault, identifyDocumentChecklist, identifyDocumentType } from '@/utils/fileClassificationUtils';
+import {
+  defaultChecklist,
+  conferencesDefault,
+  identifyDocumentChecklist,
+  identifyDocumentType,
+  DocumentTypes,
+} from '@/utils/fileClassificationUtils';
 import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
@@ -151,6 +157,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const [userInput, setUserInput] = createSignal('');
   const [loading, setLoading] = createSignal(false);
+  const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -368,6 +375,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     setLoading(true);
+    setUploading(false);
     scrollToBottom();
 
     const urls = previews().map((item) => {
@@ -381,6 +389,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     clearPreviews();
 
+    setUploading(false);
     setMessages((prevMessages) => {
       const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: urls }];
       addChatMessage(messages);
@@ -983,7 +992,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           fileMap.checklist = checklist.concat(conferencesDefault);
         }
       } else {
-        fileMap.type = 'Documento sem checklist';
+        fileMap.type = DocumentTypes.DOCUMENTO_SEM_CHECKLIST;
         fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);
@@ -1028,6 +1037,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const processNextChecklist = async () => {
+    setUploading(true);
     setLoading(true);
     const files = filesMapping();
 
@@ -1043,6 +1053,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const { urls, textContent } = await processFileToSend(file.file);
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
+    setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     const extractChecklist = async () => {
@@ -1069,9 +1080,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
           const generateChecklistItemToPrint = (key: string, value: string) => {
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-            const hasValue = value !== null;
-            const shouldBeChecked = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
-            let checklistItem = `<input type="checkbox" ${shouldBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+
+            let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
             checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
             return checklistItem;
           };
@@ -1283,8 +1294,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         setLeadEmail={setLeadEmail}
                       />
                     )}
-                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                    {message.type === 'userMessage' && loading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
+                    )}
+                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && (
+                      <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
+                    )}
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

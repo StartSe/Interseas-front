@@ -1,5 +1,6 @@
 import { FooterTheme } from '@/features/bubble/types';
 import { Show, onCleanup, onMount } from 'solid-js';
+import { LogoInterseas } from '@/components/icons/LogoInterseas';
 
 type Props = {
   footer?: FooterTheme;
@@ -41,26 +42,29 @@ export const Badge = (props: Props) => {
   return (
     <>
       <Show when={props.footer?.showFooter === undefined || props.footer?.showFooter === null || props.footer?.showFooter === true}>
-        <span
-          class="w-full text-center px-[10px] pt-[6px] pb-[10px] m-auto text-[13px]"
-          style={{
-            color: props.footer?.textColor ?? props.poweredByTextColor ?? defaultTextColor,
-            'background-color': props.badgeBackgroundColor ?? '#ffffff',
-          }}
-        >
-          {props.footer?.text ?? 'Powered by'}
-          <a
-            ref={liteBadge}
-            href={props.footer?.companyLink ?? 'https://startse.com'}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="lite-badge"
-            id="lite-badge"
-            style={{ 'font-weight': 'bold', color: props.footer?.textColor ?? props.poweredByTextColor ?? defaultTextColor }}
+        <div class="w-full flex justify-center items-center px-3 ">
+          <span
+            class="w-full px-[10px] pt-[6px] pb-[10px] m-auto text-[13px]"
+            style={{
+              color: props.footer?.textColor ?? props.poweredByTextColor ?? defaultTextColor,
+              'background-color': props.badgeBackgroundColor ?? '#ffffff',
+            }}
           >
-            <span>&nbsp;{props.footer?.company ?? 'StartSe'}</span>
-          </a>
-        </span>
+            {props.footer?.text ?? 'Powered by'}
+            <a
+              ref={liteBadge}
+              href={props.footer?.companyLink ?? 'https://startse.com'}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="lite-badge"
+              id="lite-badge"
+              style={{ 'font-weight': 'bold', color: props.footer?.textColor ?? props.poweredByTextColor ?? defaultTextColor }}
+            >
+              <span>&nbsp;{props.footer?.company ?? 'StartSe'}</span>
+            </a>
+          </span>
+          <LogoInterseas />
+        </div>
       </Show>
       <Show when={props.footer?.showFooter === false}>
         <span

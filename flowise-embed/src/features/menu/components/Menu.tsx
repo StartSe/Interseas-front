@@ -3,6 +3,7 @@ import styles from '../../../assets/menu.css';
 import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
+import { XIcon } from '@/components/icons/XIcon';
 export interface MenuProps {
   currentId: string;
   items: MenuItemProps[];
@@ -28,7 +29,7 @@ export const Menu = (props: MenuProps) => {
                   <LogoInterseas />
                 </div>
                 <button class="close-button" onClick={() => setOpen(false)}>
-                  X
+                  <XIcon color="#000000" />
                 </button>
               </div>
               <div class="menu-items">

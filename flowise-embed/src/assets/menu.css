@@ -32,6 +32,7 @@
     grid-template-rows: auto 1fr auto;
     gap: 0.25rem;
     overflow: auto;
+    overflow-x: hidden;
     border-radius: 0px 0.25rem 0.25rem 0px;
 }
 .menu-overlay {

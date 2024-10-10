@@ -1,16 +1,10 @@
-import { registerWebComponents, nameURL } from './register';
+import { registerWebComponents } from './register';
 import { parseChatbot, injectChatbotInWindow } from './window';
-import { parseChatbotAnalise, injectChatbotInWindowAnalise } from './windowCriticalAnalysis';
 
 registerWebComponents();
 
-const chatbot = nameURL.includes('analise_critica.html') ? parseChatbotAnalise() : parseChatbot();
+const chatbot = parseChatbot();
 
-if (nameURL.includes('analise_critica.html')) {
-  injectChatbotInWindowAnalise(chatbot);
-}
-if (nameURL.includes('index.html')) {
-  injectChatbotInWindow(chatbot);
-}
+injectChatbotInWindow(chatbot);
 
 export default chatbot;

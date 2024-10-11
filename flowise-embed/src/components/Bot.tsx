@@ -1058,6 +1058,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setDocumentsUploaded(true);
     setIsUploadButtonDisabled(false);
   };
+
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
     let textContent = '';
@@ -1076,13 +1077,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       case Flow.CriticalAnalysis.toString():
         return urls;
       default:
-        const textContentResponse = await pdfToText(file);
-        if (textContentResponse.ok) {
-          const textContentJsonResponse = await textContentResponse.json();
-          textContent = textContentJsonResponse.data;
-        }
+        const textContent = await getTextContent(file);
         return { urls, textContent };
     }
+  };
+
+  const getTextContent = async (file: File) => {
+    let textContent = '';
+    const textContentResponse = await pdfToText(file);
+    if (textContentResponse.ok) {
+      const textContentJsonResponse = await textContentResponse.json();
+      textContent = textContentJsonResponse.data;
+    }
+    return textContent;
   };
 
   const processNextChecklist = async () => {

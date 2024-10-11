@@ -29,7 +29,7 @@ export const init = (props: BotProps) => {
 
 export const initMenu = (props: MenuProps) => {
   const element = document.querySelector('flowise-menu');
-  if (!element) throw new Error('<flowise-fullchatbot> element not found.');
+  if (!element) throw new Error('<flowise-menu> element not found.');
   Object.assign(element, props);
 };
 

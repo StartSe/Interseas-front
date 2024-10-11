@@ -382,54 +382,56 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       const fileUploads = getFileUploads();
 
-      if (props.flow === Flow.CriticalAnalysis.toString()) {
-        const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
-        const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
-        updateMessages(inputValue, fileUploads);
-        await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
-      } else {
-        updateMessages(inputValue, fileUploads);
-        const body: IncomingInput = {
-          question: inputValue,
-          chatId: chatId(),
-        };
-        if (fileUploads && fileUploads.length > 0) body.uploads = fileUploads;
-        if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-        if (leadEmail()) body.leadEmail = leadEmail();
-        if (action) body.action = action;
-        if (isChatFlowAvailableToStream()) {
-          body.socketIOClientId = socketIOClientId();
-        } else {
-          setUploading(false);
-          setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-        }
-        const result = await sendMessageQuery({
-          chatflowid: props.chatflowid,
-          apiHost: props.apiHost,
-          body,
-        });
-        if (result.data) {
-          const data = result.data;
-          let text = '';
-          if (data.text) text = data.text;
-          else if (data.json) text = JSON.stringify(data.json, null, 2);
-          else text = JSON.stringify(data, null, 2);
-          updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
-        }
-        if (result.error) {
-          const error = result.error;
-          console.error(error);
-          if (typeof error === 'object') {
-            handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
+      switch (props.flow) {
+        case Flow.CriticalAnalysis.toString():
+          const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+          const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+          updateMessages(inputValue, fileUploads);
+          await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+          break;
+        default:
+          updateMessages(inputValue, fileUploads);
+          const body: IncomingInput = {
+            question: inputValue,
+            chatId: chatId(),
+          };
+          if (fileUploads && fileUploads.length > 0) body.uploads = fileUploads;
+          if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+          if (leadEmail()) body.leadEmail = leadEmail();
+          if (action) body.action = action;
+          if (isChatFlowAvailableToStream()) {
+            body.socketIOClientId = socketIOClientId();
+          } else {
+            setUploading(false);
+            setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
+          }
+          const result = await sendMessageQuery({
+            chatflowid: props.chatflowid,
+            apiHost: props.apiHost,
+            body,
+          });
+          if (result.data) {
+            const data = result.data;
+            let text = '';
+            if (data.text) text = data.text;
+            else if (data.json) text = JSON.stringify(data.json, null, 2);
+            else text = JSON.stringify(data, null, 2);
+            updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
+          }
+          if (result.error) {
+            const error = result.error;
+            console.error(error);
+            if (typeof error === 'object') {
+              handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
+              return;
+            }
+            if (typeof error === 'string') {
+              handleError(error);
+              return;
+            }
+            handleError();
             return;
           }
-          if (typeof error === 'string') {
-            handleError(error);
-            return;
-          }
-          handleError();
-          return;
-        }
       }
 
       setLoading(false);
@@ -1046,15 +1048,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     ]);
 
     // TODO: send alert message if needed
-    if (props.flow === Flow.CriticalAnalysis.toString()) {
-      await processFileCriticalAnalysis();
-    } else {
-      await processNextChecklist();
+    switch (props.flow) {
+      case Flow.CriticalAnalysis.toString():
+        await processFileCriticalAnalysis();
+        break;
+      default:
+        await processNextChecklist();
     }
     setDocumentsUploaded(true);
     setIsUploadButtonDisabled(false);
   };
-
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
     let textContent = '';
@@ -1069,15 +1072,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const imagesToUpload = await setImagesToBeUploaded(imagesList);
     const urls = readImagesUrls(imagesToUpload);
 
-    if (props.flow === Flow.CriticalAnalysis.toString()) {
-      return urls;
-    } else {
-      const textContentResponse = await pdfToText(file);
-      if (textContentResponse.ok) {
-        const textContentJsonResponse = await textContentResponse.json();
-        textContent = textContentJsonResponse.data;
-      }
-      return { urls, textContent };
+    switch (props.flow) {
+      case Flow.CriticalAnalysis.toString():
+        return urls;
+      default:
+        const textContentResponse = await pdfToText(file);
+        if (textContentResponse.ok) {
+          const textContentJsonResponse = await textContentResponse.json();
+          textContent = textContentJsonResponse.data;
+        }
+        return { urls, textContent };
     }
   };
 

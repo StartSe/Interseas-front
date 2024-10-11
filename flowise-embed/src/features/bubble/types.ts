@@ -50,7 +50,7 @@ export type FeedbackTheme = {
 
 export type ChatWindowTheme = {
   showTitle?: boolean;
-  flow: 'compliance' | 'critical_analysis' | 'cost_estimate';
+  flow: Flow;
   showAgentMessages?: boolean; // parameter to show agent reasonings when using agentflows
   title?: string;
   titleAvatarSrc?: string;
@@ -106,3 +106,10 @@ export type TextExtractionConfig = {
   default: string;
   image: string;
 };
+
+export enum Flow {
+  Compliance = 'compliance',
+  CriticalAnalysis = 'critical_analysis',
+  CostEstimate = 'cost_estimate',
+  Empty = '',
+}

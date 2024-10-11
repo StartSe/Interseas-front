@@ -5,6 +5,7 @@ import { BubbleParams } from '../types';
 import { Bot, BotProps } from '../../../components/Bot';
 import Tooltip from './Tooltip';
 import { getBubbleButtonSize } from '@/utils';
+import { Flow } from '../types';
 
 const defaultButtonColor = '#3B81F6';
 const defaultIconColor = 'white';
@@ -124,7 +125,7 @@ export const Bubble = (props: BubbleProps) => {
               bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
               bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}
               showTitle={bubbleProps.theme?.chatWindow?.showTitle}
-              flow={bubbleProps.theme?.chatWindow?.flow || ''}
+              flow={bubbleProps.theme?.chatWindow?.flow || Flow.Empty}
               showAgentMessages={bubbleProps.theme?.chatWindow?.showAgentMessages}
               title={bubbleProps.theme?.chatWindow?.title}
               titleAvatarSrc={bubbleProps.theme?.chatWindow?.titleAvatarSrc}

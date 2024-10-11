@@ -1,5 +1,5 @@
 import type { BubbleProps } from './features/bubble';
-import type { BubblePropsCriticalAnalysis } from './features/bubbleCriticalAnalysis';
+import { Flow } from './features/bubble/types';
 
 export const defaultBotProps: BubbleProps = {
   chatflowid: '',
@@ -7,14 +7,7 @@ export const defaultBotProps: BubbleProps = {
   chatflowConfig: undefined,
   theme: undefined,
   observersConfig: undefined,
-};
-
-export const defaultBotPropsAnalise: BubblePropsCriticalAnalysis = {
-  chatflowid: '',
-  apiHost: undefined,
-  chatflowConfig: undefined,
-  theme: undefined,
-  observersConfig: undefined,
+  flow: Flow.Empty,
 };
 
 export const constants = {

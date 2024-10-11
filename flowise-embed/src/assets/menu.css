@@ -76,7 +76,6 @@
     padding: 0px 1rem;
     align-self: stretch;
     border-bottom: 0.5px solid #FBA115;
-    background: #FAFAFA;
 }
 .menu-item.selected,
 .menu-item:hover {
@@ -85,16 +84,14 @@
 }
 .menu-item.selected p,
 .menu-item:hover p {
-    color: white;
+    color: #FAFAFA;
 }
 .menu-item p {
     color: #136FEE;
     font-family: sans-serif;
-    /* font-size: 14px; */
     font-style: normal;
     font-weight: 500;
     line-height: 100%;
-    /* 14px */
     letter-spacing: 0.009375rem;
 }
 .menu-item p b {

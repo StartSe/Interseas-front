@@ -1139,7 +1139,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
 
               let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-              checklistItem += hasValue ? spacedText(value) : spacedText(`<span style="color: ${colorTheme.errorColor};">Não identificado</span>`);
+              checklistItem += hasValue
+                ? spacedText(value)
+                : spacedText(
+                    `<span style="color: ${colorTheme.errorColor};">${
+                      key === 'Assinatura' ? 'A assinatura não foi identificada, por favor verifique manualmente!' : 'Não identificado'
+                    }</span>`,
+                  );
               return checklistItem;
             };
 

@@ -1,4 +1,5 @@
 import type { BubbleProps } from './features/bubble';
+import type { MenuProps } from './features/menu';
 import { Flow } from './features/bubble/types';
 
 export const defaultBotProps: BubbleProps = {
@@ -19,4 +20,9 @@ export const constants = {
   n8nFourthStep: 'a5f9547f-905b-4fc0-b5dc-3ebbb5936eda',
   n8nSixthStep: 'd9a6bc71-e1da-42a0-96c9-0a29fc92eedc',
   n8nSeventhStep: '916a955c-467e-4830-9d95-3bb3fc976698',
+};
+
+export const defaultMenuProps: MenuProps = {
+  currentId: '',
+  items: [],
 };

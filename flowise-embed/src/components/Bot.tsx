@@ -513,7 +513,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     return item;
   };
-
   const handleActionClick = async (label: string, action: IAction | undefined | null) => {
     setUserInput(label);
     setMessages((data) => {
@@ -1106,7 +1105,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
       const extractChecklist = async () => {
-        let result;
         const maxAttempts = 3;
 
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -1123,9 +1121,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             fileMap.content = jsonData;
             fileMap.filledChecklist = jsonData;
 
-            if (!Object.keys(jsonData).includes('checklist')) {
-              throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
-            }
             if (!Object.keys(jsonData).includes('checklist')) {
               throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
             }
@@ -1290,6 +1285,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               color: props.bubbleTextColor,
               'border-top-left-radius': props.isFullPage ? '0px' : '6px',
               'border-top-right-radius': props.isFullPage ? '0px' : '6px',
+              'padding-left': '2rem',
             }}
           >
             <Show when={props.titleAvatarSrc}>

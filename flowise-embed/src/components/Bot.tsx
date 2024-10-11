@@ -40,6 +40,7 @@ import { pdfToText } from '@/service/aiUtilsApi';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
+import { locationValues, normalizeLocationNames } from '@/utils/locationUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -377,13 +378,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const fileUploads = getFileUploads();
 
       switch (props.flow) {
-        case Flow.CriticalAnalysis.toString():
+        case Flow.CriticalAnalysis.toString(): {
           const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
           const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
           updateMessages(inputValue, fileUploads);
           await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
           break;
-        default:
+        }
+        default: {
           updateMessages(inputValue, fileUploads);
           const body: IncomingInput = {
             question: inputValue,
@@ -422,6 +424,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             handleError(errorMessage);
             return;
           }
+          break;
+        }
       }
 
       setLoading(false);
@@ -453,6 +457,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
     try {
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+
+      for (const key in jsonDataCriticalAnalysis) {
+        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        if (/estado/i.test(normalizedKey)) {
+          jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.STATE);
+        }
+
+        if (/pais/i.test(normalizedKey)) {
+          jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.COUNTRY);
+        }
+      }
+
+      jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
+
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
       let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
@@ -501,7 +520,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const generateItemToPrint = (key: string, value: string, isChecklistItem: boolean = false) => {
+  const generateItemToPrint = (key: string, value: string, isChecklistItem = false) => {
     const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
     const hasValue = value !== 'null' && value !== null;
     const checkboxStyle = hasValue && !isChecklistItem ? 'color: white; background-color: #136FEE; ' : '';
@@ -1050,7 +1069,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
-    let textContent = '';
 
     if (isImage(file.name)) {
       imagesList.push(file);
@@ -1063,11 +1081,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const urls = readImagesUrls(imagesToUpload);
 
     switch (props.flow) {
-      case Flow.CriticalAnalysis.toString():
+      case Flow.CriticalAnalysis.toString(): {
         return urls;
-      default:
+      }
+      default: {
         const textContent = await getTextContent(file);
         return { urls, textContent };
+      }
     }
   };
 

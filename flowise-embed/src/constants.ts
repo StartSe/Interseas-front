@@ -18,7 +18,7 @@ export const constants = {
   n8nSecondStep: '0164614d-e044-4c3f-9ef9-9212407bf402',
   n8nThirdStep: '484dc0f1-3431-4d3a-be2b-0cb9b39989ff',
   n8nFourthStep: 'a5f9547f-905b-4fc0-b5dc-3ebbb5936eda',
-  n8nSixthStep: 'd9a6bc71-e1da-42a0-96c9-0a29fc92eedc',
+  n8nSixthStep: '50b6723d-7cff-4ecf-852e-f693efd9d95f',
   n8nSeventhStep: '916a955c-467e-4830-9d95-3bb3fc976698',
 };
 

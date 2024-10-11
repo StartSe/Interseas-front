@@ -39,6 +39,7 @@ import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 import { pdfToText } from '@/service/aiUtilsApi';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
+import { Flow } from '@/features/bubble/types';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -110,13 +111,6 @@ export type MessageType = {
 type observerConfigType = (accessor: string | boolean | object | MessageType[]) => void;
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 
-export enum Flow {
-  Compliance = 'compliance',
-  CriticalAnalysis = 'critical_analysis',
-  CostEstimate = 'cost_estimate',
-  Empty = '',
-}
-
 export type BotProps = {
   chatflowid: string;
   apiHost?: string;
@@ -132,7 +126,7 @@ export type BotProps = {
   bubbleBackgroundColor?: string;
   bubbleTextColor?: string;
   showTitle?: boolean;
-  flow: 'compliance' | 'critical_analysis' | 'cost_estimate' | '';
+  flow: Flow;
   showAgentMessages?: boolean;
   title?: string;
   titleAvatarSrc?: string;

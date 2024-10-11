@@ -493,7 +493,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         });
 
         await parallelApiExecutor.execute();
-
         setLoading(false);
       }
 

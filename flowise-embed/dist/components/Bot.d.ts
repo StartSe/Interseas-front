@@ -1,4 +1,5 @@
 import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme } from '@/features/bubble/types';
+import { Flow } from '@/features/bubble/types';
 export type FileEvent<T = EventTarget> = {
     target: T;
 };
@@ -72,6 +73,7 @@ export type BotProps = {
     bubbleBackgroundColor?: string;
     bubbleTextColor?: string;
     showTitle?: boolean;
+    flow: Flow;
     showAgentMessages?: boolean;
     title?: string;
     titleAvatarSrc?: string;

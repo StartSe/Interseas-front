@@ -43,6 +43,7 @@ export type FeedbackTheme = {
 };
 export type ChatWindowTheme = {
     showTitle?: boolean;
+    flow: Flow;
     showAgentMessages?: boolean;
     title?: string;
     titleAvatarSrc?: string;
@@ -93,4 +94,10 @@ export type TextExtractionConfig = {
     default: string;
     image: string;
 };
+export declare enum Flow {
+    Compliance = "compliance",
+    CriticalAnalysis = "critical_analysis",
+    CostEstimate = "cost_estimate",
+    Empty = ""
+}
 //# sourceMappingURL=types.d.ts.map

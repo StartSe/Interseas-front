@@ -14,6 +14,7 @@ declare const chatbot: {
         observersConfig?: import("./components/Bot").observersConfigType | undefined;
     }) => void;
     destroy: () => void;
+    initMenu: (props: import("./features/menu").MenuProps) => void;
 };
 export default chatbot;
 //# sourceMappingURL=web.d.ts.map

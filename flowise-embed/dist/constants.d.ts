@@ -1,7 +1,6 @@
 import type { BubbleProps } from './features/bubble';
-import type { BubblePropsCriticalAnalysis } from './features/bubbleCriticalAnalysis';
+import type { MenuProps } from './features/menu';
 export declare const defaultBotProps: BubbleProps;
-export declare const defaultBotPropsAnalise: BubblePropsCriticalAnalysis;
 export declare const constants: {
     apiUtilsUrl: string;
     n8nDomain: string;
@@ -12,4 +11,5 @@ export declare const constants: {
     n8nSixthStep: string;
     n8nSeventhStep: string;
 };
+export declare const defaultMenuProps: MenuProps;
 //# sourceMappingURL=constants.d.ts.map

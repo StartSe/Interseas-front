@@ -3,7 +3,7 @@ export enum locationValues {
   COUNTRY = 'Country',
 }
 
-const removeAccents = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const removeAccents = (str: string) => (str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '');
 
 const statePatterns: { [key: string]: RegExp } = {
   AC: /\b(Acre|AC)\b/i,
@@ -96,7 +96,7 @@ const countryPatterns: { [key: string]: RegExp } = {
   Eslováquia: /\b(Slovakia|SVK|Eslovaquia)\b/i,
   Eslovênia: /\b(Slovenia|SVN|Eslovenia)\b/i,
   Espanha: /\b(Spain|ESP|Espanha)\b/i,
-  EUA: /\b(United[\s_-]?States|USA|US|EUA)\b/i,
+  EUA: /\b(United[\s_-]?States|USA|US|EUA|Estados[\s_-]?Unidos)\b/i,
   Estônia: /\b(Estonia|EST)\b/i,
   Eswatini: /\b(Eswatini|SWZ)\b/i,
   Etiópia: /\b(Ethiopia|ETH|Etiopia)\b/i,

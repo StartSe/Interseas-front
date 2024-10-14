@@ -459,7 +459,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
 
       for (const key in jsonDataCriticalAnalysis) {
-        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const normalizedKey = key ? key.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '';
 
         if (/estado/i.test(normalizedKey)) {
           jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.STATE);

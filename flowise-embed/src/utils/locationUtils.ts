@@ -3,7 +3,7 @@ export enum locationValues {
   COUNTRY = 'Country',
 }
 
-const removeAccents = (str: string) => (str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '');
+export const removeAccents = (str: string) => (str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '');
 
 const statePatterns: { [key: string]: RegExp } = {
   AC: /\b(Acre|AC)\b/i,

@@ -482,10 +482,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setDisableInput(false);
+        setDocumentsUploaded(true);
+        setLoading(false);
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
       } else {
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
         setLoading(true);
+        setDisableInput(true);
+        setDocumentsUploaded(false);
+        setStartUploadingDocument(true);
+        setIsUploadButtonDisabled(true);
 
         const parallelApiExecutor = new ParallelApiExecutor({
           jsonCriticalAnalysisUpdate,
@@ -516,6 +522,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } catch (error) {
       console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
       throw error;
+    } finally {
+      setIsUploadButtonDisabled(false);
     }
   };
 
@@ -1061,9 +1069,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         break;
       default:
         await processNextChecklist();
+        setDocumentsUploaded(true);
+        setIsUploadButtonDisabled(false);
     }
-    setDocumentsUploaded(true);
-    setIsUploadButtonDisabled(false);
   };
 
   const processFileToSend = async (file: File) => {
@@ -1274,8 +1282,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
 
-    setLoading(false);
-    setUserInput('');
     scrollToBottom();
   };
 

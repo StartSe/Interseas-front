@@ -1100,18 +1100,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const getTextContent = async (file: File) => {
     let textContent = '';
-    const textContentResponse = await pdfToText(file);
-    if (textContentResponse.ok) {
-      const textContentJsonResponse = await textContentResponse.json();
-      textContent = textContentJsonResponse.data;
+    try {
+      const textContentResponse = await pdfToText(file);
+      if (textContentResponse.ok) {
+        const textContentJsonResponse = await textContentResponse.json();
+        textContent = textContentJsonResponse.data;
+      }
+      return textContent;
+    } catch {
+      return '';
     }
-    return textContent;
   };
 
   const processNextChecklist = async () => {
     setUploading(true);
     setLoading(true);
-    console.log('1');
 
     const files = filesMapping();
 

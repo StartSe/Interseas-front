@@ -40,7 +40,7 @@ import { pdfToText } from '@/service/aiUtilsApi';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
-import { locationValues, normalizeLocationNames } from '@/utils/locationUtils';
+import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -459,7 +459,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
 
       for (const key in jsonDataCriticalAnalysis) {
-        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const normalizedKey = removeAccents(key);
 
         if (/estado/i.test(normalizedKey)) {
           jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.STATE);

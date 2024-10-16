@@ -1341,7 +1341,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 type="button"
                 isDisabled={messages().length === 1}
                 class="my-2 ml-2"
-                on:click={clearChat}
+                on:click={() => {
+                  window.location.reload();
+                  clearChat();
+                }}
               />
             </div>
           </div>

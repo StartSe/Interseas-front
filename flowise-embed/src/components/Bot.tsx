@@ -1157,7 +1157,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
             }
 
-            const generateChecklistItemToPrint = (key: string, value: string) => {
+            const generateChecklistItemToPrint = (key: string, value: any) => {
+              if (value && typeof value === 'object') {
+                const formatted_value = Object.entries(value)
+                  .map(([key, value]) => {
+                    return `${key}: ${value}`;
+                  })
+                  .join('<br>');
+                value = formatted_value;
+              }
+
               const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
               const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
 
@@ -1175,13 +1184,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             let checklistMessage = `<b>${fileMap.type}:</b><br>`;
 
             for (const [key, value] of Object.entries(jsonData.checklist)) {
-              checklistMessage += generateChecklistItemToPrint(key, value as string);
+              checklistMessage += generateChecklistItemToPrint(key, value);
             }
 
             if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
               checklistMessage += `<br><b>Conferências:</b><br>`;
               for (const [key, value] of Object.entries(jsonData['conferências'])) {
-                checklistMessage += generateChecklistItemToPrint(key, value as string);
+                checklistMessage += generateChecklistItemToPrint(key, value);
               }
             }
 

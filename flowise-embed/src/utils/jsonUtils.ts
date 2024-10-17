@@ -36,5 +36,5 @@ function shouldReplaceWithNull(keyValue: any): boolean {
     return false;
   }
 
-  return ['n/a', 'null', 'undefined', ''].includes(keyValue.toLowerCase());
+  return ['n/a', 'null', 'undefined', ''].includes(keyValue.toString().toLowerCase());
 }

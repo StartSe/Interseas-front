@@ -714,7 +714,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const isValidURL = (url: string): URL | undefined => {
     try {
       return new URL(url);
-    } catch (err) {
+    } catch {
       return undefined;
     }
   };
@@ -1219,6 +1219,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           }
           break;
         } catch (error) {
+          console.error(error);
           if (attempt === maxAttempts) {
             const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
 

@@ -5,7 +5,7 @@ export const pdfToText = async (file: Blob): Promise<Response> => {
   const form = new FormData();
   form.append('file', file);
 
-  const timeout_seconds = 10;
+  const timeout_seconds = 30;
   const signal = AbortSignal.timeout(timeout_seconds * 1000);
 
   return fetch(`${apiHost}/text-extraction/plain-text`, {

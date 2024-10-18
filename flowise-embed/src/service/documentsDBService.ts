@@ -7,6 +7,7 @@ interface DocumentData {
   checklist_result?: any;
   extraction_result?: any;
   pdf_to_text?: string;
+  checklist_type?: string;
   images?: string[];
 }
 
@@ -16,18 +17,18 @@ export default class DocumentDatabaseService {
   public documentData: DocumentData & { version: number };
 
   constructor(documentData: DocumentData) {
-    this.apiEndpoint = `${constants.supabaseApiEndpoint}/Documents`;
-    this.storageEndpoint = `${constants.supabaseStorageEndpoint}`;
+    this.apiEndpoint = `${constants.supabaseApiEndpoint}rest/v1/Documents`;
+    this.storageEndpoint = `${constants.supabaseApiEndpoint}storage/v1/object/Interseas/`;
 
-    const versionMatch = documentData.file_name.match(/v(\d+)/);
-    const version = versionMatch ? parseInt(versionMatch[1], 10) : 1;
+    const versionMatch = documentData.file_name.match(/v(\d+)/i);
+    const version = versionMatch ? parseInt(versionMatch[1]) : 0; // Remove o 10 e usa somente parseInt sem base 10
+    const fileNameWithoutVersion = documentData.file_name.replace(/v\d+/i, '').trim();
 
-    this.documentData = { ...documentData, version };
+    this.documentData = { ...documentData, file_name: fileNameWithoutVersion, version };
   }
 
   public async saveDocument(): Promise<void> {
     try {
-      //   await this.saveImagesToBucket();
       await this.sendToDatabase(this.documentData);
     } catch (error) {
       console.error('Erro ao salvar documento:', error);
@@ -53,43 +54,4 @@ export default class DocumentDatabaseService {
       console.error('Erro ao salvar no banco de dados:', error);
     }
   }
-
-  //   // Método para salvar as imagens geradas no Supabase Storage Bucket
-  //   private async saveImagesToBucket(): Promise<void> {
-  //     if (!this.documentData.images || this.documentData.images.length === 0) {
-  //       console.log('Nenhuma imagem para salvar.');
-  //       return;
-  //     }
-
-  //     const savedImageUrls: string[] = [];
-  //     for (let i = 0; i < this.documentData.images.length; i++) {
-  //       const image = this.documentData.images[i];
-  //       const fileName = `${this.documentData.file_name}-page-${i + 1}.png`;
-
-  //       try {
-  //         const response = await fetch(`${this.storageEndpoint}/upload`, {
-  //           method: 'POST',
-  //           headers: {
-  //             apikey: constants.supabaseApiKey,
-  //             Authorization: `Bearer ${constants.supabaseApiKey}`,
-  //             'Content-Type': 'application/octet-stream', // para enviar a imagem em binário
-  //           },
-  //           body: image, // Aqui, você pode enviar o Blob ou base64 da imagem
-  //         });
-
-  //         if (response.ok) {
-  //           const { Key } = await response.json();
-  //           const imageUrl = `${this.storageEndpoint}/public/${Key}`;
-  //           savedImageUrls.push(imageUrl);
-  //         } else {
-  //           throw new Error('Erro ao salvar imagem no bucket.');
-  //         }
-  //       } catch (error) {
-  //         console.error('Erro ao salvar imagem no bucket:', error);
-  //       }
-  //     }
-
-  //     // Atualiza o documento com as URLs das imagens salvas
-  //     this.documentData.images = savedImageUrls;
-  //   }
 }

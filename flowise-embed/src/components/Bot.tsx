@@ -1091,8 +1091,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const getTextContent = async (file: File) => {
     let textContent = '';
-    textContent = await pdfToText(file);
     try {
+      textContent = await pdfToText(file);
       return textContent;
     } catch {
       return '';

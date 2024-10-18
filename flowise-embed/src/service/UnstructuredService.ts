@@ -14,6 +14,7 @@ interface UnstructuredElement {
   text: string;
   metadata: Metadata;
 }
+
 type UnstructuredResponse = UnstructuredElement[];
 
 class UnstructuredService {
@@ -24,6 +25,7 @@ class UnstructuredService {
     this.apiHost = constants.n8nDomain;
     this.path = constants.n8nPdfPath;
   }
+  
   public async pdfToText(file: Blob): Promise<string> {
     const form = new FormData();
     form.append('files', file);

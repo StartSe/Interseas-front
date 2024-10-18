@@ -68,6 +68,7 @@ const mergeImages = async (images: string[]) => {
 
   return canvas.toDataURL();
 };
+
 const blobToFile = (blob: Blob, fileName: string): File => {
   return new File([blob], fileName, { type: blob.type });
 };
@@ -118,6 +119,7 @@ export const convertPdfToMultipleImages = async (file: File) => {
 
   return files;
 };
+
 export const pdfToText = async (blob: Blob): Promise<string> => {
   try {
     const service = new UnstructuredService();
@@ -130,12 +132,11 @@ export const pdfToText = async (blob: Blob): Promise<string> => {
 interface IPageTextContent {
   items: { str: string }[];
 }
+
 const extractTextLocally = async (file: File): Promise<string> => {
   try {
-    console.log('Starting local text extraction');
     const fileData = (await readFileData(file)) as string;
     const pdfDocument = await pdfjsLib.getDocument(fileData).promise;
-    console.log({ pdfDocument });
 
     const pageTextPromises = [];
     for (let pageIndex = 1; pageIndex <= pdfDocument.numPages; pageIndex++) {

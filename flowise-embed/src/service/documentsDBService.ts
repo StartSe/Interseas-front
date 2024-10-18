@@ -21,7 +21,7 @@ export default class DocumentDatabaseService {
     this.storageEndpoint = `${constants.supabaseApiEndpoint}storage/v1/object/Interseas/`;
 
     const versionMatch = documentData.file_name.match(/v(\d+)/i);
-    const version = versionMatch ? parseInt(versionMatch[1]) : 0; // Remove o 10 e usa somente parseInt sem base 10
+    const version = versionMatch ? parseInt(versionMatch[1]) : 0;
     const fileNameWithoutVersion = documentData.file_name.replace(/v\d+/i, '').trim();
 
     this.documentData = { ...documentData, file_name: fileNameWithoutVersion, version };

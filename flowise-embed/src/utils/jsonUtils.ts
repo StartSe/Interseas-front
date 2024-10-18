@@ -1,7 +1,7 @@
 export enum customBooleanValues {
   NOT_FOUND = 'Não consta',
   FOUND = 'Consta',
-  NOT_MACHINE = 'Não, não é uma máquina',
+  NOT_MACHINE = 'Não, ',
 }
 
 export function sanitizeJson<T>(json: T): T {

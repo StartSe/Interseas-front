@@ -54,7 +54,7 @@ export const defaultChecklist = `
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Descrição EX-tarifário - (formato "EX-[número]")
 Conferências:
-• Máquina/Equipamento - (true/false)
+• Máquina/Equipamento
 • Marca - (se mercadoria é máquina ou equipamento)
 • Modelo - (se mercadoria é máquina ou equipamento)
 • Possui Ex-tarifário - (true/false)
@@ -68,7 +68,7 @@ Conferências:
 
 export const conferencesDefault = `
 Conferências:
-• Máquina/Equipamento - (true/false)
+• Máquina/Equipamento
 • Possui Ex-tarifário - (true/false)`;
 
 export const checklistCeMercante = `

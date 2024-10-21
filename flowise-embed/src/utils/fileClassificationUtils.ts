@@ -57,7 +57,7 @@ Conferências:
 • Máquina/Equipamento
 • Marca - (se mercadoria é máquina ou equipamento)
 • Modelo - (se mercadoria é máquina ou equipamento)
-• Possui Ex-tarifário - (Se sim, justifique o porque/Se não, justifique o porque)
+• Possui Ex-tarifário - (Sim/Não, sempre justificando)
 • Multiplicação de valor unitário = quantidade comercializada de cada item
 • Somatório dos itens = valor total informado
 • Se importação direta: Notify = Importador
@@ -69,7 +69,7 @@ Conferências:
 export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento
-• Possui Ex-tarifário - (Se sim, justifique o porque/Se não, justifique o porque)`;
+• Possui Ex-tarifário - (Sim/Não, sempre justificando)`;
 
 export const checklistCeMercante = `
 • Número do conhecimento de embarque

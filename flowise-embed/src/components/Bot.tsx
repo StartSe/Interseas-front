@@ -1162,17 +1162,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
             const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
             const isMachineOrEquipment = value && value.includes(customBooleanValues.NOT_MACHINE.toString());
+            const equipmentValue = isMachineOrEquipment ? value : 'Não identificado';
 
             let checklistItem = `<input type="checkbox" ${hasValue && !isMachineOrEquipment ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
             checklistItem += spacedText(
               hasValue && !isMachineOrEquipment
                 ? value
                 : `<span style="color: ${colorTheme.errorColor};">${
-                    key === 'Assinatura'
-                      ? 'A assinatura não foi identificada, por favor verifique manualmente!'
-                      : isMachineOrEquipment
-                        ? value
-                        : 'Não identificado'
+                    key === 'Assinatura' ? 'A assinatura não foi identificada, por favor verifique manualmente!' : equipmentValue
                   }</span>`,
             );
             return checklistItem;

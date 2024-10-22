@@ -1,5 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - pdfjsLib is being loaded on index.html through <script> tag
+
+import UnstructuredService from '@/service/UnstructuredService';
+
+declare global {
+  interface Window {
+    pdfjsLib: any;
+  }
+}
+
 const pdfjsLib = window.pdfjsLib;
 
 const readFileData = (file: File) => {
@@ -61,6 +69,10 @@ const mergeImages = async (images: string[]) => {
   return canvas.toDataURL();
 };
 
+const blobToFile = (blob: Blob, fileName: string): File => {
+  return new File([blob], fileName, { type: blob.type });
+};
+
 const base64ToFile = (base64String: string, fileName: string, fileType: string): File => {
   const byteCharacters = window.atob(base64String);
   const byteArrays = [];
@@ -106,4 +118,42 @@ export const convertPdfToMultipleImages = async (file: File) => {
   }
 
   return files;
+};
+
+export const pdfToText = async (blob: Blob): Promise<string> => {
+  try {
+    const service = new UnstructuredService();
+    return service.pdfToText(blob);
+  } catch (error) {
+    const file = blobToFile(blob, 'convertedFile.pdf');
+    return extractTextLocally(file);
+  }
+};
+interface IPageTextContent {
+  items: { str: string }[];
+}
+
+const extractTextLocally = async (file: File): Promise<string> => {
+  try {
+    const fileData = (await readFileData(file)) as string;
+    const pdfDocument = await pdfjsLib.getDocument(fileData).promise;
+
+    const pageTextPromises = [];
+    for (let pageIndex = 1; pageIndex <= pdfDocument.numPages; pageIndex++) {
+      const page = await pdfDocument.getPage(pageIndex);
+      const textContent: IPageTextContent = await page.getTextContent();
+      const pageText = textContent.items.map((item) => item.str).join('');
+      pageTextPromises.push(pageText);
+    }
+
+    const pageTexts = await Promise.all(pageTextPromises);
+    const extractedText = pageTexts.join('');
+    if (!extractedText) {
+      throw new Error('No text extracted from PDF');
+    }
+    return extractedText;
+  } catch (error) {
+    console.error('Error during local text extraction:', error);
+    throw error;
+  }
 };

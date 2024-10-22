@@ -25,7 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { convertPdfToMultipleImages } from '@/utils/pdfUtils';
+import { convertPdfToMultipleImages, pdfToText } from '@/utils/pdfUtils';
 import {
   defaultChecklist,
   conferencesDefault,
@@ -36,7 +36,6 @@ import {
 import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
-import { pdfToText } from '@/service/aiUtilsApi';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
@@ -1093,11 +1092,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const getTextContent = async (file: File) => {
     let textContent = '';
     try {
-      const textContentResponse = await pdfToText(file);
-      if (textContentResponse.ok) {
-        const textContentJsonResponse = await textContentResponse.json();
-        textContent = textContentJsonResponse.data;
-      }
+      textContent = await pdfToText(file);
       return textContent;
     } catch {
       return '';

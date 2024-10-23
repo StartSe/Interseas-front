@@ -10,6 +10,10 @@ declare global {
 
 const pdfjsLib = window.pdfjsLib;
 
+interface TextItem {
+  str: string;
+}
+
 const readFileData = (file: File) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

@@ -22,10 +22,10 @@ export const constants = {
   n8nFifthStep: 'e05fca0c-20fb-42ed-a923-a627d9ae7f13',
   n8nSixthStep: '50b6723d-7cff-4ecf-852e-f693efd9d95f',
   n8nSeventhStep: '916a955c-467e-4830-9d95-3bb3fc976698',
-  supabaseApiEndpoint: 'https://virfxvqlitfelwvsamuw.supabase.co/rest/v1',
+  supabaseApiEndpoint: 'https://virfxvqlitfelwvsamuw.supabase.co/',
   supabaseApiKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcmZ4dnFsaXRmZWx3dnNhbXV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyODMyOTIxNCwiZXhwIjoyMDQzOTA1MjE0fQ.lY1MfXPHo9IbzFlBxMt-RVJ8uqXN9G3rKCVzvSjWUBg',
-  supabaseStorageEndpoint: 'https://virfxvqlitfelwvsamuw.supabase.co/storage/v1/s3',
+  n8nFlowSendDataToSupabase: '83faf03f-f684-4b7c-9c07-10f0fb237a26',
 };
 
 export const defaultMenuProps: MenuProps = {

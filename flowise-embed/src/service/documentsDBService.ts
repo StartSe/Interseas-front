@@ -3,7 +3,7 @@ import { constants } from '@/constants';
 interface DocumentData {
   file_name: string;
   file_extension: string;
-  hash: string;
+  hash: any;
   checklist_result?: any;
   extraction_result?: any;
   pdf_to_text?: string;
@@ -24,10 +24,10 @@ class DocumentsDBService {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao enviar documento ao banco de dados.');
+        throw new Error('Error sending document to the database.');
       }
     } catch (error) {
-      console.error('Erro ao salvar no banco de dados:', error);
+      console.error('Error saving to the database:', error);
     }
   }
 

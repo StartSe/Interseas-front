@@ -40,6 +40,7 @@ import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
+import DocumentsDBService from '@/service/documentsDBService';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1033,7 +1034,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const filesMap: FileMapping[] = [];
 
-    files.forEach((file) => {
+    for (const file of files) {
       const fileMap = {
         file: file,
       } as FileMapping;
@@ -1048,8 +1049,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.type = DocumentTypes.DOCUMENTO_SEM_CHECKLIST;
         fileMap.checklist = defaultChecklist;
       }
+      await extractAndSaveDocumentData(file, fileMap);
       filesMap.push(fileMap);
-    });
+    }
 
     setFilesMapping(filesMap);
 
@@ -1071,6 +1073,35 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setDocumentsUploaded(true);
         setIsUploadButtonDisabled(false);
     }
+  };
+
+  const extractDocumentData = async (file: UploadFile, fileMap: any) => {
+    const textContent = await getTextContent(file.file);
+    // const pdf = await printPdfBase64(file.file);
+
+    return {
+      file_name: file.name,
+      file_extension: file.file.type,
+      // hash: pdf?.base64,
+      checklist_result: fileMap.checklist,
+      extraction_result: textContent,
+      // pdf_to_text: pdf?.text,
+      checklist_type: fileMap.type,
+    };
+  };
+
+  const saveDocumentData = async (documentData: any) => {
+    const documentService = new DocumentsDBService();
+    try {
+      await documentService.saveDocument(documentData);
+    } catch (error) {
+      console.error('Error saving to the database:', error);
+    }
+  };
+
+  const extractAndSaveDocumentData = async (file: UploadFile, fileMap: any) => {
+    const documentData = await extractDocumentData(file, fileMap);
+    await saveDocumentData(documentData);
   };
 
   const processFileToSend = async (file: File) => {

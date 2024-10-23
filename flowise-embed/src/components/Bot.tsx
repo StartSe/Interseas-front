@@ -1160,17 +1160,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             }
 
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-            const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
-            const isMachineOrEquipment = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
-            const equipmentValue = isMachineOrEquipment ? value : 'Não identificado';
+            const isValidValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+            const hasJustificationNotFound = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
+            const defaultNotFoundMessage = hasJustificationNotFound ? value : 'Não identificado';
+            const signatureKey = 'Assinatura';
+            const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
+            const notFoundMessage = key === signatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
 
-            let checklistItem = `<input type="checkbox" ${hasValue && !isMachineOrEquipment ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            let checklistItem = `<input type="checkbox" ${isValidValue && !hasJustificationNotFound ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
             checklistItem += spacedText(
-              hasValue && !isMachineOrEquipment
-                ? value
-                : `<span style="color: ${colorTheme.errorColor};">${
-                    key === 'Assinatura' ? 'A assinatura não foi identificada, por favor verifique manualmente!' : equipmentValue
-                  }</span>`,
+              isValidValue && !hasJustificationNotFound ? value : `<span style="color: ${colorTheme.errorColor};">${notFoundMessage}</span>`,
             );
             return checklistItem;
           };

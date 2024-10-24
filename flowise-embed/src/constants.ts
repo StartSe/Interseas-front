@@ -26,6 +26,7 @@ export const constants = {
   supabaseApiKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpcmZ4dnFsaXRmZWx3dnNhbXV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyODMyOTIxNCwiZXhwIjoyMDQzOTA1MjE0fQ.lY1MfXPHo9IbzFlBxMt-RVJ8uqXN9G3rKCVzvSjWUBg',
   n8nFlowSendDataToSupabase: '83faf03f-f684-4b7c-9c07-10f0fb237a26',
+  n8nFlowGetDataToSupabase: 'cce1b9da-cf8e-46cb-b36a-9028c13f1a4e',
 };
 
 export const defaultMenuProps: MenuProps = {

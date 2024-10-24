@@ -25,7 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { convertPdfToMultipleImages, pdfToText } from '@/utils/pdfUtils';
+import { convertPdfToMultipleImages, pdfToText, pdfToSHA256 } from '@/utils/pdfUtils';
 import {
   defaultChecklist,
   conferencesDefault,
@@ -40,6 +40,7 @@ import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
+import DocumentsDBService from '@/service/documentsDBService';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1033,7 +1034,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const filesMap: FileMapping[] = [];
 
-    files.forEach((file) => {
+    for (const file of files) {
       const fileMap = {
         file: file,
       } as FileMapping;
@@ -1049,7 +1050,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);
-    });
+    }
 
     setFilesMapping(filesMap);
 
@@ -1071,6 +1072,33 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setDocumentsUploaded(true);
         setIsUploadButtonDisabled(false);
     }
+  };
+
+  const extractDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
+    const pdfSHA256 = await pdfToSHA256(fileMap.file.file);
+    return {
+      file_name: fileMap.file.file.name,
+      file_extension: fileMap.file.file.type,
+      hash: pdfSHA256,
+      checklist_result: fileMap.filledChecklist || agentResult,
+      extraction_result: fileMap.content || agentResult,
+      pdf_to_text: textContent,
+      checklist_type: fileMap.type,
+    };
+  };
+
+  const saveDocumentData = async (documentData: any) => {
+    const documentService = new DocumentsDBService();
+    try {
+      await documentService.saveDocument(documentData);
+    } catch (error) {
+      console.error('Error saving to the database:', error);
+    }
+  };
+
+  const extractAndSaveDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
+    const documentData = await extractDocumentData(fileMap, textContent, agentResult?.text);
+    await saveDocumentData(documentData);
   };
 
   const processFileToSend = async (file: File) => {
@@ -1143,6 +1171,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           if (!Object.keys(jsonData).includes('checklist')) {
             throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
           }
+
+          extractAndSaveDocumentData(fileMap, textContent);
 
           const generateChecklistItemToPrint = (key: string, value: any) => {
             if (value && typeof value === 'object') {
@@ -1285,12 +1315,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
+    const textContent = await getTextContent(file.file);
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls as Partial<FileUpload>[] }]);
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
+    for (const file of files) {
+      extractAndSaveDocumentData(file, textContent, dataFoundCriticalAnalysis);
+    }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
 
     scrollToBottom();

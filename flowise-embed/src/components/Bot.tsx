@@ -1000,6 +1000,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const sendBackgroundMessage = async (value: string, urls: any[]) => {
+    console.log('passou aqui', value);
     const body: IncomingInput = {
       question: value,
       chatId: chatId(),
@@ -1074,14 +1075,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const extractDocumentData = async (fileMap: any, textContent: any) => {
+  const extractDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
     const pdfBase64 = await pdfToBase64(fileMap.file.file);
     return {
       file_name: fileMap.file.file.name,
       file_extension: fileMap.file.file.type,
       hash: pdfBase64,
-      checklist_result: fileMap.filledChecklist,
-      extraction_result: fileMap.content,
+      checklist_result: fileMap.filledChecklist || agentResult,
+      extraction_result: fileMap.content || agentResult,
       pdf_to_text: textContent,
       checklist_type: fileMap.type,
     };
@@ -1096,8 +1097,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const extractAndSaveDocumentData = async (fileMap: any, textContent: any) => {
-    const documentData = await extractDocumentData(fileMap, textContent);
+  const extractAndSaveDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
+    const documentData = await extractDocumentData(fileMap, textContent, agentResult?.text);
     await saveDocumentData(documentData);
   };
 
@@ -1303,12 +1304,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
+    const textContent = await getTextContent(file.file);
 
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls as Partial<FileUpload>[] }]);
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
+    for (const file of files) {
+      extractAndSaveDocumentData(file, textContent, dataFoundCriticalAnalysis);
+    }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
 
     scrollToBottom();

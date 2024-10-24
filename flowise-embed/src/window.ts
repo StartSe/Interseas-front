@@ -33,6 +33,12 @@ export const initMenu = (props: MenuProps) => {
   Object.assign(element, props);
 };
 
+export const initHome = () => {
+  const element = document.querySelector('flowise-menu-home');
+  if (!element) throw new Error('<flowise-home> element not found.');
+  Object.assign(element);
+};
+
 export const destroy = () => {
   elementUsed?.remove();
 };
@@ -42,6 +48,7 @@ type Chatbot = {
   init: typeof init;
   destroy: typeof destroy;
   initMenu: typeof initMenu;
+  initHome: typeof initHome;
 };
 
 declare const window:
@@ -55,6 +62,7 @@ export const parseChatbot = () => ({
   init,
   destroy,
   initMenu,
+  initHome,
 });
 
 export const injectChatbotInWindow = (bot: Chatbot) => {

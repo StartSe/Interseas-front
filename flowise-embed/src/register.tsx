@@ -3,6 +3,7 @@ import { defaultBotProps, defaultMenuProps } from './constants';
 import { Bubble } from './features/bubble';
 import { Full } from './features/full';
 import { Menu } from './features/menu';
+import { Home } from '@/pages/Home/Home';
 
 export const registerWebComponents = () => {
   if (typeof window === 'undefined') return;
@@ -10,4 +11,5 @@ export const registerWebComponents = () => {
   customElement('flowise-fullchatbot', defaultBotProps, Full);
   customElement('flowise-chatbot', defaultBotProps, Bubble);
   customElement('flowise-menu', defaultMenuProps, Menu);
+  customElement('flowise-home', {}, Home);
 };

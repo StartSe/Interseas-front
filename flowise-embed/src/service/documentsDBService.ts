@@ -13,7 +13,7 @@ interface DocumentData {
 class DocumentsDBService {
   private async sendToDatabase(document: DocumentData): Promise<void> {
     try {
-      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
+      await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,10 +22,6 @@ class DocumentsDBService {
         },
         body: JSON.stringify(document),
       });
-
-      if (!response.ok) {
-        throw new Error('Error sending document to the database.');
-      }
     } catch (error) {
       console.error('Error saving to the database:', error);
     }

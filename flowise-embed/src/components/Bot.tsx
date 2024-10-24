@@ -40,6 +40,7 @@ import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
+import { SelectionBubble } from './bubbles/SelectionBubble';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -71,7 +72,7 @@ type FilePreview = {
   type: string;
 };
 
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage';
+type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage' | 'selectionMessage';
 
 export type IAgentReasoning = {
   agentName?: string;
@@ -163,6 +164,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [loading, setLoading] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
+  const [ncmPhase, setNcmPhase] = createSignal(false);
+
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
     [
@@ -210,6 +213,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
 
   onMount(() => {
+    if (props.flow === Flow.CriticalAnalysis.toString()) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' }]);
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INICIAL_QUESTION, type: 'selectionMessage' }]);
+
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
     if (botProps?.observersConfig) {
       const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;
       typeof observeUserInput === 'function' &&
@@ -367,6 +377,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
   };
 
+  createEffect(() => {
+    const selectionMessage = messages().findLast((message) => message.type === 'selectionMessage')?.message;
+    const userMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
+
+    if (
+      selectionMessage === messageUtils.NCM_INICIAL_QUESTION ||
+      selectionMessage === messageUtils.NCM_CONTINUE_QUESTION ||
+      selectionMessage === messageUtils.NCM_HELP_QUESTION
+    ) {
+      if (userMessage === 'Sim') {
+        setNcmPhase(true);
+      } else if (userMessage === 'Não') {
+        setNcmPhase(false);
+      }
+    }
+  });
+
   const handleSubmit = async (inputValue: string, action?: IAction | null) => {
     try {
       setUserInput(inputValue);
@@ -378,10 +405,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       switch (props.flow) {
         case Flow.CriticalAnalysis.toString(): {
-          const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
-          const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
-          updateMessages(inputValue, fileUploads);
-          await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+          if (ncmPhase()) {
+            updateMessages(inputValue, fileUploads);
+            const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
+            const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
+            setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
+            setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
+          } else {
+            updateMessages(inputValue, fileUploads);
+            const promptInformMissingData = `CORRIGE_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+            const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+            await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+          }
           break;
         }
         default: {
@@ -480,17 +515,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
-        setDisableInput(false);
-        setDocumentsUploaded(true);
         setLoading(false);
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
       } else {
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
         setLoading(true);
-        setDisableInput(true);
-        setDocumentsUploaded(false);
         setStartUploadingDocument(true);
-        setIsUploadButtonDisabled(true);
 
         const parallelApiExecutor = new ParallelApiExecutor({
           jsonCriticalAnalysisUpdate,
@@ -500,6 +530,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         await parallelApiExecutor.execute();
         setLoading(false);
       }
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_HELP_QUESTION, type: 'selectionMessage' }]);
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(
@@ -521,8 +552,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } catch (error) {
       console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
       throw error;
-    } finally {
-      setIsUploadButtonDisabled(false);
     }
   };
 
@@ -1027,10 +1056,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const startProcessingFiles = async (files: UploadFile[]) => {
-    setIsUploadModalOpen(false);
-    setDisableInput(true);
-    setIsUploadButtonDisabled(true);
+    if (props.flow !== Flow.CriticalAnalysis.toString()) {
+      setIsUploadModalOpen(false);
+      setDisableInput(true);
+      setIsUploadButtonDisabled(true);
+    }
 
+    if (ncmPhase()) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' }]);
+      return;
+    }
     const filesMap: FileMapping[] = [];
 
     files.forEach((file) => {
@@ -1379,6 +1414,28 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         fontSize={props.fontSize}
                       />
                     )}
+                    {message.type === 'selectionMessage' && (
+                      <SelectionBubble
+                        message={message}
+                        fileAnnotations={message.fileAnnotations}
+                        chatflowid={props.chatflowid}
+                        chatId={chatId()}
+                        apiHost={props.apiHost}
+                        backgroundColor={props.botMessage?.backgroundColor}
+                        textColor={props.botMessage?.textColor}
+                        feedbackColor={props.feedback?.color}
+                        showAvatar={props.botMessage?.showAvatar}
+                        avatarSrc={props.botMessage?.avatarSrc}
+                        chatFeedbackStatus={chatFeedbackStatus()}
+                        fontSize={props.fontSize}
+                        isLoading={loading() && index() === messages().length - 1}
+                        showAgentMessages={props.showAgentMessages}
+                        handleActionClick={(label, action) => handleActionClick(label, action)}
+                        setMessages={setMessages}
+                        handleSubmit={handleSubmit}
+                        clearChat={clearChat}
+                      />
+                    )}
                     {message.type === 'apiMessage' && (
                       <BotBubble
                         message={message}
@@ -1584,24 +1641,29 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   handleFileChange={handleFileChange}
                   sendMessageSound={props.textInput?.sendMessageSound}
                   sendSoundLocation={props.textInput?.sendSoundLocation}
+                  startProcessingFiles={startProcessingFiles}
                 />
               )
             ) : (
               <>
-                <UploadButton
-                  onClick={() => setIsUploadModalOpen(true)}
-                  text={messageUtils.UPLOAD_BUTTON_LABEL}
-                  disabled={isUploadButtonDisabled()}
-                />
-                <FileUploadModal
-                  isOpen={isUploadModalOpen()}
-                  onClose={() => setIsUploadModalOpen(false)}
-                  onUploadSubmit={startProcessingFiles}
-                  modalTitle={messageUtils.MODAL_TITLE}
-                  uploadLabel={messageUtils.UPLOADING_LABEL}
-                  uploadingButtonLabel={messageUtils.MODAL_BUTTON}
-                  errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
-                />
+                {props.flow !== Flow.CriticalAnalysis.toString() ? (
+                  <>
+                    <UploadButton
+                      onClick={() => setIsUploadModalOpen(true)}
+                      text={messageUtils.UPLOAD_BUTTON_LABEL}
+                      disabled={isUploadButtonDisabled()}
+                    />
+                    <FileUploadModal
+                      isOpen={isUploadModalOpen()}
+                      onClose={() => setIsUploadModalOpen(false)}
+                      onUploadSubmit={startProcessingFiles}
+                      modalTitle={messageUtils.MODAL_TITLE}
+                      uploadLabel={messageUtils.UPLOADING_LABEL}
+                      uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+                      errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+                    />
+                  </>
+                ) : null}
               </>
             )}
           </div>

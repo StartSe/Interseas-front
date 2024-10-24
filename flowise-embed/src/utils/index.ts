@@ -16,8 +16,11 @@ export const sendRequest = async <ResponseData>(
       }
     | string,
 ): Promise<{ data?: ResponseData; error?: Error }> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 240000);
   try {
     const url = typeof params === 'string' ? params : params.url;
+
     const response = await fetch(url, {
       method: typeof params === 'string' ? 'GET' : params.method,
       mode: 'cors',
@@ -28,7 +31,9 @@ export const sendRequest = async <ResponseData>(
             }
           : undefined,
       body: typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined,
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     let data: any;
     const contentType = response.headers.get('Content-Type');
     if (contentType && contentType.includes('application/json')) {

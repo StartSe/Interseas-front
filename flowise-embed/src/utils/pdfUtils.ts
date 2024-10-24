@@ -133,6 +133,18 @@ export const pdfToText = async (blob: Blob): Promise<string> => {
     return extractTextLocally(file);
   }
 };
+
+export const pdfToBase64 = async (blob: Blob): Promise<string> => {
+  try {
+    const base64FromBlob = await convertToBase64(blob);
+    return base64FromBlob;
+  } catch (error) {
+    const file = blobToFile(blob, 'convertedFile.pdf');
+    const base64FromFile = await convertToBase64(file);
+    return base64FromFile;
+  }
+};
+
 interface IPageTextContent {
   items: { str: string }[];
 }
@@ -160,4 +172,16 @@ const extractTextLocally = async (file: File): Promise<string> => {
     console.error('Error during local text extraction:', error);
     throw error;
   }
+};
+
+const convertToBase64 = (input: Blob | File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64data = reader.result?.toString().split(',')[1];
+      resolve(base64data || '');
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(input);
+  });
 };

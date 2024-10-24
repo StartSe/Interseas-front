@@ -17,21 +17,29 @@
         items: menuItems,
         fillColor: "#000000",
       });
-      Chatbot.initHome();
+      Chatbot.initHome({
+        items: menuItems,
+      });
     </script>
     <style>
-      body {
-        width: 100vw;
-        height: 100vh;
+      * {
         margin: 0;
         padding: 0;
-        display: flex;
-        flex-direction: column;
+        box-sizing: border-box;
       }
+
+      body {
+        min-height: 100vh;
+        display: grid;
+        /* flex-direction: column; */
+      }
+      /* Header */
       header {
         position: fixed;
-        /* top: 0; */
-        z-index: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
         height: 49px;
         display: flex;
         align-items: center;
@@ -40,30 +48,6 @@
         background-color: #fafafa;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
-      footer {
-        position: relative;
-        top: 47px;
-        padding: 0 12px 0 12px;
-        display: flex;
-        justify-content: space-between;
-        color: blue;
-      }
-      footer div {
-        display: flex;
-        align-items: center;
-      }
-      footer span {
-        width: 100%;
-        padding: 6px 10px 10px 10px;
-        margin: auto;
-        font-size: 13px;
-        color: #002f6c;
-      }
-      footer span a {
-        font-weight: bold;
-        color: #002f6c;
-        text-decoration: none;
-      }
     </style>
   </head>
   <body>
@@ -71,17 +55,8 @@
       <flowise-menu></flowise-menu>
       <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
     </header>
-    <flowise-home></flowise-home>
-    <footer>
-      <div>
-        <span>
-          Powered by
-          <a href="https://startse.com" target="_blank">
-            <span>&nbsp;StartSe</span>
-          </a>
-        </span>
-        <img src="./flowise-embed/src/assets/logo.svg" alt="" />
-      </div>
-    </footer>
+    <flowise-home
+      style="width: 100%; display: grid; justify-self: end"
+    ></flowise-home>
   </body>
 </html>

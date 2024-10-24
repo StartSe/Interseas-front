@@ -1,21 +1,33 @@
-import styles from '../styles/index.css';
-import { CardModel } from './components/CardModel';
+import { For } from 'solid-js';
+import styles from './styles/index.css';
+import { CardModel, CardModelProps } from './components/CardModel';
 
-export const Home = () => {
+export interface HomeProps {
+  items: CardModelProps[];
+}
+
+export const Home = (props: HomeProps) => {
   return (
     <>
-      {/* <style>{styles}</style> */}
+      <style>{styles}</style>
       <main>
         <div class="text-box">
-          <h1>Boas-vindas aao Comex AI!</h1>
+          <h1>Boas-vindas ao Comex AI!</h1>
           <p>Escolha qual tarefa deseja realizar abaixo</p>
         </div>
         <div class="card-container">
-          <CardModel typeCard="card-critical" title="Análise Crítica" onClick={() => (window.location.href = 'critical_analysis.html')} />
-          <CardModel typeCard="card-compliance" title="Análise de Compliance" onClick={() => (window.location.href = 'compliance.html')} />
-          <CardModel typeCard="card-estimativa" title="Análise de Estimativa" onClick={() => (window.location.href = 'index.html')} />
+          <For each={props.items}>{(item) => <CardModel {...item} onClick={() => (window.location.href = `${item.id}.html`)} />}</For>
         </div>
       </main>
+      <footer>
+        <span>
+          Powered by
+          <a href="https://startse.com" target="_blank">
+            <span>&nbsp;StartSe</span>
+          </a>
+        </span>
+        <img src="./flowise-embed/src/assets/logo.svg" alt="" />
+      </footer>
     </>
   );
 };

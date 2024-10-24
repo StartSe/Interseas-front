@@ -1,5 +1,5 @@
 import { customElement } from 'solid-element';
-import { defaultBotProps, defaultMenuProps } from './constants';
+import { defaultBotProps, defaultHomeProps, defaultMenuProps } from './constants';
 import { Bubble } from './features/bubble';
 import { Full } from './features/full';
 import { Menu } from './features/menu';
@@ -11,5 +11,5 @@ export const registerWebComponents = () => {
   customElement('flowise-fullchatbot', defaultBotProps, Full);
   customElement('flowise-chatbot', defaultBotProps, Bubble);
   customElement('flowise-menu', defaultMenuProps, Menu);
-  customElement('flowise-home', {}, Home);
+  customElement('flowise-home', defaultHomeProps, Home);
 };

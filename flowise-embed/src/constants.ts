@@ -1,6 +1,7 @@
 import type { BubbleProps } from './features/bubble';
 import type { MenuProps } from './features/menu';
 import { Flow } from './features/bubble/types';
+import { HomeProps } from './pages/Home/Home';
 
 export const defaultBotProps: BubbleProps = {
   chatflowid: '',
@@ -27,4 +28,8 @@ export const defaultMenuProps: MenuProps = {
   currentId: '',
   items: [],
   fillColor: '#F4F6FF',
+};
+
+export const defaultHomeProps: HomeProps = {
+  items: [],
 };

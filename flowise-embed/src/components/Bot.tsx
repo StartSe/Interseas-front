@@ -1161,7 +1161,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
             const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
-              if (validValue && !justificationNotFound) {
+              const isSuccessfulMessage = validValue && !justificationNotFound;
+              if (isSuccessfulMessage) {
                 return spacedText(value);
               } else {
                 const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
@@ -1174,11 +1175,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               }
             };
 
-            const isValidValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+            const isValidValue = value !== null && customBooleanValues.NOT_FOUND.toString() !== value;
             const hasJustificationNotFound = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
-            const isValidValueOrPositiveJustification = isValidValue && !hasJustificationNotFound;
+            const shouldCheckboxBeChecked = isValidValue && !hasJustificationNotFound;
 
-            let checklistItem = `<input type="checkbox" ${isValidValueOrPositiveJustification ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            let checklistItem = `<input type="checkbox" ${shouldCheckboxBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
             checklistItem += getMessage(key, value, isValidValue, hasJustificationNotFound);
 
             return checklistItem;

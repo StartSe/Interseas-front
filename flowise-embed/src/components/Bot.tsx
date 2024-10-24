@@ -408,13 +408,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         case Flow.CriticalAnalysis.toString(): {
           if (ncmPhase()) {
             updateMessages(inputValue, fileUploads);
-            const promptInformMissingData = `DESCOBRE_NCM\ntext:${inputValue}`;
-            const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
-            setMessages((prevMessages) => [...prevMessages, { message: jsonCriticalAnalysisUpdate.text, type: 'apiMessage' }]);
+            const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
+            const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
+            setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
             setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
           } else {
             updateMessages(inputValue, fileUploads);
-            const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+            const promptInformMissingData = `CORRIGE_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
             const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
             await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
           }

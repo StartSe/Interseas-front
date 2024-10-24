@@ -11,7 +11,7 @@ interface DocumentData {
 }
 
 class DocumentsDBService {
-  private async sendToDatabase(document: DocumentData): Promise<void> {
+  private async sendDataToN8n(document: DocumentData): Promise<void> {
     try {
       await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
         method: 'POST',
@@ -28,7 +28,7 @@ class DocumentsDBService {
   }
 
   public async saveDocument(documentData: DocumentData): Promise<void> {
-    await this.sendToDatabase(documentData);
+    await this.sendDataToN8n(documentData);
   }
 }
 

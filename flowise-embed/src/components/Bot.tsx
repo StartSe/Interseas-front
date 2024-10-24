@@ -1155,16 +1155,28 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             }
 
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-            const hasValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
+            const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
+              const isSuccessfulMessage = validValue && !justificationNotFound;
+              if (isSuccessfulMessage) {
+                return spacedText(value);
+              } else {
+                const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
+                const signatureKey = 'Assinatura';
+                const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
+                const isSignatureKey = key === signatureKey;
+                const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
 
-            let checklistItem = `<input type="checkbox" ${hasValue ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-            checklistItem += hasValue
-              ? spacedText(value)
-              : spacedText(
-                  `<span style="color: ${colorTheme.errorColor};">${
-                    key === 'Assinatura' ? 'A assinatura não foi identificada, por favor verifique manualmente!' : 'Não identificado'
-                  }</span>`,
-                );
+                return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
+              }
+            };
+
+            const isValidValue = value !== null && customBooleanValues.NOT_FOUND.toString() !== value;
+            const hasJustificationNotFound = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
+            const shouldCheckboxBeChecked = isValidValue && !hasJustificationNotFound;
+
+            let checklistItem = `<input type="checkbox" ${shouldCheckboxBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            checklistItem += getMessage(key, value, isValidValue, hasJustificationNotFound);
+
             return checklistItem;
           };
 

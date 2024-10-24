@@ -1,5 +1,5 @@
 import { For } from 'solid-js';
-import styles from './styles/index.css';
+import styles from './home.css';
 import { CardModel, CardModelProps } from './components/CardModel';
 
 export interface HomeProps {

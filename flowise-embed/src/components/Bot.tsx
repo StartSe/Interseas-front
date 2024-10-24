@@ -1160,17 +1160,27 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             }
 
             const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+            const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
+              if (validValue && !justificationNotFound) {
+                return spacedText(value);
+              } else {
+                const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
+                const signatureKey = 'Assinatura';
+                const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
+                const isSignatureKey = key === signatureKey;
+                const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+
+                return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
+              }
+            };
+
             const isValidValue = ![customBooleanValues.NOT_FOUND.toString(), null].includes(value);
             const hasJustificationNotFound = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
-            const defaultNotFoundMessage = hasJustificationNotFound ? value : 'Não identificado';
-            const signatureKey = 'Assinatura';
-            const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
-            const notFoundMessage = key === signatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+            const isValidValueOrPositiveJustification = isValidValue && !hasJustificationNotFound;
 
-            let checklistItem = `<input type="checkbox" ${isValidValue && !hasJustificationNotFound ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-            checklistItem += spacedText(
-              isValidValue && !hasJustificationNotFound ? value : `<span style="color: ${colorTheme.errorColor};">${notFoundMessage}</span>`,
-            );
+            let checklistItem = `<input type="checkbox" ${isValidValueOrPositiveJustification ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+            checklistItem += getMessage(key, value, isValidValue, hasJustificationNotFound);
+
             return checklistItem;
           };
 

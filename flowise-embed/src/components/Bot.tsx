@@ -1000,7 +1000,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const sendBackgroundMessage = async (value: string, urls: any[]) => {
-    console.log('passou aqui', value);
     const body: IncomingInput = {
       question: value,
       chatId: chatId(),

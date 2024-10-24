@@ -134,15 +134,31 @@ export const pdfToText = async (blob: Blob): Promise<string> => {
   }
 };
 
-export const pdfToBase64 = async (blob: Blob): Promise<string> => {
-  try {
-    const base64FromBlob = await convertToBase64(blob);
-    return base64FromBlob;
-  } catch (error) {
-    const file = blobToFile(blob, 'convertedFile.pdf');
-    const base64FromFile = await convertToBase64(file);
-    return base64FromFile;
-  }
+export const pdfToSHA256 = async (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.readAsArrayBuffer(blob);
+
+    reader.onloadend = async () => {
+      try {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+
+        // Convertendo o ArrayBuffer para uma string hexadecimal
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('');
+
+        resolve(hashHex);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    reader.onerror = () => {
+      reject(reader.error);
+    };
+  });
 };
 
 interface IPageTextContent {

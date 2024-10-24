@@ -25,7 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { convertPdfToMultipleImages, pdfToText, pdfToBase64 } from '@/utils/pdfUtils';
+import { convertPdfToMultipleImages, pdfToText, pdfToSHA256 } from '@/utils/pdfUtils';
 import {
   defaultChecklist,
   conferencesDefault,
@@ -1075,11 +1075,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const extractDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
-    const pdfBase64 = await pdfToBase64(fileMap.file.file);
+    const pdfSHA256 = await pdfToSHA256(fileMap.file.file);
     return {
       file_name: fileMap.file.file.name,
       file_extension: fileMap.file.file.type,
-      hash: pdfBase64,
+      hash: pdfSHA256,
       checklist_result: fileMap.filledChecklist || agentResult,
       extraction_result: fileMap.content || agentResult,
       pdf_to_text: textContent,

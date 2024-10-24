@@ -25,7 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { convertPdfToMultipleImages, pdfToText } from '@/utils/pdfUtils';
+import { convertPdfToMultipleImages, pdfToText, pdfToBase64 } from '@/utils/pdfUtils';
 import {
   defaultChecklist,
   conferencesDefault,
@@ -1049,7 +1049,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.type = DocumentTypes.DOCUMENTO_SEM_CHECKLIST;
         fileMap.checklist = defaultChecklist;
       }
-      await extractAndSaveDocumentData(file, fileMap);
       filesMap.push(fileMap);
     }
 
@@ -1075,17 +1074,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const extractDocumentData = async (file: UploadFile, fileMap: any) => {
-    const textContent = await getTextContent(file.file);
-    // const pdf = await printPdfBase64(file.file);
-
+  const extractDocumentData = async (fileMap: any, textContent: any) => {
+    const pdfBase64 = await pdfToBase64(fileMap.file.file);
     return {
-      file_name: file.name,
-      file_extension: file.file.type,
-      // hash: pdf?.base64,
-      checklist_result: fileMap.checklist,
-      extraction_result: textContent,
-      // pdf_to_text: pdf?.text,
+      file_name: fileMap.file.file.name,
+      file_extension: fileMap.file.file.type,
+      hash: pdfBase64,
+      checklist_result: fileMap.filledChecklist,
+      extraction_result: fileMap.content,
+      pdf_to_text: textContent,
       checklist_type: fileMap.type,
     };
   };
@@ -1099,8 +1096,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const extractAndSaveDocumentData = async (file: UploadFile, fileMap: any) => {
-    const documentData = await extractDocumentData(file, fileMap);
+  const extractAndSaveDocumentData = async (fileMap: any, textContent: any) => {
+    const documentData = await extractDocumentData(fileMap, textContent);
     await saveDocumentData(documentData);
   };
 
@@ -1174,6 +1171,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           if (!Object.keys(jsonData).includes('checklist')) {
             throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
           }
+
+          extractAndSaveDocumentData(fileMap, textContent);
 
           const generateChecklistItemToPrint = (key: string, value: any) => {
             if (value && typeof value === 'object') {

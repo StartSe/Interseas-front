@@ -31,8 +31,6 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: constants.supabaseApiKey,
-          Authorization: `Bearer ${constants.supabaseApiKey}`,
         },
         body: JSON.stringify({ hash }),
       });

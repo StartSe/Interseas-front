@@ -7,6 +7,7 @@ import { XIcon } from '@/components/icons/XIcon';
 export interface MenuProps {
   currentId: string;
   items: MenuItemProps[];
+  fillColor?: string;
 }
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
@@ -47,7 +48,7 @@ export const Menu = (props: MenuProps) => {
             <div class="menu-overlay" onClick={() => setOpen(false)} />
           </div>
         ) : (
-          <MenuButton onClick={() => setOpen(true)} />
+          <MenuButton fillColor={props.fillColor} onClick={() => setOpen(true)} />
         )}
       </div>
     </>

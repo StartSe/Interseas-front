@@ -26,4 +26,5 @@ export const constants = {
 export const defaultMenuProps: MenuProps = {
   currentId: '',
   items: [],
+  fillColor: '#F4F6FF',
 };

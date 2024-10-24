@@ -92,19 +92,6 @@ main {
   background-size: cover;
 }
 
-/* Imagens de background dos cards */
-.card-critical {
-  background-image: url("./flowise-embed/images/imgcritica.jpeg");
-}
-
-.card-compliance {
-  background-image: url("./flowise-embed/images/imgcompiance.jpeg");
-}
-
-.card-estimativa {
-  background-image: url("./flowise-embed/images/imgestimativas.jpeg");
-}
-
 /* Footer do card */
 .card-footer {
   width: 100%;

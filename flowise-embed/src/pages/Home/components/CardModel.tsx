@@ -1,5 +1,4 @@
 import { Component } from 'solid-js';
-// import styles from '../styles/index.css';
 import { RigthArrowIcon } from '@/components/icons/RigthArrowIcon';
 
 export interface CardModelProps {
@@ -7,13 +6,13 @@ export interface CardModelProps {
   title: string;
   onClick: () => void;
   typeCard: string;
+  bgCard: string;
 }
 
 export const CardModel: Component<CardModelProps> = (props) => {
   return (
     <>
-      {/* <style>{styles}</style> */}
-      <div class={'card ' + `${props.typeCard}`}>
+      <div class="card" style={'background-image: url(./flowise-embed/images/' + `${props.bgCard}` + ')'}>
         <div class="card-footer">
           <p>{props.title}</p>
           <button onClick={() => props.onClick()}>

@@ -1,4 +1,4 @@
-import { Show, onMount, Setter, createSignal, createEffect, For } from 'solid-js';
+import { Show, onMount, createEffect, For, Setter } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
 import { IAction, MessageType } from '../Bot';
@@ -25,9 +25,9 @@ type Props = {
   handleSubmit: (inputValue: string, action?: IAction | null) => void;
   clearChat: () => void;
   selectionOptions: [string, string];
+  isDisabled: boolean;
+  setIsDisabled: Setter<boolean>;
 };
-
-const [isDisabled, setIsDisabled] = createSignal(false);
 
 const defaultBackgroundColor = colorTheme.secondaryColor;
 const defaultTextColor = colorTheme.black;
@@ -45,7 +45,7 @@ export const SelectionBubble = (props: Props) => {
   let botDetailsEl: HTMLDetailsElement | undefined;
 
   onMount(() => {
-    setIsDisabled(false);
+    props.setIsDisabled(false);
     if (botMessageEl) {
       botMessageEl.innerHTML = Marked.parse(props.message.message);
       botMessageEl.querySelectorAll('a').forEach((link) => {
@@ -78,7 +78,7 @@ export const SelectionBubble = (props: Props) => {
         },
       ]);
     }
-    setIsDisabled(true);
+    props.setIsDisabled(true);
     return;
   };
 
@@ -102,8 +102,8 @@ export const SelectionBubble = (props: Props) => {
               <span ref={botMessageEl} data-testid="host-bubble" />
               <div
                 style={{
-                  display: isDisabled() ? 'none' : 'flex',
-                  'margin-bottom': isDisabled() ? '0px' : '5px',
+                  display: props.isDisabled ? 'none' : 'flex',
+                  'margin-bottom': props.isDisabled ? '0px' : '5px',
                   'flex-direction': 'row',
                   'margin-top': '5px',
                 }}
@@ -121,6 +121,7 @@ export const SelectionBubble = (props: Props) => {
                           color: DefaultButtonValues.color,
                           'margin-right': index() === props.selectionOptions.length - 1 ? '0px' : '3px',
                         }}
+                        disabled={props.isDisabled}
                       >
                         {option}
                       </button>

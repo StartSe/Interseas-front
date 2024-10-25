@@ -166,6 +166,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [isNcmDiscoveringStep, setIsNcmDiscoveringStep] = createSignal(false);
+  const [isDisabled, setIsDisabled] = createSignal(false);
 
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -424,7 +425,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           if (isNcmDiscoveringStep()) {
             await discoverNcm(inputValue, fileUploads);
           } else {
+            setIsDisabled(true);
             await processCriticalAnalysisMissingData(inputValue, fileUploads);
+            setIsDisabled(false);
           }
           break;
         }
@@ -1318,6 +1321,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processFileCriticalAnalysis = async () => {
     setLoading(true);
+    setIsDisabled(true);
     const files = filesMapping().filter((item) => !!item);
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
@@ -1329,6 +1333,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
+    setIsDisabled(false);
 
     scrollToBottom();
   };
@@ -1437,6 +1442,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         handleSubmit={handleSubmit}
                         clearChat={clearChat}
                         selectionOptions={[messageUtils.SIM, messageUtils.NAO]}
+                        isDisabled={isDisabled()}
+                        setIsDisabled={setIsDisabled}
                       />
                     )}
                     {message.type === 'apiMessage' && (

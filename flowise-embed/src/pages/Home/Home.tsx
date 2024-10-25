@@ -23,7 +23,7 @@ export const Home = (props: HomeProps) => {
         <span>
           Powered by
           <a href="https://startse.com" target="_blank">
-            <span>&nbsp;StartSe</span>
+            &nbsp;StartSe
           </a>
         </span>
         <img src="./flowise-embed/src/assets/logo.svg" alt="" />

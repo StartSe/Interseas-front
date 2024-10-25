@@ -1,4 +1,5 @@
 import { constants } from '@/constants';
+import { Flow } from '@/features/bubble/types';
 
 interface DocumentData {
   file_name?: string;
@@ -8,6 +9,7 @@ interface DocumentData {
   extraction_result?: any;
   pdf_to_text?: string;
   checklist_type?: string;
+  agent_flow: string;
 }
 
 class DocumentsDBService {
@@ -25,14 +27,14 @@ class DocumentsDBService {
     }
   }
 
-  private async checkHashInDatabase(hash: any): Promise<boolean> {
+  private async checkHashInDatabase(hash: any, agent_flow: Flow): Promise<boolean> {
     try {
       const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowGetDataToSupabase, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ hash }),
+        body: JSON.stringify({ hash, agent_flow }),
       });
 
       const data = await response.json();
@@ -47,8 +49,10 @@ class DocumentsDBService {
     await this.sendDataToN8n(documentData);
   }
 
-  public async isHashInDatabase(hash: string): Promise<boolean> {
-    return await this.checkHashInDatabase(hash);
+  public async isHashInDatabase(hash: string, agent_flow: Flow): Promise<boolean> {
+    console.log('Checking hash in the database:', hash);
+    console.log('Checking hash in the agent_flow:', agent_flow);
+    return await this.checkHashInDatabase(hash, agent_flow);
   }
 }
 

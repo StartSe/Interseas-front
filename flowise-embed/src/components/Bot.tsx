@@ -401,7 +401,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
     const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
     setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
-    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
+    setIsNcmDiscoveringStep(false);
   };
 
   const processCriticalAnalysisMissingData = async (inputValue: string, fileUploads: FileUpload[]) => {
@@ -542,7 +542,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         await parallelApiExecutor.execute();
         setLoading(false);
       }
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_HELP_QUESTION, type: 'selectionMessage' }]);
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(

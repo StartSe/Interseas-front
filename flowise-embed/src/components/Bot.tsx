@@ -383,7 +383,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
 
     if (
-      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(lastSelectionMessage ?? '')
+      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(
+        lastSelectionMessage ? lastSelectionMessage : '',
+      )
     ) {
       if (lastUserMessage === messageUtils.SIM) {
         setIsNcmDiscoveringStep(true);
@@ -420,9 +422,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       switch (props.flow) {
         case Flow.CriticalAnalysis.toString(): {
           if (isNcmDiscoveringStep()) {
-            discoverNcm(inputValue, fileUploads);
+            await discoverNcm(inputValue, fileUploads);
           } else {
-            processCriticalAnalysisMissingData(inputValue, fileUploads);
+            await processCriticalAnalysisMissingData(inputValue, fileUploads);
           }
           break;
         }
@@ -1428,7 +1430,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         avatarSrc={props.botMessage?.avatarSrc}
                         chatFeedbackStatus={chatFeedbackStatus()}
                         fontSize={props.fontSize}
-                        isLoading={loading()}
+                        isLoading={loading() && index() === messages().length - 1}
                         showAgentMessages={props.showAgentMessages}
                         handleActionClick={(label, action) => handleActionClick(label, action)}
                         setMessages={setMessages}

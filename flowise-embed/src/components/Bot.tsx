@@ -1090,6 +1090,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       extraction_result: fileMap.content || agentResult,
       pdf_to_text: textContent,
       checklist_type: fileMap.type,
+      agent_flow: props.flow,
     };
   };
 
@@ -1110,7 +1111,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const checkDocumentHash = async (pdfSHA256: any): Promise<any> => {
     const documentService = new DocumentsDBService();
     try {
-      const result = await documentService.isHashInDatabase(pdfSHA256);
+      const result = await documentService.isHashInDatabase(pdfSHA256, props.flow);
       return result;
     } catch (error) {
       console.error('Error checking hash on database:', error);

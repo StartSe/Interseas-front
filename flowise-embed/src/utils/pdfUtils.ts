@@ -10,10 +10,6 @@ declare global {
 
 const pdfjsLib = window.pdfjsLib;
 
-interface TextItem {
-  str: string;
-}
-
 const readFileData = (file: File) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -144,8 +140,6 @@ export const pdfToSHA256 = async (blob: Blob): Promise<string> => {
       try {
         const arrayBuffer = reader.result as ArrayBuffer;
         const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-
-        // Convertendo o ArrayBuffer para uma string hexadecimal
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('');
 
@@ -188,16 +182,4 @@ const extractTextLocally = async (file: File): Promise<string> => {
     console.error('Error during local text extraction:', error);
     throw error;
   }
-};
-
-const convertToBase64 = (input: Blob | File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result?.toString().split(',')[1];
-      resolve(base64data || '');
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(input);
-  });
 };

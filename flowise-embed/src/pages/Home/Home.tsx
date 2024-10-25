@@ -16,7 +16,7 @@ export const Home = (props: HomeProps) => {
           <p>Escolha qual tarefa deseja realizar abaixo</p>
         </div>
         <div class="card-container">
-          <For each={props.items}>{(item) => <CardModel {...item} onClick={() => (window.location.href = `${item.id}.html`)} />}</For>
+          <For each={props.items}>{(item) => <CardModel {...item} />}</For>
         </div>
       </main>
       <footer>

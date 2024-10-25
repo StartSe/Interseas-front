@@ -1,4 +1,4 @@
-import { Show, onMount, Setter, createSignal } from 'solid-js';
+import { Show, onMount, Setter, createSignal, createEffect, For } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
 import { IAction, MessageType } from '../Bot';
@@ -23,8 +23,8 @@ type Props = {
   handleActionClick: (label: string, action: IAction | undefined | null) => void;
   setMessages: Setter<MessageType[]>;
   handleSubmit: (inputValue: string, action?: IAction | null) => void;
-  disabled?: boolean;
   clearChat: () => void;
+  selectionOptions: [string, string];
 };
 
 const [isDisabled, setIsDisabled] = createSignal(false);
@@ -60,7 +60,7 @@ export const SelectionBubble = (props: Props) => {
 
   const onClick = (label: string) => {
     props.setMessages((prevMessages) => [...prevMessages, { message: label, type: 'userMessage' }]);
-    if (label === 'Sim') {
+    if (label === messageUtils.SIM) {
       props.setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -69,7 +69,7 @@ export const SelectionBubble = (props: Props) => {
         },
       ]);
     }
-    if (label === 'Não') {
+    if (label === messageUtils.NAO) {
       props.setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -108,35 +108,25 @@ export const SelectionBubble = (props: Props) => {
                   'margin-top': '5px',
                 }}
               >
-                <div class={'flex w-full justify-center'}>
-                  <button
-                    onClick={() => onClick('Sim')}
-                    class={
-                      'py-2 px-10 font-semibold uppercase focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 '
-                    }
-                    style={{
-                      background: DefaultButtonValues.backgroundColor,
-                      color: DefaultButtonValues.color,
-                      'margin-right': '3px',
-                    }}
-                  >
-                    Sim
-                  </button>
-                </div>
-                <div class={'flex w-full justify-center'}>
-                  <button
-                    onClick={() => onClick('Não')}
-                    class={
-                      'py-2 px-10 font-semibold uppercase focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 '
-                    }
-                    style={{
-                      background: DefaultButtonValues.backgroundColor,
-                      color: DefaultButtonValues.color,
-                    }}
-                  >
-                    Não
-                  </button>
-                </div>
+                <For each={props.selectionOptions} fallback={<></>}>
+                  {(option, index) => (
+                    <div class={'flex w-full justify-center'}>
+                      <button
+                        onClick={() => onClick(option)}
+                        class={
+                          'py-2 px-10 font-semibold uppercase focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 '
+                        }
+                        style={{
+                          background: DefaultButtonValues.backgroundColor,
+                          color: DefaultButtonValues.color,
+                          'margin-right': index() === props.selectionOptions.length - 1 ? '0px' : '3px',
+                        }}
+                      >
+                        {option}
+                      </button>
+                    </div>
+                  )}
+                </For>
               </div>
             </div>
           )}

@@ -22,7 +22,7 @@ export const messageUtils = {
   CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: 'Dados enviados para análise crítica!',
   CRITICAL_ANALYSIS_PROCESSING_ERROR: 'Error processing critical analysis update.',
   DATA_NOT_FOUND: 'não encontrado',
-  NCM_INICIAL_QUESTION: 'Deseja descobrir o NCM?',
+  NCM_INITIAL_QUESTION: 'Deseja descobrir o NCM?',
   NCM_CONTINUE_QUESTION: 'Deseja continuar com o especialista em Classificação Fiscal?',
   NCM_HELP_QUESTION: 'Precisa de ajuda com a classificação Fiscal?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
@@ -42,7 +42,7 @@ Dados Adicionais (opcional):
 4. Informações Complementares: 
 5. Sinônimo:`,
   CRITICAL_ANALYSIS_TEMPLATE: `
-Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou faça o **upload**(ícone no canto inferior esquerdo da caixa de texto) de um documento contendo as informações e nosso time de especialistas irá analisá-los:
+Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou faça o **upload** (ícone no canto inferior esquerdo da caixa de texto) de um documento contendo as informações e nosso time de especialistas irá analisá-los:
 
 1. **NCM:**
 2. **INCOTERM:**
@@ -52,4 +52,6 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
 6. **País de origem/fabricação:**
 7. **País de Embarque:**
 8. **Estado do Importador:**`,
+  SIM: 'Sim',
+  NAO: 'Não',
 };

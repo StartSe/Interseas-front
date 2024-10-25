@@ -165,7 +165,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [loading, setLoading] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
-  const [ncmPhase, setNcmPhase] = createSignal(false);
+  const [isNcmDiscoveringStep, setIsNcmDiscoveringStep] = createSignal(false);
 
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -216,7 +216,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   onMount(() => {
     if (props.flow === Flow.CriticalAnalysis.toString()) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' }]);
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INICIAL_QUESTION, type: 'selectionMessage' }]);
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' }]);
 
       setDisableInput(false);
       setDocumentsUploaded(true);
@@ -379,21 +379,34 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   createEffect(() => {
-    const selectionMessage = messages().findLast((message) => message.type === 'selectionMessage')?.message;
-    const userMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
+    const lastSelectionMessage = messages().findLast((message) => message.type === 'selectionMessage')?.message;
+    const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
 
     if (
-      selectionMessage === messageUtils.NCM_INICIAL_QUESTION ||
-      selectionMessage === messageUtils.NCM_CONTINUE_QUESTION ||
-      selectionMessage === messageUtils.NCM_HELP_QUESTION
+      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(lastSelectionMessage ?? '')
     ) {
-      if (userMessage === 'Sim') {
-        setNcmPhase(true);
-      } else if (userMessage === 'Não') {
-        setNcmPhase(false);
+      if (lastUserMessage === messageUtils.SIM) {
+        setIsNcmDiscoveringStep(true);
+      } else if (lastUserMessage === messageUtils.NAO) {
+        setIsNcmDiscoveringStep(false);
       }
     }
   });
+
+  const discoverNcm = async (inputValue: string, fileUploads: FileUpload[]) => {
+    updateMessages(inputValue, fileUploads);
+    const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
+    const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
+    setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
+    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
+  };
+
+  const processCriticalAnalysisMissingData = async (inputValue: string, fileUploads: FileUpload[]) => {
+    updateMessages(inputValue, fileUploads);
+    const promptInformMissingData = `CORRIGE_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+    const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+    await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+  };
 
   const handleSubmit = async (inputValue: string, action?: IAction | null) => {
     try {
@@ -406,17 +419,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       switch (props.flow) {
         case Flow.CriticalAnalysis.toString(): {
-          if (ncmPhase()) {
-            updateMessages(inputValue, fileUploads);
-            const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
-            const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
-            setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
-            setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
+          if (isNcmDiscoveringStep()) {
+            discoverNcm(inputValue, fileUploads);
           } else {
-            updateMessages(inputValue, fileUploads);
-            const promptInformMissingData = `CORRIGE_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
-            const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
-            await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+            processCriticalAnalysisMissingData(inputValue, fileUploads);
           }
           break;
         }
@@ -1057,16 +1063,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const startProcessingFiles = async (files: UploadFile[]) => {
+    if (isNcmDiscoveringStep()) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' }]);
+      return;
+    }
+
     if (props.flow !== Flow.CriticalAnalysis.toString()) {
       setIsUploadModalOpen(false);
       setDisableInput(true);
       setIsUploadButtonDisabled(true);
     }
 
-    if (ncmPhase()) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' }]);
-      return;
-    }
     const filesMap: FileMapping[] = [];
 
     files.forEach((file) => {
@@ -1421,12 +1428,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         avatarSrc={props.botMessage?.avatarSrc}
                         chatFeedbackStatus={chatFeedbackStatus()}
                         fontSize={props.fontSize}
-                        isLoading={loading() && index() === messages().length - 1}
+                        isLoading={loading()}
                         showAgentMessages={props.showAgentMessages}
                         handleActionClick={(label, action) => handleActionClick(label, action)}
                         setMessages={setMessages}
                         handleSubmit={handleSubmit}
                         clearChat={clearChat}
+                        selectionOptions={[messageUtils.SIM, messageUtils.NAO]}
                       />
                     )}
                     {message.type === 'apiMessage' && (

@@ -6,6 +6,7 @@
   --font-family: "IBM Plex Sans", sans-serif;
   --bg-color-light: #fafafa;
   --header-height: 3.0625rem;
+  --color-white: #ffffff;
   --primary-color: #136fee;
   --primary-color-hover: #0a5bcc;
   --text-color-dark: #002f6c;
@@ -101,7 +102,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffffff;
+  background-color: var(--color-white);
 }
 
 .card-footer p {
@@ -115,7 +116,7 @@ main {
   width: 2.5rem;
   height: 2.5rem;
   background-color: var(--primary-color);
-  color: white;
+  color: var(--color-white);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -137,7 +138,7 @@ footer {
 }
 
 footer span {
-  padding: 16px 10px;
+  padding: 1rem 0.625rem;
   font-size: 0.875rem;
   color: var(--text-color-dark);
 }

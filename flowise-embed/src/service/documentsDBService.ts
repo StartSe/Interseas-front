@@ -50,8 +50,6 @@ class DocumentsDBService {
   }
 
   public async isHashInDatabase(hash: string, agent_flow: Flow): Promise<boolean> {
-    console.log('Checking hash in the database:', hash);
-    console.log('Checking hash in the agent_flow:', agent_flow);
     return await this.checkHashInDatabase(hash, agent_flow);
   }
 }

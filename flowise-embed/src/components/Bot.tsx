@@ -454,9 +454,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
-  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
+  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any, processedFile?: boolean) => {
     try {
-      const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      let jsonDataCriticalAnalysis;
+      if (processedFile) {
+        jsonDataCriticalAnalysis = jsonCriticalAnalysisUpdate;
+      } else {
+        jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      }
 
       for (const key in jsonDataCriticalAnalysis) {
         const normalizedKey = removeAccents(key);
@@ -469,8 +474,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.COUNTRY);
         }
       }
-
-      jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
 
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
@@ -493,30 +496,33 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setStartUploadingDocument(true);
         setIsUploadButtonDisabled(true);
 
+        jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
+
         const parallelApiExecutor = new ParallelApiExecutor({
           jsonCriticalAnalysisUpdate,
           setMessages,
         });
 
         await parallelApiExecutor.execute();
+
         setLoading(false);
       }
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(
           criticalAnalysisMessage,
-          jsonCriticalAnalysisUpdate?.sourceDocuments,
-          jsonCriticalAnalysisUpdate?.fileAnnotations,
-          jsonCriticalAnalysisUpdate?.agentReasoning,
-          jsonCriticalAnalysisUpdate?.action,
+          jsonCriticalAnalysisUpdate?.sourceDocuments || null,
+          jsonCriticalAnalysisUpdate?.fileAnnotations || null,
+          jsonCriticalAnalysisUpdate?.agentReasoning || null,
+          jsonCriticalAnalysisUpdate?.action || null,
         );
       } else {
         updateLastMessage(
           '',
-          jsonCriticalAnalysisUpdate?.sourceDocuments,
-          jsonCriticalAnalysisUpdate?.fileAnnotations,
-          jsonCriticalAnalysisUpdate?.agentReasoning,
-          jsonCriticalAnalysisUpdate?.action,
+          jsonCriticalAnalysisUpdate?.sourceDocuments || null,
+          jsonCriticalAnalysisUpdate?.fileAnnotations || null,
+          jsonCriticalAnalysisUpdate?.agentReasoning || null,
+          jsonCriticalAnalysisUpdate?.action || null,
         );
       }
     } catch (error) {
@@ -1346,9 +1352,24 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
+
+    const fileProcessed = await extractSHA256AndCheckDocumentHash(fileMap);
+
+    if (fileProcessed != null) {
+      let processedDocumentJson = JSON.parse(fileProcessed);
+      processedDocumentJson = sanitizeJson(processedDocumentJson);
+      await processCriticalAnalysisUpdate(processedDocumentJson, true);
+    } else {
+      await processNewFileData(file, files, urls);
+    }
+
+    scrollToBottom();
+  };
+
+  async function processNewFileData(file: any, files: any[], urls: Partial<FileUpload>[]) {
     const textContent = await getTextContent(file.file);
 
-    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls as Partial<FileUpload>[] }]);
+    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
@@ -1357,9 +1378,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       extractAndSaveDocumentData(file, textContent, dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
-
-    scrollToBottom();
-  };
+  }
 
   return (
     <>

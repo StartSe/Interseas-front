@@ -1161,15 +1161,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const isSuccessfulMessage = validValue && !justificationNotFound;
         if (isSuccessfulMessage) {
           return spacedText(value);
-        } else {
-          const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
-          const signatureKey = 'Assinatura';
-          const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
-          const isSignatureKey = key === signatureKey;
-          const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
-
-          return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
         }
+        const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
+        const signatureKey = 'Assinatura';
+        const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
+        const isSignatureKey = key === signatureKey;
+        const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+
+        return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
       };
 
       const isValidValue = value !== null && customBooleanValues.NOT_FOUND.toString() !== value;

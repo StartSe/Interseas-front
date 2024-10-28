@@ -28,7 +28,7 @@ class DocumentsDBService {
     }
   }
 
-  private async checkHashInDatabase(hash: any, agent_flow: Flow): Promise<boolean> {
+  private async getDocumentFromDBByHash(hash: any, agent_flow: Flow): Promise<any> {
     try {
       const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowGetDataToSupabase, {
         method: 'POST',
@@ -41,8 +41,7 @@ class DocumentsDBService {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error checking hash in the database:', error);
-      return false;
+      throw new Error(`Error checking hash in the database:', ${error}`);
     }
   }
 
@@ -51,7 +50,7 @@ class DocumentsDBService {
   }
 
   public async isHashInDatabase(hash: string, agentFlow: Flow): Promise<boolean> {
-    return await this.checkHashInDatabase(hash, agentFlow);
+    return await this.getDocumentFromDBByHash(hash, agentFlow);
   }
 
   public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {

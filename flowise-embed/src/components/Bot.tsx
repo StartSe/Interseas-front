@@ -151,6 +151,7 @@ export type LeadsConfig = {
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
 const defaultTextColor = '#303235';
+const documentService = new DocumentsDBService();
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -1078,51 +1079,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const extractDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
-    const pdfSHA256 = await pdfToSHA256(fileMap.file.file);
-    return {
-      file_name: fileMap.file.file.name,
-      file_extension: fileMap.file.file.type,
-      hash: pdfSHA256,
-      checklist_result: fileMap.filledChecklist || agentResult,
-      extraction_result: fileMap.content || agentResult,
-      pdf_to_text: textContent,
-      checklist_type: fileMap.type,
-      agent_flow: props.flow,
-    };
-  };
-
-  const saveDocumentData = async (documentData: any) => {
-    const documentService = new DocumentsDBService();
-    try {
-      await documentService.saveDocument(documentData);
-    } catch (error) {
-      console.error('Error saving to the database:', error);
-    }
-  };
-
-  const extractAndSaveDocumentData = async (fileMap: any, textContent: any, agentResult?: any) => {
-    const documentData = await extractDocumentData(fileMap, textContent, agentResult?.text);
-    await saveDocumentData(documentData);
-  };
-
-  const checkDocumentHash = async (pdfSHA256: any): Promise<any> => {
-    const documentService = new DocumentsDBService();
-    try {
-      const result = await documentService.isHashInDatabase(pdfSHA256, props.flow);
-      return result;
-    } catch (error) {
-      console.error('Error checking hash on database:', error);
-      return null;
-    }
-  };
-
-  const extractSHA256AndCheckDocumentHash = async (fileMap: any): Promise<any> => {
-    const pdfSHA256 = await pdfToSHA256(fileMap.file.file);
-    const fileProcessed = await checkDocumentHash(pdfSHA256);
-    return fileProcessed?.checklist_result;
-  };
-
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
 
@@ -1171,8 +1127,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-
-        extractAndSaveDocumentData(fileMap, textContent);
+        documentService.extractAndSaveDocumentData(fileMap, textContent, props.flow);
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;
@@ -1295,7 +1250,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const fileProcessed = await extractSHA256AndCheckDocumentHash(fileMap);
+    const fileProcessed = await documentService.extractSHA256AndCheckDocumentHash(fileMap, props.flow);
 
     if (fileProcessed != null) {
       let processedDocumentJson = JSON.parse(fileProcessed);
@@ -1352,7 +1307,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
 
-    const fileProcessed = await extractSHA256AndCheckDocumentHash(fileMap);
+    const fileProcessed = await documentService.extractSHA256AndCheckDocumentHash(fileMap, props.flow);
 
     if (fileProcessed != null) {
       let processedDocumentJson = JSON.parse(fileProcessed);
@@ -1374,7 +1329,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {
-      extractAndSaveDocumentData(file, textContent, dataFoundCriticalAnalysis);
+      documentService.extractAndSaveDocumentData(file, textContent, props.flow, dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }

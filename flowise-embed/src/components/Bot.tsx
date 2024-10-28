@@ -385,9 +385,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
 
     if (
-      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(
-        lastSelectionMessage ? lastSelectionMessage : '',
-      )
+      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(lastSelectionMessage ?? '')
     ) {
       setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
     }

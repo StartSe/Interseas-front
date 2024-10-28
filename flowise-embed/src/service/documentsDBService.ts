@@ -16,7 +16,7 @@ interface DocumentData {
 class DocumentsDBService {
   private async sendDataToN8n(document: DocumentData): Promise<void> {
     try {
-      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
+      await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ class DocumentsDBService {
       const data = await response.json();
       return data;
     } catch (error) {
-      throw new Error(`Error checking hash in the database:', ${error}`);
+      throw new Error(`Error find document on DB:', ${error}`);
     }
   }
 
@@ -55,7 +55,6 @@ class DocumentsDBService {
 
   public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
     const hashPdf = await pdfToHash(fileMap.file.file);
-    console.log('agentFlow:', agentFlow);
     return {
       file_name: fileMap.file.file.name,
       file_extension: fileMap.file.file.type,
@@ -81,9 +80,9 @@ class DocumentsDBService {
     await this.saveDocumentData(documentData);
   }
 
-  public async checkDocumentHash(pdfSHA256: any, agentFlow: Flow): Promise<any> {
+  public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {
     try {
-      const result = await this.isHashInDatabase(pdfSHA256, agentFlow);
+      const result = await this.isHashInDatabase(hashPdf, agentFlow);
       return result;
     } catch (error) {
       console.error('Error checking hash on database:', error);

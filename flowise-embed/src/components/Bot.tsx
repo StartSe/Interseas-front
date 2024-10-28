@@ -25,7 +25,7 @@ import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
 import { FileMapping } from '@/utils/fileUtils';
-import { convertPdfToMultipleImages, pdfToText, pdfToSHA256 } from '@/utils/pdfUtils';
+import { convertPdfToMultipleImages, pdfToText } from '@/utils/pdfUtils';
 import {
   defaultChecklist,
   conferencesDefault,

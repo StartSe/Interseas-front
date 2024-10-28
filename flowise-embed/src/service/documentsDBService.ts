@@ -1,6 +1,6 @@
 import { constants } from '@/constants';
 import { Flow } from '@/features/bubble/types';
-import { pdfToSHA256 } from '@/utils/pdfUtils';
+import { pdfToHash } from '@/utils/pdfUtils';
 
 interface DocumentData {
   file_name?: string;
@@ -55,12 +55,12 @@ class DocumentsDBService {
   }
 
   public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
-    const pdfSHA256 = await pdfToSHA256(fileMap.file.file);
+    const hashPdf = await pdfToHash(fileMap.file.file);
     console.log('agentFlow:', agentFlow);
     return {
       file_name: fileMap.file.file.name,
       file_extension: fileMap.file.file.type,
-      hash: pdfSHA256,
+      hash: hashPdf,
       checklist_result: fileMap.filledChecklist || agentResult,
       extraction_result: fileMap.content || agentResult,
       pdf_to_text: textContent,
@@ -93,9 +93,8 @@ class DocumentsDBService {
   }
 
   public async extractSHA256AndCheckDocumentHash(fileMap: any, agentFlow: Flow): Promise<any> {
-    const pdfSHA256 = await pdfToSHA256(fileMap.file.file);
-    console.log('fileMap.flow:', agentFlow);
-    const fileProcessed = await this.checkDocumentHash(pdfSHA256, agentFlow);
+    const hashPdf = await pdfToHash(fileMap.file.file);
+    const fileProcessed = await this.checkDocumentHash(hashPdf, agentFlow);
     return fileProcessed?.checklist_result;
   }
 }

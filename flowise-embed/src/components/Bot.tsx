@@ -1127,7 +1127,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-        documentService.extractAndSaveDocumentData(fileMap, textContent, props.flow);
+        documentService.saveExtractedDataToDatabase(fileMap, textContent, props.flow);
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;
@@ -1249,7 +1249,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const fileProcessed = await documentService.extractSHA256AndCheckDocumentHash(fileMap, props.flow);
+    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
 
     if (fileProcessed != null) {
       let processedDocumentJson = JSON.parse(fileProcessed);
@@ -1306,7 +1306,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
 
-    const fileProcessed = await documentService.extractSHA256AndCheckDocumentHash(fileMap, props.flow);
+    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
 
     if (fileProcessed != null) {
       let processedDocumentJson = JSON.parse(fileProcessed);
@@ -1328,7 +1328,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {
-      documentService.extractAndSaveDocumentData(file, textContent, props.flow, dataFoundCriticalAnalysis);
+      documentService.saveExtractedDataToDatabase(file, textContent, props.flow, dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }

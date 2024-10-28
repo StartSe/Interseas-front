@@ -77,7 +77,7 @@ class DocumentsDBService {
     }
   }
 
-  public async extractAndSaveDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
+  public async saveExtractedDataToDatabase(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
     await this.saveDocumentData(documentData);
   }
@@ -92,7 +92,7 @@ class DocumentsDBService {
     }
   }
 
-  public async extractSHA256AndCheckDocumentHash(fileMap: any, agentFlow: Flow): Promise<any> {
+  public async checkDocumentForAlreadyProcessedData(fileMap: any, agentFlow: Flow): Promise<any> {
     const hashPdf = await pdfToHash(fileMap.file.file);
     const fileProcessed = await this.checkDocumentHash(hashPdf, agentFlow);
     return fileProcessed?.checklist_result;

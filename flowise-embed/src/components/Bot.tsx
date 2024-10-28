@@ -1067,11 +1067,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
 
-    if (props.flow !== Flow.CriticalAnalysis.toString()) {
-      setIsUploadModalOpen(false);
-      setDisableInput(true);
-      setIsUploadButtonDisabled(true);
-    }
+    setIsUploadModalOpen(false);
+    setDisableInput(true);
+    setIsUploadButtonDisabled(true);
 
     const filesMap: FileMapping[] = [];
 
@@ -1316,6 +1314,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const processFileCriticalAnalysis = async () => {
     setLoading(true);
     setIsDisabled(true);
+    setDisableInput(false);
+    setIsUploadButtonDisabled(false);
+
     const files = filesMapping().filter((item) => !!item);
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
@@ -1327,7 +1328,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
-    setIsDisabled(false);
 
     scrollToBottom();
   };

@@ -456,10 +456,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any, processedFile?: boolean) => {
     try {
-      let jsonDataCriticalAnalysis;
-      if (processedFile) {
-        jsonDataCriticalAnalysis = jsonCriticalAnalysisUpdate;
-      } else {
+      let jsonDataCriticalAnalysis = jsonCriticalAnalysisUpdate;
+      if (!processedFile) {
         jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
       }
 

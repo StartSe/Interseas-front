@@ -52,6 +52,6 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
 6. **País de origem/fabricação:**
 7. **País de Embarque:**
 8. **Estado do Importador:**`,
-  SIM: 'Sim',
-  NAO: 'Não',
+  YES: 'Sim',
+  NO: 'Não',
 };

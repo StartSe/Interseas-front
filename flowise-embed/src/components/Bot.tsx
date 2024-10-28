@@ -213,6 +213,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
   const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
+  const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
 
   onMount(() => {
     if (props.flow === Flow.CriticalAnalysis.toString()) {
@@ -388,11 +389,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         lastSelectionMessage ? lastSelectionMessage : '',
       )
     ) {
-      if (lastUserMessage === messageUtils.SIM) {
-        setIsNcmDiscoveringStep(true);
-      } else if (lastUserMessage === messageUtils.NAO) {
-        setIsNcmDiscoveringStep(false);
-      }
+      setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
     }
   });
 
@@ -1440,7 +1437,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         setMessages={setMessages}
                         handleSubmit={handleSubmit}
                         clearChat={clearChat}
-                        selectionOptions={[messageUtils.SIM, messageUtils.NAO]}
+                        selectionOptions={basicQuestionOptions}
                         isDisabled={isDisabled()}
                         setIsDisabled={setIsDisabled}
                       />

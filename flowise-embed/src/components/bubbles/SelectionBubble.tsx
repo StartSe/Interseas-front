@@ -24,7 +24,7 @@ type Props = {
   setMessages: Setter<MessageType[]>;
   handleSubmit: (inputValue: string, action?: IAction | null) => void;
   clearChat: () => void;
-  selectionOptions: [string, string];
+  selectionOptions: string[];
   isDisabled: boolean;
   setIsDisabled: Setter<boolean>;
 };
@@ -60,7 +60,7 @@ export const SelectionBubble = (props: Props) => {
 
   const onClick = (label: string) => {
     props.setMessages((prevMessages) => [...prevMessages, { message: label, type: 'userMessage' }]);
-    if (label === messageUtils.SIM) {
+    if (label === props.selectionOptions[0]) {
       props.setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -69,7 +69,7 @@ export const SelectionBubble = (props: Props) => {
         },
       ]);
     }
-    if (label === messageUtils.NAO) {
+    if (label === props.selectionOptions[1]) {
       props.setMessages((prevMessages) => [
         ...prevMessages,
         {

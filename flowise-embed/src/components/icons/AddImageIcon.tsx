@@ -1,5 +1,17 @@
-export const AddImageIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+import { JSX } from 'solid-js/jsx-runtime';
+const defaultButtonColor = '#3B81F6';
+export const AddImageIcon = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="32"
+    height="32"
+    viewBox="0 0 32 32"
+    fill="none"
+    stroke={props.color ?? defaultButtonColor}
+    stroke-width="0"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
     <path d="M30 23.9999H26V19.9999H24V23.9999H20V25.9999H24V29.9999H26V25.9999H30V23.9999Z" fill="#136FEE" />
     <path
       d="M16 27.9999H8V3.99986H16V9.99986C16.0015 10.5298 16.2127 11.0376 16.5875 11.4124C16.9622 11.7871 17.47 11.9983 18 11.9999H24V15.9999H26V9.99986C26.0036 9.86842 25.9786 9.73778 25.9268 9.61693C25.875 9.49608 25.7976 9.3879 25.7 9.29986L18.7 2.29986C18.612 2.20218 18.5038 2.12478 18.3829 2.07298C18.2621 2.02119 18.1314 1.99624 18 1.99986H8C7.47004 2.00139 6.96222 2.21259 6.58748 2.58733C6.21274 2.96207 6.00153 3.46989 6 3.99986V27.9999C6.00153 28.5298 6.21274 29.0376 6.58748 29.4124C6.96222 29.7871 7.47004 29.9983 8 29.9999H16V27.9999ZM18 4.39986L23.6 9.99986H18V4.39986Z"

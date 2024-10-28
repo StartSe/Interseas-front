@@ -1650,7 +1650,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               )
             ) : (
               <>
-                {props.flow !== Flow.CriticalAnalysis.toString() ? (
+                {!isUploadButtonDisabled() && !disableInput() ? (
                   <>
                     <UploadButton
                       onClick={() => setIsUploadModalOpen(true)}

@@ -3,6 +3,7 @@ import type { MenuProps } from './features/menu';
 export declare const defaultBotProps: BubbleProps;
 export declare const constants: {
     apiUtilsUrl: string;
+    n8nPdfPath: string;
     n8nDomain: string;
     n8nFirstStep: string;
     n8nSecondStep: string;

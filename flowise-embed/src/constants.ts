@@ -1,6 +1,7 @@
 import type { BubbleProps } from './features/bubble';
 import type { MenuProps } from './features/menu';
 import { Flow } from './features/bubble/types';
+import { HomeProps } from './pages/Home/Home';
 
 export const defaultBotProps: BubbleProps = {
   chatflowid: '',
@@ -13,6 +14,7 @@ export const defaultBotProps: BubbleProps = {
 
 export const constants = {
   apiUtilsUrl: 'https://ca-ai-utils-api-prod-eastus2-001.bravepond-9830b784.eastus2.azurecontainerapps.io',
+  n8nPdfPath: 'webhook/plain-text',
   n8nDomain: 'https://interseas-n8n.paas.startse.com',
   n8nFirstStep: 'a96d9f14-3835-4e08-b8a7-a77f3b754886',
   n8nSecondStep: '0164614d-e044-4c3f-9ef9-9212407bf402',
@@ -21,9 +23,16 @@ export const constants = {
   n8nFifthStep: 'e05fca0c-20fb-42ed-a923-a627d9ae7f13',
   n8nSixthStep: '50b6723d-7cff-4ecf-852e-f693efd9d95f',
   n8nSeventhStep: '916a955c-467e-4830-9d95-3bb3fc976698',
+  n8nFlowSendDataToSupabase: '83faf03f-f684-4b7c-9c07-10f0fb237a26',
+  n8nFlowGetDataFromSupabase: 'cce1b9da-cf8e-46cb-b36a-9028c13f1a4e',
 };
 
 export const defaultMenuProps: MenuProps = {
   currentId: '',
+  items: [],
+  fillColor: '#F4F6FF',
+};
+
+export const defaultHomeProps: HomeProps = {
   items: [],
 };

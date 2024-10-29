@@ -40,6 +40,7 @@ import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
+import { SelectionBubble } from './bubbles/SelectionBubble';
 import DocumentsDBService from '@/service/documentsDBService';
 
 export type FileEvent<T = EventTarget> = {
@@ -72,7 +73,7 @@ type FilePreview = {
   type: string;
 };
 
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage';
+type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage' | 'selectionMessage';
 
 export type IAgentReasoning = {
   agentName?: string;
@@ -165,6 +166,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [loading, setLoading] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
+  const [isNcmDiscoveringStep, setIsNcmDiscoveringStep] = createSignal(false);
+  const [isDisabled, setIsDisabled] = createSignal(false);
+
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
     [
@@ -210,8 +214,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
   const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
+  const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
 
   onMount(() => {
+    if (props.flow === Flow.CriticalAnalysis.toString()) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' }]);
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' }]);
+
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
     if (botProps?.observersConfig) {
       const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;
       typeof observeUserInput === 'function' &&
@@ -369,6 +381,32 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
   };
 
+  createEffect(() => {
+    const lastSelectionMessage = messages().findLast((message) => message.type === 'selectionMessage')?.message;
+    const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
+
+    if (
+      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(lastSelectionMessage ?? '')
+    ) {
+      setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
+    }
+  });
+
+  const discoverNcm = async (inputValue: string, fileUploads: FileUpload[]) => {
+    updateMessages(inputValue, fileUploads);
+    const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
+    const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
+    setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
+    setIsNcmDiscoveringStep(false);
+  };
+
+  const processCriticalAnalysisMissingData = async (inputValue: string, fileUploads: FileUpload[]) => {
+    updateMessages(inputValue, fileUploads);
+    const promptInformMissingData = `CORRIGE_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
+    const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
+    await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+  };
+
   const handleSubmit = async (inputValue: string, action?: IAction | null) => {
     try {
       setUserInput(inputValue);
@@ -380,10 +418,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       switch (props.flow) {
         case Flow.CriticalAnalysis.toString(): {
-          const promptInformMissingData = `CORRIGI_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
-          const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
-          updateMessages(inputValue, fileUploads);
-          await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
+          if (isNcmDiscoveringStep()) {
+            await discoverNcm(inputValue, fileUploads);
+          } else {
+            setIsDisabled(true);
+            await processCriticalAnalysisMissingData(inputValue, fileUploads);
+            setIsDisabled(false);
+          }
           break;
         }
         default: {
@@ -483,17 +524,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
-        setDisableInput(false);
-        setDocumentsUploaded(true);
         setLoading(false);
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
       } else {
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
         setLoading(true);
-        setDisableInput(true);
-        setDocumentsUploaded(false);
         setStartUploadingDocument(true);
-        setIsUploadButtonDisabled(true);
 
         jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
 
@@ -527,8 +563,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } catch (error) {
       console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
       throw error;
-    } finally {
-      setIsUploadButtonDisabled(false);
     }
   };
 
@@ -1033,6 +1067,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const startProcessingFiles = async (files: UploadFile[]) => {
+    if (isNcmDiscoveringStep()) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' }]);
+      return;
+    }
+
     setIsUploadModalOpen(false);
     setDisableInput(true);
     setIsUploadButtonDisabled(true);
@@ -1301,6 +1340,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processFileCriticalAnalysis = async () => {
     setLoading(true);
+    setIsDisabled(true);
+    setDisableInput(false);
+    setIsUploadButtonDisabled(false);
+
     const files = filesMapping().filter((item) => !!item);
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file;
@@ -1414,6 +1457,31 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         showAvatar={props.userMessage?.showAvatar}
                         avatarSrc={props.userMessage?.avatarSrc}
                         fontSize={props.fontSize}
+                      />
+                    )}
+                    {message.type === 'selectionMessage' && (
+                      <SelectionBubble
+                        message={message}
+                        fileAnnotations={message.fileAnnotations}
+                        chatflowid={props.chatflowid}
+                        chatId={chatId()}
+                        apiHost={props.apiHost}
+                        backgroundColor={props.botMessage?.backgroundColor}
+                        textColor={props.botMessage?.textColor}
+                        feedbackColor={props.feedback?.color}
+                        showAvatar={props.botMessage?.showAvatar}
+                        avatarSrc={props.botMessage?.avatarSrc}
+                        chatFeedbackStatus={chatFeedbackStatus()}
+                        fontSize={props.fontSize}
+                        isLoading={loading() && index() === messages().length - 1}
+                        showAgentMessages={props.showAgentMessages}
+                        handleActionClick={(label, action) => handleActionClick(label, action)}
+                        setMessages={setMessages}
+                        handleSubmit={handleSubmit}
+                        clearChat={clearChat}
+                        selectionOptions={basicQuestionOptions}
+                        isDisabled={isDisabled()}
+                        setIsDisabled={setIsDisabled}
                       />
                     )}
                     {message.type === 'apiMessage' && (
@@ -1621,24 +1689,29 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   handleFileChange={handleFileChange}
                   sendMessageSound={props.textInput?.sendMessageSound}
                   sendSoundLocation={props.textInput?.sendSoundLocation}
+                  startProcessingFiles={startProcessingFiles}
                 />
               )
             ) : (
               <>
-                <UploadButton
-                  onClick={() => setIsUploadModalOpen(true)}
-                  text={messageUtils.UPLOAD_BUTTON_LABEL}
-                  disabled={isUploadButtonDisabled()}
-                />
-                <FileUploadModal
-                  isOpen={isUploadModalOpen()}
-                  onClose={() => setIsUploadModalOpen(false)}
-                  onUploadSubmit={startProcessingFiles}
-                  modalTitle={messageUtils.MODAL_TITLE}
-                  uploadLabel={messageUtils.UPLOADING_LABEL}
-                  uploadingButtonLabel={messageUtils.MODAL_BUTTON}
-                  errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
-                />
+                {!isUploadButtonDisabled() && !disableInput() ? (
+                  <>
+                    <UploadButton
+                      onClick={() => setIsUploadModalOpen(true)}
+                      text={messageUtils.UPLOAD_BUTTON_LABEL}
+                      disabled={isUploadButtonDisabled()}
+                    />
+                    <FileUploadModal
+                      isOpen={isUploadModalOpen()}
+                      onClose={() => setIsUploadModalOpen(false)}
+                      onUploadSubmit={startProcessingFiles}
+                      modalTitle={messageUtils.MODAL_TITLE}
+                      uploadLabel={messageUtils.UPLOADING_LABEL}
+                      uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+                      errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+                    />
+                  </>
+                ) : null}
               </>
             )}
           </div>

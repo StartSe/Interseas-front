@@ -6,6 +6,8 @@ export const isEmpty = (value: string | undefined | null): value is undefined =>
 
 export const isNotEmpty = (value: string | undefined | null): value is string => value !== undefined && value !== null && value !== '';
 
+const fourMinutesInMilliseconds = 4 * 60 * 1000;
+
 export const sendRequest = async <ResponseData>(
   params:
     | {
@@ -16,8 +18,11 @@ export const sendRequest = async <ResponseData>(
       }
     | string,
 ): Promise<{ data?: ResponseData; error?: Error }> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), fourMinutesInMilliseconds);
   try {
     const url = typeof params === 'string' ? params : params.url;
+
     const response = await fetch(url, {
       method: typeof params === 'string' ? 'GET' : params.method,
       mode: 'cors',
@@ -28,7 +33,9 @@ export const sendRequest = async <ResponseData>(
             }
           : undefined,
       body: typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined,
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     let data: any;
     const contentType = response.headers.get('Content-Type');
     if (contentType && contentType.includes('application/json')) {

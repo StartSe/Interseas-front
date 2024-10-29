@@ -5,6 +5,11 @@ import { SendButton } from '@/components/buttons/SendButton';
 import { FileEvent, UploadsConfig } from '@/components/Bot';
 import { ImageUploadButton } from '@/components/buttons/ImageUploadButton';
 import { RecordAudioButton } from '@/components/buttons/RecordAudioButton';
+import { create } from 'lodash';
+import { FileUploadModal } from '@/features/modal';
+import { messageUtils } from '@/utils/messageUtils';
+import { UploadFile } from '@solid-primitives/upload';
+import { FileMapping } from '@/utils/fileUtils';
 
 type Props = {
   placeholder?: string;
@@ -24,6 +29,7 @@ type Props = {
   autoFocus?: boolean;
   sendMessageSound?: boolean;
   sendSoundLocation?: string;
+  startProcessingFiles: (files: UploadFile[]) => Promise<void>;
 };
 
 const defaultBackgroundColor = '#ffffff';
@@ -35,6 +41,7 @@ export const TextInput = (props: Props) => {
   const [inputValue, setInputValue] = createSignal(props.defaultValue ?? '');
   const [isSendButtonDisabled, setIsSendButtonDisabled] = createSignal(false);
   const [warningMessage, setWarningMessage] = createSignal('');
+  const [isUploadModalOpen, setIsUploadModalOpen] = createSignal(false);
   let inputRef: HTMLInputElement | HTMLTextAreaElement | undefined;
   let fileUploadRef: HTMLInputElement | HTMLTextAreaElement | undefined;
   let audioRef: HTMLAudioElement | undefined;
@@ -99,6 +106,11 @@ export const TextInput = (props: Props) => {
     if (event.target) event.target.value = '';
   };
 
+  const processFiles = async () => {
+    setIsUploadModalOpen(false);
+    props.startProcessingFiles([]);
+  };
+
   return (
     <div
       class="w-full h-auto max-h-[192px] min-h-[56px] flex flex-col items-end justify-between chatbot-input border border-[#eeeeee]"
@@ -123,11 +135,22 @@ export const TextInput = (props: Props) => {
               type="button"
               class="m-0 h-14 flex items-center justify-center"
               isDisabled={props.disabled || isSendButtonDisabled()}
-              on:click={handleImageUploadClick}
+              on:click={() => setIsUploadModalOpen(true)}
             >
               <span style={{ 'font-family': 'Poppins, sans-serif' }}>Image Upload</span>
             </ImageUploadButton>
-            <input style={{ display: 'none' }} multiple ref={fileUploadRef as HTMLInputElement} type="file" onChange={handleFileChange} />
+            <FileUploadModal
+              isOpen={isUploadModalOpen()}
+              onClose={() => setIsUploadModalOpen(false)}
+              onUploadSubmit={(files: UploadFile[]) => {
+                setIsUploadModalOpen(false);
+                props.startProcessingFiles(files);
+              }}
+              modalTitle={messageUtils.MODAL_TITLE}
+              uploadLabel={messageUtils.UPLOADING_LABEL}
+              uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+              errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+            />
           </>
         ) : null}
         <ShortTextInput

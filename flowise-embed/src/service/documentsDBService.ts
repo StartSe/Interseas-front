@@ -14,14 +14,14 @@ interface DocumentData {
 }
 
 class DocumentsDBService {
-  private async sendDataToN8n(document: DocumentData): Promise<void> {
+  private async sendDataToN8n(tableName: string, data: DocumentData): Promise<void> {
     try {
       await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(document),
+        body: JSON.stringify({ tableName, data }),
       });
     } catch (error) {
       console.error('Error saving to the database:', error);
@@ -45,8 +45,12 @@ class DocumentsDBService {
     }
   }
 
-  public async saveDocument(documentData: DocumentData): Promise<void> {
-    await this.sendDataToN8n(documentData);
+  public async saveDataOnDBByN8n(tableName: string, data: DocumentData): Promise<void> {
+    try {
+      await this.sendDataToN8n(tableName, data);
+    } catch (error) {
+      console.error('Error saving to the database:', error);
+    }
   }
 
   public async isHashInDatabase(hash: string, agentFlow: Flow): Promise<boolean> {
@@ -67,17 +71,13 @@ class DocumentsDBService {
     };
   }
 
-  public async saveDocumentData(documentData: DocumentData): Promise<void> {
-    try {
-      await this.saveDocument(documentData);
-    } catch (error) {
-      console.error('Error saving to the database:', error);
-    }
+  public async sendChatDataToDB(chatData: any): Promise<void> {
+    await this.saveDataOnDBByN8n('chats', chatData);
   }
 
-  public async saveExtractedDataToDatabase(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
+  public async sendExtractedDataToDB(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
-    await this.saveDocumentData(documentData);
+    await this.saveDataOnDBByN8n('documents', documentData);
   }
 
   public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {

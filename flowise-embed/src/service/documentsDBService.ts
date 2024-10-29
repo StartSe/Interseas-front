@@ -4,7 +4,7 @@ import { pdfToHash } from '@/utils/pdfUtils';
 
 interface DocumentData {
   file_name?: string;
-  file_extension?: string;
+  mime_type?: string;
   hash: string;
   checklist_result?: any;
   extraction_result?: any;
@@ -57,7 +57,7 @@ class DocumentsDBService {
     const hashPdf = await pdfToHash(fileMap.file.file);
     return {
       file_name: fileMap.file.file.name,
-      file_extension: fileMap.file.file.type,
+      mime_type: fileMap.file.file.type,
       hash: hashPdf,
       checklist_result: fileMap.filledChecklist || agentResult,
       extraction_result: fileMap.content || agentResult,

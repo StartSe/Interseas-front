@@ -30,7 +30,7 @@ class DocumentsDBService {
 
   private async getDocumentFromDBByHash(hash: any, agent_flow: Flow): Promise<any> {
     try {
-      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowGetDataToSupabase, {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowGetDataFromSupabase, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

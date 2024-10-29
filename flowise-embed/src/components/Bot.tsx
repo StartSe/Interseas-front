@@ -1308,7 +1308,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
 
-    if (fileProcessed != null) {
+    if (fileProcessed) {
       let processedDocumentJson = JSON.parse(fileProcessed);
       processedDocumentJson = sanitizeJson(processedDocumentJson);
       await processCriticalAnalysisUpdate(processedDocumentJson, true);

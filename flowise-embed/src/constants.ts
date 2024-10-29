@@ -23,7 +23,7 @@ export const constants = {
   n8nSixthStep: '50b6723d-7cff-4ecf-852e-f693efd9d95f',
   n8nSeventhStep: '916a955c-467e-4830-9d95-3bb3fc976698',
   n8nFlowSendDataToSupabase: '83faf03f-f684-4b7c-9c07-10f0fb237a26',
-  n8nFlowGetDataToSupabase: 'cce1b9da-cf8e-46cb-b36a-9028c13f1a4e',
+  n8nFlowGetDataFromSupabase: 'cce1b9da-cf8e-46cb-b36a-9028c13f1a4e',
 };
 
 export const defaultMenuProps: MenuProps = {

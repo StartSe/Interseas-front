@@ -72,12 +72,14 @@ class DocumentsDBService {
   }
 
   public async sendChatDataToDB(chatData: any): Promise<void> {
-    await this.saveDataOnDBByN8n('chats', chatData);
+    const tableName = 'chats';
+    await this.saveDataOnDBByN8n(tableName, chatData);
   }
 
   public async sendExtractedDataToDB(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
+    const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
-    await this.saveDataOnDBByN8n('documents', documentData);
+    await this.saveDataOnDBByN8n(tableName, documentData);
   }
 
   public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {

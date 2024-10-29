@@ -616,9 +616,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const clearChat = () => {
     try {
       removeLocalStorageChatHistory(props.chatflowid);
-      setChatId(
-        (props.chatflowConfig?.vars as any)?.customerId ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}` : uuidv4(),
-      );
+      const newChatId = (props.chatflowConfig?.vars as any)?.customerId
+        ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}`
+        : uuidv4();
+
+      setChatId(newChatId);
+      documentService.sendChatDataToDB(newChatId);
+      window.location.reload();
+
       const messages: MessageType[] = [
         {
           message: props.welcomeMessage ?? defaultWelcomeMessage,
@@ -1188,7 +1193,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-        documentService.saveExtractedDataToDatabase(fileMap, textContent, props.flow);
+        documentService.sendExtractedDataToDB(fileMap, textContent, props.flow);
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;
@@ -1393,7 +1398,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {
-      documentService.saveExtractedDataToDatabase(file, textContent, props.flow, dataFoundCriticalAnalysis);
+      documentService.sendExtractedDataToDB(file, textContent, props.flow, dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }
@@ -1453,7 +1458,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 class="my-2 ml-2"
                 on:click={() => {
                   clearChat();
-                  window.location.reload();
                 }}
               />
             </div>

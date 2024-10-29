@@ -40,6 +40,7 @@ import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
+import DocumentsDBService from '@/service/documentsDBService';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -150,6 +151,7 @@ export type LeadsConfig = {
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
 const defaultTextColor = '#303235';
+const documentService = new DocumentsDBService();
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -453,9 +455,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
-  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any) => {
+  const processCriticalAnalysisUpdate = async (jsonCriticalAnalysisUpdate: any, processedFile?: boolean) => {
     try {
-      const jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      let jsonDataCriticalAnalysis = jsonCriticalAnalysisUpdate;
+      if (!processedFile) {
+        jsonDataCriticalAnalysis = JSON.parse(jsonCriticalAnalysisUpdate.text);
+      }
 
       for (const key in jsonDataCriticalAnalysis) {
         const normalizedKey = removeAccents(key);
@@ -468,8 +473,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.COUNTRY);
         }
       }
-
-      jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
 
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
@@ -492,30 +495,33 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setStartUploadingDocument(true);
         setIsUploadButtonDisabled(true);
 
+        jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
+
         const parallelApiExecutor = new ParallelApiExecutor({
           jsonCriticalAnalysisUpdate,
           setMessages,
         });
 
         await parallelApiExecutor.execute();
+
         setLoading(false);
       }
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(
           criticalAnalysisMessage,
-          jsonCriticalAnalysisUpdate?.sourceDocuments,
-          jsonCriticalAnalysisUpdate?.fileAnnotations,
-          jsonCriticalAnalysisUpdate?.agentReasoning,
-          jsonCriticalAnalysisUpdate?.action,
+          jsonCriticalAnalysisUpdate?.sourceDocuments || null,
+          jsonCriticalAnalysisUpdate?.fileAnnotations || null,
+          jsonCriticalAnalysisUpdate?.agentReasoning || null,
+          jsonCriticalAnalysisUpdate?.action || null,
         );
       } else {
         updateLastMessage(
           '',
-          jsonCriticalAnalysisUpdate?.sourceDocuments,
-          jsonCriticalAnalysisUpdate?.fileAnnotations,
-          jsonCriticalAnalysisUpdate?.agentReasoning,
-          jsonCriticalAnalysisUpdate?.action,
+          jsonCriticalAnalysisUpdate?.sourceDocuments || null,
+          jsonCriticalAnalysisUpdate?.fileAnnotations || null,
+          jsonCriticalAnalysisUpdate?.agentReasoning || null,
+          jsonCriticalAnalysisUpdate?.action || null,
         );
       }
     } catch (error) {
@@ -1033,7 +1039,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const filesMap: FileMapping[] = [];
 
-    files.forEach((file) => {
+    for (const file of files) {
       const fileMap = {
         file: file,
       } as FileMapping;
@@ -1049,7 +1055,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.checklist = defaultChecklist;
       }
       filesMap.push(fileMap);
-    });
+    }
 
     setFilesMapping(filesMap);
 
@@ -1099,6 +1105,128 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
+  const extractNewChecklist = async (file: any, fileMap: any, urls: any) => {
+    const maxAttempts = 3;
+    const textContent = await getTextContent(file.file);
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
+        const resultFromBackgroundMessage = await sendBackgroundMessage(checklistPrompt, urls);
+
+        let jsonData = JSON.parse(resultFromBackgroundMessage.text);
+        jsonData = sanitizeJson(jsonData);
+
+        if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
+          throw new Error(jsonData.error);
+        }
+
+        fileMap.content = jsonData;
+        fileMap.filledChecklist = jsonData;
+
+        if (!Object.keys(jsonData).includes('checklist')) {
+          throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
+        }
+        documentService.saveExtractedDataToDatabase(fileMap, textContent, props.flow);
+        structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
+
+        break;
+      } catch (error) {
+        console.error(error);
+        if (attempt === maxAttempts) {
+          const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+
+          setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+        }
+      }
+    }
+
+    setIsNextChecklistButtonDisabled(false);
+    setLoading(false);
+  };
+
+  const structureAndSaveMessages = async (jsonData: any, fileMap: any, resultFromBackgroundMessage?: any) => {
+    const generateChecklistItemToPrint = (key: string, value: any) => {
+      if (value && typeof value === 'object') {
+        const formatted_value = Object.entries(value)
+          .map(([key, value]) => {
+            return `${key}: ${value}`;
+          })
+          .join('<br>');
+        value = formatted_value;
+      }
+
+      const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
+      const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
+        const isSuccessfulMessage = validValue && !justificationNotFound;
+        if (isSuccessfulMessage) {
+          return spacedText(value);
+        }
+        const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
+        const signatureKey = 'Assinatura';
+        const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
+        const isSignatureKey = key === signatureKey;
+        const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+
+        return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
+      };
+
+      const isValidValue = value !== null && customBooleanValues.NOT_FOUND.toString() !== value;
+      const hasJustificationNotFound = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
+      const shouldCheckboxBeChecked = isValidValue && !hasJustificationNotFound;
+
+      let checklistItem = `<input type="checkbox" ${shouldCheckboxBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
+      checklistItem += getMessage(key, value, isValidValue, hasJustificationNotFound);
+
+      return checklistItem;
+    };
+
+    let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+
+    for (const [key, value] of Object.entries(jsonData.checklist)) {
+      checklistMessage += generateChecklistItemToPrint(key, value);
+    }
+
+    if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
+      checklistMessage += `<br><b>Conferências:</b><br>`;
+      for (const [key, value] of Object.entries(jsonData['conferências'])) {
+        checklistMessage += generateChecklistItemToPrint(key, value);
+      }
+    }
+
+    setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+
+    const conferences = jsonData['conferências'];
+
+    if (
+      conferences &&
+      ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
+        (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
+    ) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
+    }
+
+    if (!isChatFlowAvailableToStream()) {
+      updateLastMessage(
+        checklistMessage,
+        resultFromBackgroundMessage?.sourceDocuments || null,
+        resultFromBackgroundMessage?.fileAnnotations || null,
+        resultFromBackgroundMessage?.agentReasoning || null,
+        resultFromBackgroundMessage?.action || null,
+        checklistMessage,
+      );
+    } else {
+      updateLastMessage(
+        '',
+        resultFromBackgroundMessage?.sourceDocuments || null,
+        resultFromBackgroundMessage?.fileAnnotations || null,
+        resultFromBackgroundMessage?.agentReasoning || null,
+        resultFromBackgroundMessage?.action || null,
+        checklistMessage,
+      );
+    }
+  };
+
   const processNextChecklist = async () => {
     setUploading(true);
     setLoading(true);
@@ -1121,124 +1249,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setUploading(false);
     setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
-    const textContent = await getTextContent(file.file);
+    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
 
-    const extractChecklist = async () => {
-      const maxAttempts = 3;
+    if (fileProcessed != null) {
+      let processedDocumentJson = JSON.parse(fileProcessed);
+      processedDocumentJson = sanitizeJson(processedDocumentJson);
+      structureAndSaveMessages(processedDocumentJson, fileMap);
+    } else {
+      await extractNewChecklist(file, fileMap, urls);
+    }
 
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
-          const resultFromBackgroundMessage = await sendBackgroundMessage(checklistPrompt, urls);
-          let jsonData = JSON.parse(resultFromBackgroundMessage.text);
-          jsonData = sanitizeJson(jsonData);
-
-          if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {
-            throw new Error(jsonData.error);
-          }
-
-          fileMap.content = jsonData;
-          fileMap.filledChecklist = jsonData;
-
-          if (!Object.keys(jsonData).includes('checklist')) {
-            throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
-          }
-
-          const generateChecklistItemToPrint = (key: string, value: any) => {
-            if (value && typeof value === 'object') {
-              const formatted_value = Object.entries(value)
-                .map(([key, value]) => {
-                  return `${key}: ${value}`;
-                })
-                .join('<br>');
-              value = formatted_value;
-            }
-
-            const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-            const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
-              const isSuccessfulMessage = validValue && !justificationNotFound;
-              if (isSuccessfulMessage) {
-                return spacedText(value);
-              } else {
-                const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
-                const signatureKey = 'Assinatura';
-                const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
-                const isSignatureKey = key === signatureKey;
-                const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
-
-                return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
-              }
-            };
-
-            const isValidValue = value !== null && customBooleanValues.NOT_FOUND.toString() !== value;
-            const hasJustificationNotFound = value && value.includes(customBooleanValues.FALSE_WITH_JUSTIFICATION.toString());
-            const shouldCheckboxBeChecked = isValidValue && !hasJustificationNotFound;
-
-            let checklistItem = `<input type="checkbox" ${shouldCheckboxBeChecked ? 'checked' : ''} disabled> <b>${key}</b>:<br>`;
-            checklistItem += getMessage(key, value, isValidValue, hasJustificationNotFound);
-
-            return checklistItem;
-          };
-
-          let checklistMessage = `<b>${fileMap.type}:</b><br>`;
-
-          for (const [key, value] of Object.entries(jsonData.checklist)) {
-            checklistMessage += generateChecklistItemToPrint(key, value);
-          }
-
-          if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
-            checklistMessage += `<br><b>Conferências:</b><br>`;
-            for (const [key, value] of Object.entries(jsonData['conferências'])) {
-              checklistMessage += generateChecklistItemToPrint(key, value);
-            }
-          }
-
-          setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
-
-          const conferences = jsonData['conferências'];
-
-          if (
-            conferences &&
-            ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
-              (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
-          ) {
-            setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
-          }
-
-          if (!isChatFlowAvailableToStream()) {
-            updateLastMessage(
-              checklistMessage,
-              resultFromBackgroundMessage?.sourceDocuments,
-              resultFromBackgroundMessage?.fileAnnotations,
-              resultFromBackgroundMessage?.agentReasoning,
-              resultFromBackgroundMessage?.action,
-              checklistMessage,
-            );
-          } else {
-            updateLastMessage(
-              '',
-              resultFromBackgroundMessage?.sourceDocuments,
-              resultFromBackgroundMessage?.fileAnnotations,
-              resultFromBackgroundMessage?.agentReasoning,
-              resultFromBackgroundMessage?.action,
-              checklistMessage,
-            );
-          }
-          break;
-        } catch (error) {
-          console.error(error);
-          if (attempt === maxAttempts) {
-            const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
-
-            setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
-          }
-        }
-      }
-
-      setIsNextChecklistButtonDisabled(false);
-      setLoading(false);
-    };
-    await extractChecklist();
     try {
       setLoading(true);
 
@@ -1286,15 +1306,32 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const file = fileMap.file;
     const urls = await processFileToSend(file.file);
 
-    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls as Partial<FileUpload>[] }]);
+    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+
+    if (fileProcessed) {
+      let processedDocumentJson = JSON.parse(fileProcessed);
+      processedDocumentJson = sanitizeJson(processedDocumentJson);
+      await processCriticalAnalysisUpdate(processedDocumentJson, true);
+    } else {
+      await processNewFileData(file, files, urls);
+    }
+
+    scrollToBottom();
+  };
+
+  async function processNewFileData(file: any, files: any[], urls: Partial<FileUpload>[]) {
+    const textContent = await getTextContent(file.file);
+
+    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
+    for (const file of files) {
+      documentService.saveExtractedDataToDatabase(file, textContent, props.flow, dataFoundCriticalAnalysis);
+    }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
-
-    scrollToBottom();
-  };
+  }
 
   return (
     <>

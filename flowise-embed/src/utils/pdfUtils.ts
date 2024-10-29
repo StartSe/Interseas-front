@@ -129,6 +129,33 @@ export const pdfToText = async (blob: Blob): Promise<string> => {
     return extractTextLocally(file);
   }
 };
+
+export const pdfToHash = async (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const hashAlgorithm = 'SHA-256';
+
+    reader.readAsArrayBuffer(blob);
+
+    reader.onloadend = async () => {
+      try {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const hashBuffer = await crypto.subtle.digest(hashAlgorithm, arrayBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('');
+
+        resolve(hashHex);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    reader.onerror = () => {
+      reject(reader.error);
+    };
+  });
+};
+
 interface IPageTextContent {
   items: { str: string }[];
 }

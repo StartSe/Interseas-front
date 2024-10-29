@@ -29,18 +29,13 @@ export const messageUtils = {
   NCM_DISCOVER_TEMPLATE: `
 Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas informações. Por favor, envie uma **mensagem de texto** preenchendo os campos abaixo e nosso time de especialistas irá classificar fiscalmente:
 
-**Dados Obrigatórios:**
-
 1. **Nome Comercial:**
 2. **Finalidade de Uso:**
-
-Dados Adicionais (opcional):
-
-1. HS Code:
-2. Nome Técnico:
-3. Material Constitutivo (com percentuais, se aplicável): 
-4. Informações Complementares: 
-5. Sinônimo:`,
+3. HS Code:
+4. Nome Técnico:
+5. Material Constitutivo (com percentuais, se aplicável): 
+6. Informações Complementares: 
+7. Sinônimo:`,
   CRITICAL_ANALYSIS_TEMPLATE: `
 Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou faça o **upload** (ícone no canto inferior esquerdo da caixa de texto) de um documento contendo as informações e nosso time de especialistas irá analisá-los:
 

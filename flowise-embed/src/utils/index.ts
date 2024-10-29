@@ -6,7 +6,7 @@ export const isEmpty = (value: string | undefined | null): value is undefined =>
 
 export const isNotEmpty = (value: string | undefined | null): value is string => value !== undefined && value !== null && value !== '';
 
-const fourMinutesInMilliseconds = 240000;
+const fourMinutesInMilliseconds = 4 * 60 * 1000;
 
 export const sendRequest = async <ResponseData>(
   params:

@@ -41,20 +41,20 @@ const DefaultButtonValues = {
 Marked.setOptions({ isNoP: true });
 
 export const SelectionBubble = (props: Props) => {
-  let botMessageEl: HTMLDivElement | undefined;
-  let botDetailsEl: HTMLDetailsElement | undefined;
+  let botMessageElement: HTMLDivElement | undefined;
+  let botDetailsElement: HTMLDetailsElement | undefined;
 
   onMount(() => {
     props.setIsDisabled(false);
-    if (botMessageEl) {
-      botMessageEl.innerHTML = Marked.parse(props.message.message);
-      botMessageEl.querySelectorAll('a').forEach((link) => {
+    if (botMessageElement) {
+      botMessageElement.innerHTML = Marked.parse(props.message.message);
+      botMessageElement.querySelectorAll('a').forEach((link) => {
         link.target = '_blank';
       });
     }
 
-    if (botDetailsEl && props.isLoading) {
-      botDetailsEl.open = true;
+    if (botDetailsElement && props.isLoading) {
+      botDetailsElement.open = true;
     }
   });
 
@@ -99,7 +99,7 @@ export const SelectionBubble = (props: Props) => {
               }}
               class="px-4 py-2 ml-2 max-w-full chatbot-host-bubble prose"
             >
-              <span ref={botMessageEl} data-testid="host-bubble" />
+              <span ref={botMessageElement} data-testid="host-bubble" />
               <div
                 style={{
                   display: props.isDisabled ? 'none' : 'flex',

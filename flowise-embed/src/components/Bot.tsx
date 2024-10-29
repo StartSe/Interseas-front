@@ -19,7 +19,7 @@ import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { messageUtils } from '@/utils/messageUtils';
+import { messageUtils, ncmChangeMessage } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
@@ -515,6 +515,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
 
+      const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
       let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
@@ -523,6 +524,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
+      if (Object.keys(jsonResponseCriticalAnalysis()).length !== 0) {
+        Object.keys(oldJson).forEach((key) => {
+          if (/ncm/i.test(key) && oldJson[key] !== null && jsonDataCriticalAnalysis['NCM']) {
+            const oldNcm = oldJson[key];
+            const newNcm = jsonDataCriticalAnalysis['NCM'];
+            if (oldNcm && newNcm && oldNcm.replace(/\./g, '') !== newNcm.replace(/\./g, '')) {
+              setMessages((prev) => [...prev, { message: ncmChangeMessage(oldNcm, newNcm), type: 'apiMessage' }]);
+            }
+          }
+        });
+      }
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setLoading(false);
         setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);

@@ -50,3 +50,9 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   YES: 'Sim',
   NO: 'Não',
 };
+
+export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
+  return `Atualização detectada no código NCM!\n\n
+  * O código anterior era: **${oldNcm}**\n
+  * O novo código é: **${newNcm}**\n\n`;
+}

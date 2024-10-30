@@ -1,20 +1,24 @@
 import { constants } from '@/constants';
 import { Flow } from '@/features/bubble/types';
 import { pdfToHash } from '@/utils/pdfUtils';
+import { v4 as uuidv4 } from 'uuid';
+import { processFileName } from '@/utils/pdfUtils';
 
 interface DocumentData {
+  id: string;
   file_name?: string;
   mime_type?: string;
   hash: string;
-  checklist_result?: any;
   extraction_result?: any;
+  checklist_result?: any;
   pdf_to_text?: string;
+  version?: any;
   checklist_type?: string;
   agent_flow: string;
 }
 
 class DocumentsDBService {
-  private async sendDataToN8n(tableName: string, data: DocumentData): Promise<void> {
+  private async sendDataToN8n(tableName: string, data: any): Promise<void> {
     try {
       await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
         method: 'POST',
@@ -45,7 +49,7 @@ class DocumentsDBService {
     }
   }
 
-  public async saveDataOnDBByN8n(tableName: string, data: DocumentData): Promise<void> {
+  private async sendDataOnDBByN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
     } catch (error) {
@@ -59,27 +63,41 @@ class DocumentsDBService {
 
   public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
     const hashPdf = await pdfToHash(fileMap.file.file);
+    const documentId = uuidv4();
+    const { fileName, version } = processFileName(fileMap.file.file.name);
     return {
-      file_name: fileMap.file.file.name,
+      id: documentId,
+      file_name: fileName,
       mime_type: fileMap.file.file.type,
       hash: hashPdf,
-      checklist_result: fileMap.filledChecklist || agentResult,
       extraction_result: fileMap.content || agentResult,
+      checklist_result: fileMap.filledChecklist || agentResult,
       pdf_to_text: textContent,
+      version: version,
       checklist_type: fileMap.type,
       agent_flow: agentFlow,
     };
   }
 
-  public async sendChatDataToDB(chatData: any): Promise<void> {
+  public async saveChatDataToDB(chatData: any): Promise<void> {
     const tableName = 'chats';
-    await this.saveDataOnDBByN8n(tableName, chatData);
+    await this.sendDataOnDBByN8n(tableName, chatData);
   }
 
-  public async sendExtractedDataToDB(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
+  public async saveDocumentDataToDB(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
     const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
-    await this.saveDataOnDBByN8n(tableName, documentData);
+    await this.sendDataOnDBByN8n(tableName, documentData);
+    await this.saveChatDocumentDataToDB(chatId, documentData.id);
+  }
+
+  public async saveChatDocumentDataToDB(chatId: any, documentId: string): Promise<void> {
+    const tableName = 'chats_documents';
+    const chatDocumentData = {
+      chat_id: chatId,
+      document_id: documentId,
+    };
+    await this.sendDataOnDBByN8n(tableName, chatDocumentData);
   }
 
   public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {

@@ -66,6 +66,9 @@ main {
   font-weight: 600;
   margin-bottom: var(--spacing-small);
 }
+.footer-container{
+  font-family: var(--font-family);
+}
 
 .text-box p {
   font-family: var(--font-family);

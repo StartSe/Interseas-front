@@ -524,12 +524,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
+
       if (Object.keys(jsonResponseCriticalAnalysis()).length !== 0) {
         Object.keys(oldJson).forEach((key) => {
-          if (/ncm/i.test(key) && oldJson[key] !== null && jsonDataCriticalAnalysis['NCM']) {
+          const keyIsNcm = /ncm/i.test(key);
+          const oldJsonHasKey = oldJson[key] !== null;
+          const jsonDataHasNcm = !!jsonDataCriticalAnalysis['NCM'];
+
+          if (keyIsNcm && oldJsonHasKey && jsonDataHasNcm) {
             const oldNcm = oldJson[key];
             const newNcm = jsonDataCriticalAnalysis['NCM'];
-            if (oldNcm && newNcm && oldNcm.replace(/\./g, '') !== newNcm.replace(/\./g, '')) {
+            const areBothOldAndNewNcmsDefined = !!oldNcm && !!newNcm;
+            const cleanOldNcm = oldNcm.replace(/\./g, '');
+            const cleanNewNcm = newNcm.replace(/\./g, '');
+            if (areBothOldAndNewNcmsDefined && cleanOldNcm !== cleanNewNcm) {
               setMessages((prev) => [...prev, { message: ncmChangeMessage(oldNcm, newNcm), type: 'apiMessage' }]);
             }
           }

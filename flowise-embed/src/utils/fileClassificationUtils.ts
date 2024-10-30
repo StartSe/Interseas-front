@@ -473,7 +473,7 @@ const documentNameAndTypeMapping = {
   'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM': DocumentTypes.CERTIFICADO_DE_ORIGEM,
   'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE[_-\\s]DE[_-\\s]VINHOS': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
   'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE': DocumentTypes.TEST_REPORT,
-  'LABELS|LABEL|CONTRA[_-\\s]ROTULO|CONTRARROTULO': DocumentTypes.LABELS,
+  'LABEL(?:S)?|(?:CONTRA[_\\-\\sR])?ROTULO(?:S)?': DocumentTypes.LABELS,
   'ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL':
     DocumentTypes.ANEXO_IX,
   'ANEXO[_-\\s]XI|COMPROVACAO[_-\\s]OFICIAL[_-\\s]DE[_-\\s]TIPICIDADE[_-\\s]E[_-\\s]REGIONALIDADE[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]ALCOOLICAS[ ,-_]VINHOS[ ,-_]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]IMPORTACAO[_-\\s]PELO[_-\\s]BRASIL':
@@ -525,13 +525,11 @@ export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTyp
 
 export const identifyDocumentType = (fileName: string) => {
   for (const [regex, type] of Object.entries(documentNameAndTypeMapping)) {
-    if (new RegExp(regex, 'i').test(fileName)) {
-      if (new RegExp(regex, 'i').test(removeAccents(fileName))) {
-        return type as keyof typeof DocumentTypes;
-      }
+    if (new RegExp(regex, 'i').test(removeAccents(fileName))) {
+      return type as keyof typeof DocumentTypes;
     }
-    return null;
   }
+  return null;
 };
 
 export const removeAccents = (text: string) => {

@@ -1088,6 +1088,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const checklist = identifyDocumentChecklist(docType);
         if (checklist) {
           fileMap.checklist = checklist.concat(conferencesDefault);
+        } else {
+          fileMap.checklist = defaultChecklist;
         }
       } else {
         fileMap.type = DocumentTypes.DOCUMENTO_SEM_CHECKLIST;

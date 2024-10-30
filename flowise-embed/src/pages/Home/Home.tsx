@@ -20,7 +20,7 @@ export const Home = (props: HomeProps) => {
         </div>
       </main>
       <footer>
-        <span>
+        <span class="footer-container">
           Powered by
           <a href="https://startse.com" target="_blank">
             &nbsp;StartSe

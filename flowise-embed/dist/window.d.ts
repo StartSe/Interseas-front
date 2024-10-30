@@ -1,5 +1,6 @@
 import { observersConfigType } from './components/Bot';
 import { MenuProps } from './features/menu';
+import { HomeProps } from './pages/Home/Home';
 type BotProps = {
     chatflowid: string;
     apiHost?: string;
@@ -11,12 +12,14 @@ export declare const initFull: (props: BotProps & {
 }) => void;
 export declare const init: (props: BotProps) => void;
 export declare const initMenu: (props: MenuProps) => void;
+export declare const initHome: (props: HomeProps) => void;
 export declare const destroy: () => void;
 type Chatbot = {
     initFull: typeof initFull;
     init: typeof init;
     destroy: typeof destroy;
     initMenu: typeof initMenu;
+    initHome: typeof initHome;
 };
 export declare const parseChatbot: () => {
     initFull: (props: BotProps & {
@@ -25,6 +28,7 @@ export declare const parseChatbot: () => {
     init: (props: BotProps) => void;
     destroy: () => void;
     initMenu: (props: MenuProps) => void;
+    initHome: (props: HomeProps) => void;
 };
 export declare const injectChatbotInWindow: (bot: Chatbot) => void;
 export {};

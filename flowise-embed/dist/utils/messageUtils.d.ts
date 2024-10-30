@@ -17,5 +17,14 @@ export declare const messageUtils: {
     CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: string;
     CRITICAL_ANALYSIS_PROCESSING_ERROR: string;
     DATA_NOT_FOUND: string;
+    NCM_INITIAL_QUESTION: string;
+    NCM_CONTINUE_QUESTION: string;
+    NCM_HELP_QUESTION: string;
+    NCM_TEXT_INPUT_REQUIRED: string;
+    NCM_DISCOVER_TEMPLATE: string;
+    CRITICAL_ANALYSIS_TEMPLATE: string;
+    YES: string;
+    NO: string;
 };
+export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
 //# sourceMappingURL=messageUtils.d.ts.map

@@ -15,6 +15,7 @@ declare const chatbot: {
     }) => void;
     destroy: () => void;
     initMenu: (props: import("./features/menu").MenuProps) => void;
+    initHome: (props: import("./pages/Home/Home").HomeProps) => void;
 };
 export default chatbot;
 //# sourceMappingURL=web.d.ts.map

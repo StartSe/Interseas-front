@@ -1,5 +1,6 @@
 import type { BubbleProps } from './features/bubble';
 import type { MenuProps } from './features/menu';
+import { HomeProps } from './pages/Home/Home';
 export declare const defaultBotProps: BubbleProps;
 export declare const constants: {
     apiUtilsUrl: string;
@@ -12,6 +13,9 @@ export declare const constants: {
     n8nFifthStep: string;
     n8nSixthStep: string;
     n8nSeventhStep: string;
+    n8nFlowSendDataToSupabase: string;
+    n8nFlowGetDataFromSupabase: string;
 };
 export declare const defaultMenuProps: MenuProps;
+export declare const defaultHomeProps: HomeProps;
 //# sourceMappingURL=constants.d.ts.map

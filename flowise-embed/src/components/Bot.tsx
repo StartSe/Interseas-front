@@ -621,7 +621,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
-      documentService.sendChatDataToDB(newChatId);
+
+      const chatData = {
+        id: newChatId,
+        agent_flow: props.flow,
+      };
+
+      documentService.saveChatDataToDB(chatData);
       window.location.reload();
 
       const messages: MessageType[] = [
@@ -1193,7 +1199,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-        documentService.sendExtractedDataToDB(fileMap, textContent, props.flow);
+        documentService.saveDocumentDataToDB(fileMap, textContent, props.flow, chatId());
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;
@@ -1398,7 +1404,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {
-      documentService.sendExtractedDataToDB(file, textContent, props.flow, dataFoundCriticalAnalysis);
+      documentService.saveDocumentDataToDB(file, textContent, props.flow, chatId(), dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }

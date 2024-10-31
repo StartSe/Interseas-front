@@ -1,6 +1,8 @@
 // PATTERN:
 // LABEL - VARIANTS (FORMAT)
 
+import { FileMapping } from './fileUtils';
+
 export const defaultChecklist = `
 • Número do documento
 • Nome do documento
@@ -514,6 +516,66 @@ export const checklistTypeMapping = {
   [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
   [DocumentTypes.LABELS]: checklistLabels,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS]: checklistAnaliseDeVinhos,
+};
+
+export const documentPriorityMapping = {
+  [DocumentTypes.PROFORMA_INVOICE.toString()]: 2,
+  [DocumentTypes.COMMERCIAL_INVOICE.toString()]: 3,
+  [DocumentTypes.DOCUMENTO_SEM_CHECKLIST.toString()]: 0,
+  [DocumentTypes.PACKING_LIST.toString()]: 4,
+  [DocumentTypes.CONHECIMENTO_BL.toString()]: 6,
+  [DocumentTypes.CONHECIMENTO_HAWB.toString()]: 6,
+  [DocumentTypes.CONHECIMENTO_MAWB.toString()]: 6,
+  [DocumentTypes.CONHECIMENTO_CRT.toString()]: 6,
+  [DocumentTypes.CONHECIMENTO_MIC_DTA.toString()]: 7,
+  [DocumentTypes.CE_MERCANTE.toString()]: 7,
+  [DocumentTypes.CCT.toString()]: 7,
+  [DocumentTypes.INSTRUCAO_DE_EMBARQUE.toString()]: 5,
+  [DocumentTypes.DUIMP.toString()]: 0,
+  [DocumentTypes.DUE.toString()]: 0,
+  [DocumentTypes.DECLARACAO_DE_IMPORTACAO.toString()]: 0,
+  [DocumentTypes.RESUMO_DA_DECLARACAO_DE_IMPORTACAO.toString()]: 0,
+  [DocumentTypes.LICENCA_DE_IMPORTACAO.toString()]: 0,
+  [DocumentTypes.LPCO.toString()]: 0,
+  [DocumentTypes.DOWNPAYMENT_INVOICE.toString()]: 2,
+  [DocumentTypes.PROPOSTA.toString()]: 1,
+  [DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR.toString()]: 1,
+  [DocumentTypes.SALES_ORDER_DOCUMENT.toString()]: 1,
+  [DocumentTypes.CONFIRMATION_OF_ORDER.toString()]: 1,
+  [DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL.toString()]: 8,
+  [DocumentTypes.CERTIFICADO_DE_ORIGEM.toString()]: 8,
+  [DocumentTypes.TEST_REPORT.toString()]: 9,
+  [DocumentTypes.LABELS.toString()]: 10,
+  [DocumentTypes.ANEXO_IX.toString()]: 0,
+  [DocumentTypes.ANEXO_XI.toString()]: 0,
+  [DocumentTypes.CERTIFICADO_DE_INSPECAO.toString()]: 0,
+  [DocumentTypes.CERTIFICADO_DE_CONFORMIDADE_ORGANICA.toString()]: 0,
+  [DocumentTypes.DECLARACAO_DE_TRANSACAO_COMERCIAL.toString()]: 0,
+  [DocumentTypes.ATESTADO_DE_INEXISTENCIA_DE_PRODUCAO_ESTADUAL.toString()]: 0,
+  [DocumentTypes.CATALOGO_DE_EQUIPAMENTO.toString()]: 0,
+  [DocumentTypes.CERTIFICADO_DE_COMPLIANCE.toString()]: 0,
+  [DocumentTypes.CERTIFICADO_DE_ESTERILIZACAO.toString()]: 0,
+  [DocumentTypes.DECLARACAO_DO_DETENTOR_DA_REGULARIZACAO.toString()]: 0,
+  [DocumentTypes.MSDS.toString()]: 0,
+  [DocumentTypes.FICHA_DE_EMERGENCIA.toString()]: 0,
+  [DocumentTypes.FISPQ.toString()]: 0,
+  [DocumentTypes.SHIPPERS_DECLARATION.toString()]: 0,
+  [DocumentTypes.ANEXO_VII.toString()]: 0,
+  [DocumentTypes.FICHA_DE_LOTE.toString()]: 0,
+  [DocumentTypes.CERTIFICADO_FITOSSANITARIO.toString()]: 0,
+  [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS.toString()]: 9,
+};
+
+export const sortUploadFiles = (uploadFiles: FileMapping[]): FileMapping[] => {
+  return uploadFiles.sort((a, b) => {
+    const priorityA = documentPriorityMapping[a.type] || Infinity;
+    const priorityB = documentPriorityMapping[b.type] || Infinity;
+
+    if (priorityA === 0 && priorityB !== 0) return 1;
+    if (priorityB === 0 && priorityA !== 0) return -1;
+
+    return priorityA - priorityB;
+  });
 };
 
 export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTypes) => {

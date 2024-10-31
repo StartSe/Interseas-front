@@ -1168,6 +1168,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const extractNewChecklist = async (file: any, fileMap: any, urls: any) => {
     const maxAttempts = 3;
+
+    if ([DocumentTypes.LICENCA_DE_IMPORTACAO, DocumentTypes.LPCO].includes(fileMap.type)) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NO_LI_LPCO_COMPLIANCE_FEATURE, type: 'apiMessage' }]);
+      setIsNextChecklistButtonDisabled(false);
+      setLoading(false);
+      return;
+    }
+    if (fileMap.type === DocumentTypes.COMMERCIAL_INVOICE) {
+      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.MANUAL_COMPLIANCE_ALERT, type: 'apiMessage' }]);
+    }
+
     const textContent = await getTextContent(file.file);
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -1337,10 +1348,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    if (!checkImportLicenseDocuments(filledChecklists)) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
-    }
-
     const compareDocuments = new CompareDocuments({
       fileMappings: filledChecklists,
       sendBackgroundMessage,

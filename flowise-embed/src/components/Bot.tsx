@@ -1086,6 +1086,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
+  const sortUploadFilesByFirstLetter = (files: UploadFile[]): UploadFile[] => {
+    return files.sort((a, b) => {
+      const firstLetterA = a.file.name[0].toLowerCase();
+      const firstLetterB = b.file.name[0].toLowerCase();
+      return firstLetterA.localeCompare(firstLetterB);
+    });
+  };
+
   const startProcessingFiles = async (files: UploadFile[]) => {
     if (isNcmDiscoveringStep()) {
       setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' }]);
@@ -1096,9 +1104,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setDisableInput(true);
     setIsUploadButtonDisabled(true);
 
+    const ordenedFiles = sortUploadFilesByFirstLetter(files);
+
     const filesMap: FileMapping[] = [];
 
-    for (const file of files) {
+    for (const file of ordenedFiles) {
       const fileMap = {
         file: file,
       } as FileMapping;

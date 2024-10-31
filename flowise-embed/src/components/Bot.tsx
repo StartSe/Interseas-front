@@ -270,6 +270,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       return item;
     });
+    const chatMessage = getLocalStorageChatflow(props.chatflowid);
+    if (chatMessage && Object.keys(chatMessage).length > 0) {
+      const chatData = {
+        id: chatId(),
+        agent_flow: props.flow,
+      };
+      documentService.saveChatDataToDB(chatData);
+    }
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
@@ -621,13 +629,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
-
-      const chatData = {
-        id: newChatId,
-        agent_flow: props.flow,
-      };
-
-      documentService.saveChatDataToDB(chatData);
       window.location.reload();
 
       const messages: MessageType[] = [

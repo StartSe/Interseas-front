@@ -560,9 +560,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             const cleanOldNcm = oldNcm.replace(/\./g, '');
             const cleanNewNcm = newNcm.replace(/\./g, '');
             if (areBothOldAndNewNcmsDefined && cleanOldNcm !== cleanNewNcm) {
-              setMessages((prev) => {
+              setMessages((prevMessages) => {
                 const newMessage = { message: ncmChangeMessage(oldNcm, newNcm), type: 'apiMessage' } as MessageType;
-                const updated = [...prev, newMessage];
+                const updated = [...prevMessages, newMessage];
                 addChatMessage(updated);
                 return [...updated];
               });

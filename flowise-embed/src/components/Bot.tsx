@@ -270,6 +270,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       return item;
     });
+    const chatMessage = getLocalStorageChatflow(props.chatflowid);
+
+    if (!chatMessage || Object.entries(chatMessage).length === 0) {
+      const chatData = {
+        id: chatId(),
+        agent_flow: props.flow,
+      };
+
+      documentService.saveChatData(chatData);
+    }
+
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
@@ -441,8 +452,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             body.socketIOClientId = socketIOClientId();
           } else {
             setUploading(false);
-            setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
+            setMessages((prevMessages) => {
+              const newMessage = { message: '', type: 'apiMessage' } as MessageType;
+              const updated = [...prevMessages, newMessage];
+              addChatMessage(updated);
+              return [...updated];
+            });
           }
+
           const result = await sendMessageQuery({
             chatflowid: props.chatflowid,
             apiHost: props.apiHost,
@@ -523,7 +540,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }
 
-      setMessages((prevMessages) => [...prevMessages, { message: criticalAnalysisMessage, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: criticalAnalysisMessage, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
 
       if (Object.keys(jsonResponseCriticalAnalysis()).length !== 0) {
         Object.keys(oldJson).forEach((key) => {
@@ -538,16 +560,31 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             const cleanOldNcm = oldNcm.replace(/\./g, '');
             const cleanNewNcm = newNcm.replace(/\./g, '');
             if (areBothOldAndNewNcmsDefined && cleanOldNcm !== cleanNewNcm) {
-              setMessages((prev) => [...prev, { message: ncmChangeMessage(oldNcm, newNcm), type: 'apiMessage' }]);
+              setMessages((prevMessages) => {
+                const newMessage = { message: ncmChangeMessage(oldNcm, newNcm), type: 'apiMessage' } as MessageType;
+                const updated = [...prevMessages, newMessage];
+                addChatMessage(updated);
+                return [...updated];
+              });
             }
           }
         });
       }
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setLoading(false);
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' }]);
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
       } else {
-        setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' }]);
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
         setLoading(true);
         setStartUploadingDocument(true);
 
@@ -616,9 +653,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const clearChat = () => {
     try {
       removeLocalStorageChatHistory(props.chatflowid);
-      setChatId(
-        (props.chatflowConfig?.vars as any)?.customerId ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}` : uuidv4(),
-      );
+      const newChatId = (props.chatflowConfig?.vars as any)?.customerId
+        ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}`
+        : uuidv4();
+
+      setChatId(newChatId);
+      window.location.reload();
+
       const messages: MessageType[] = [
         {
           message: props.welcomeMessage ?? defaultWelcomeMessage,
@@ -1188,7 +1229,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-        documentService.saveExtractedDataToDatabase(fileMap, textContent, props.flow);
+        documentService.saveDocumentData(fileMap, textContent, props.flow, chatId());
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;
@@ -1308,8 +1349,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
 
     setUploading(false);
-    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
-
+    setMessages((prevMessages) => {
+      const newMessage = { message: `${file.name}`, type: 'userMessage', fileUploads: urls } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
     const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
 
     if (fileProcessed != null) {
@@ -1330,7 +1375,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
 
-      setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: errorMessage, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
     } finally {
       setLoading(false);
     }
@@ -1338,7 +1388,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     if (!checkImportLicenseDocuments(filledChecklists)) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
     }
 
     const compareDocuments = new CompareDocuments({
@@ -1387,13 +1442,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   async function processNewFileData(file: any, files: any[], urls: Partial<FileUpload>[]) {
     const textContent = await getTextContent(file.file);
 
-    setMessages((prevMessages) => [...prevMessages, { message: `${file.name}`, type: 'userMessage', fileUploads: urls }]);
+    setMessages((prevMessages) => {
+      const newMessage = { message: `${file.name}`, type: 'userMessage', fileUploads: urls } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {
-      documentService.saveExtractedDataToDatabase(file, textContent, props.flow, dataFoundCriticalAnalysis);
+      documentService.saveDocumentData(file, textContent, props.flow, chatId(), dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }
@@ -1453,7 +1513,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 class="my-2 ml-2"
                 on:click={() => {
                   clearChat();
-                  window.location.reload();
                 }}
               />
             </div>

@@ -278,7 +278,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         agent_flow: props.flow,
       };
 
-      documentService.saveChatDataToDB(chatData);
+      documentService.saveChatData(chatData);
     }
 
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
@@ -1229,7 +1229,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-        documentService.saveDocumentDataToDB(fileMap, textContent, props.flow, chatId());
+        documentService.saveDocumentData(fileMap, textContent, props.flow, chatId());
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;
@@ -1453,7 +1453,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {
-      documentService.saveDocumentDataToDB(file, textContent, props.flow, chatId(), dataFoundCriticalAnalysis);
+      documentService.saveDocumentData(file, textContent, props.flow, chatId(), dataFoundCriticalAnalysis);
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }

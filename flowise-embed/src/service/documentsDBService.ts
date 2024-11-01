@@ -49,7 +49,7 @@ class DocumentsDBService {
     }
   }
 
-  private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
+  private async sendDataThroughN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
     } catch (error) {
@@ -79,25 +79,25 @@ class DocumentsDBService {
     };
   }
 
-  public async saveChatDataToDB(chatData: any): Promise<void> {
+  public async saveChatData(chatData: any): Promise<void> {
     const tableName = 'chats';
-    await this.sendDataToDBThroughN8n(tableName, chatData);
+    await this.sendDataThroughN8n(tableName, chatData);
   }
 
-  public async saveDocumentDataToDB(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
+  public async saveDocumentData(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
     const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
-    await this.sendDataToDBThroughN8n(tableName, documentData);
-    await this.saveChatDocumentDataToDB(chatId, documentData.id);
+    await this.sendDataThroughN8n(tableName, documentData);
+    await this.saveChatDocumentData(chatId, documentData.id);
   }
 
-  public async saveChatDocumentDataToDB(chatId: any, documentId: string): Promise<void> {
+  public async saveChatDocumentData(chatId: any, documentId: string): Promise<void> {
     const tableName = 'chats_documents';
     const chatDocumentData = {
       chat_id: chatId,
       document_id: documentId,
     };
-    await this.sendDataToDBThroughN8n(tableName, chatDocumentData);
+    await this.sendDataThroughN8n(tableName, chatDocumentData);
   }
 
   public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {

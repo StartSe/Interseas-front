@@ -74,8 +74,9 @@ Conferências:
 export const checklistCeMercante = `
 • Número do conhecimento de embarque
 • NCM
-• Dados do Importador - também chamado de Consignee, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
+• Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Embarcador - também chamado de Shipper / Exportador (nome, endereço, NIF)
 • Peso Bruto - (G.W)
 • Cubagem (m³)
 • Data de emissão

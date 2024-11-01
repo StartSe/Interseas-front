@@ -35,7 +35,6 @@ import {
 } from '@/utils/fileClassificationUtils';
 import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
-import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';

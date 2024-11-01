@@ -49,7 +49,7 @@ class DocumentsDBService {
     }
   }
 
-  private async sendDataOnDBByN8n(tableName: string, data: any): Promise<void> {
+  private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
     } catch (error) {
@@ -81,13 +81,13 @@ class DocumentsDBService {
 
   public async saveChatDataToDB(chatData: any): Promise<void> {
     const tableName = 'chats';
-    await this.sendDataOnDBByN8n(tableName, chatData);
+    await this.sendDataToDBThroughN8n(tableName, chatData);
   }
 
   public async saveDocumentDataToDB(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
     const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
-    await this.sendDataOnDBByN8n(tableName, documentData);
+    await this.sendDataToDBThroughN8n(tableName, documentData);
     await this.saveChatDocumentDataToDB(chatId, documentData.id);
   }
 
@@ -97,7 +97,7 @@ class DocumentsDBService {
       chat_id: chatId,
       document_id: documentId,
     };
-    await this.sendDataOnDBByN8n(tableName, chatDocumentData);
+    await this.sendDataToDBThroughN8n(tableName, chatDocumentData);
   }
 
   public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {

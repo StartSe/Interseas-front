@@ -2,7 +2,7 @@ import { constants } from '@/constants';
 import { Flow } from '@/features/bubble/types';
 import { pdfToHash } from '@/utils/pdfUtils';
 import { v4 as uuidv4 } from 'uuid';
-import { processFileName } from '@/utils/pdfUtils';
+import { extractNewFileProperties } from '@/utils/pdfUtils';
 
 interface DocumentData {
   id: string;
@@ -64,7 +64,7 @@ class DocumentsDBService {
   public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
     const hashPdf = await pdfToHash(fileMap.file.file);
     const documentId = uuidv4();
-    const { fileName, version } = processFileName(fileMap.file.file.name);
+    const { fileName, version } = extractNewFileProperties(fileMap.file.file.name);
     return {
       id: documentId,
       file_name: fileName,

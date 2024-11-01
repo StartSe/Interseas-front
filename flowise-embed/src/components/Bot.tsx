@@ -1361,6 +1361,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       let processedDocumentJson = JSON.parse(fileProcessed);
       processedDocumentJson = sanitizeJson(processedDocumentJson);
       structureAndSaveMessages(processedDocumentJson, fileMap);
+      setIsNextChecklistButtonDisabled(false);
     } else {
       await extractNewChecklist(file, fileMap, urls);
     }

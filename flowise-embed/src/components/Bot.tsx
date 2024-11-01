@@ -1169,13 +1169,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const maxAttempts = 3;
 
     if ([DocumentTypes.LICENCA_DE_IMPORTACAO, DocumentTypes.LPCO].includes(fileMap.type)) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NO_LI_LPCO_COMPLIANCE_FEATURE, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NO_LI_LPCO_COMPLIANCE_FEATURE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
       setIsNextChecklistButtonDisabled(false);
       setLoading(false);
       return;
     }
     if (fileMap.type === DocumentTypes.COMMERCIAL_INVOICE) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.MANUAL_COMPLIANCE_ALERT, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.MANUAL_COMPLIANCE_ALERT, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
     }
 
     const textContent = await getTextContent(file.file);

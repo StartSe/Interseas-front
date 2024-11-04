@@ -1,27 +1,31 @@
 import { constants } from '@/constants';
 import { Flow } from '@/features/bubble/types';
 import { pdfToHash } from '@/utils/pdfUtils';
+import { v4 as uuidv4 } from 'uuid';
+import { extractNewFileProperties } from '@/utils/pdfUtils';
 
 interface DocumentData {
+  id: string;
   file_name?: string;
-  file_extension?: string;
+  mime_type?: string;
   hash: string;
-  checklist_result?: any;
   extraction_result?: any;
+  checklist_result?: any;
   pdf_to_text?: string;
+  version?: any;
   checklist_type?: string;
   agent_flow: string;
 }
 
 class DocumentsDBService {
-  private async sendDataToN8n(document: DocumentData): Promise<void> {
+  private async sendDataToN8n(tableName: string, data: any): Promise<void> {
     try {
       await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDataToSupabase, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(document),
+        body: JSON.stringify({ tableName, data }),
       });
     } catch (error) {
       console.error('Error saving to the database:', error);
@@ -45,8 +49,12 @@ class DocumentsDBService {
     }
   }
 
-  public async saveDocument(documentData: DocumentData): Promise<void> {
-    await this.sendDataToN8n(documentData);
+  private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
+    try {
+      await this.sendDataToN8n(tableName, data);
+    } catch (error) {
+      console.error('Error saving to the database:', error);
+    }
   }
 
   public async isHashInDatabase(hash: string, agentFlow: Flow): Promise<boolean> {
@@ -55,29 +63,41 @@ class DocumentsDBService {
 
   public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
     const hashPdf = await pdfToHash(fileMap.file.file);
+    const documentId = uuidv4();
+    const { fileName, version } = extractNewFileProperties(fileMap.file.file.name);
     return {
-      file_name: fileMap.file.file.name,
-      file_extension: fileMap.file.file.type,
+      id: documentId,
+      file_name: fileName,
+      mime_type: fileMap.file.file.type,
       hash: hashPdf,
-      checklist_result: fileMap.filledChecklist || agentResult,
       extraction_result: fileMap.content || agentResult,
+      checklist_result: fileMap.filledChecklist || agentResult,
       pdf_to_text: textContent,
+      version: version,
       checklist_type: fileMap.type,
       agent_flow: agentFlow,
     };
   }
 
-  public async saveDocumentData(documentData: DocumentData): Promise<void> {
-    try {
-      await this.saveDocument(documentData);
-    } catch (error) {
-      console.error('Error saving to the database:', error);
-    }
+  public async saveChatData(chatData: any): Promise<void> {
+    const tableName = 'chats';
+    await this.sendDataToDBThroughN8n(tableName, chatData);
   }
 
-  public async saveExtractedDataToDatabase(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<void> {
+  public async saveDocumentData(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
+    const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
-    await this.saveDocumentData(documentData);
+    await this.sendDataToDBThroughN8n(tableName, documentData);
+    await this.saveChatDocumentData(chatId, documentData.id);
+  }
+
+  public async saveChatDocumentData(chatId: any, documentId: string): Promise<void> {
+    const tableName = 'chats_documents';
+    const chatDocumentData = {
+      chat_id: chatId,
+      document_id: documentId,
+    };
+    await this.sendDataToDBThroughN8n(tableName, chatDocumentData);
   }
 
   public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {

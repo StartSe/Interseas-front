@@ -32,7 +32,6 @@ import {
   identifyDocumentChecklist,
   identifyDocumentType,
   DocumentTypes,
-  documentPriorityMapping,
   sortUploadFiles,
 } from '@/utils/fileClassificationUtils';
 import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
@@ -1120,9 +1119,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       filesMap.push(fileMap);
     }
 
-    const ordenedFiles = sortUploadFiles(filesMap);
+    const orderedFiles = sortUploadFiles(filesMap);
 
-    setFilesMapping(ordenedFiles);
+    setFilesMapping(orderedFiles);
 
     setMessages((prevMessages) => [
       ...prevMessages,

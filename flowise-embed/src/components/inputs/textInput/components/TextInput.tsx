@@ -127,7 +127,7 @@ export const TextInput = (props: Props) => {
               type="button"
               class="m-0 h-14 flex items-center justify-center"
               isDisabled={props.disabled || isSendButtonDisabled()}
-              on:click={() => createEffect(() => props.setIsUploadModalOpen(true))}
+              on:click={() => props.setIsUploadModalOpen(true)}
             >
               <span style={{ 'font-family': 'Poppins, sans-serif' }}>Image Upload</span>
             </ImageUploadButton>

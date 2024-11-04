@@ -1,19 +1,6 @@
-import { DocumentTypes } from '@/utils/fileClassificationUtils';
-import { FileMapping } from '@/utils/fileUtils';
-
 export type messagesArray = {
   messages: string[];
 };
-
-export function checkImportLicenseDocuments(fileMappings: FileMapping[]) {
-  for (const fileMapping of fileMappings) {
-    if (fileMapping.type === DocumentTypes.LICENCA_DE_IMPORTACAO) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export const CCTCOMPLIANCE = `COMPLIANCE NOTES - CCT AÉREO X CONHECIMENTO HAWB
 
 - Identificação do conhecimento de carga: [VALOR DO CCT AÉREO]  

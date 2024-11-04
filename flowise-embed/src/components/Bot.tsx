@@ -35,7 +35,6 @@ import {
 } from '@/utils/fileClassificationUtils';
 import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
-import { checkImportLicenseDocuments } from '@/utils/complianceUtils';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
 import { Flow } from '@/features/bubble/types';
@@ -1209,6 +1208,27 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const extractNewChecklist = async (file: any, fileMap: any, urls: any) => {
     const maxAttempts = 3;
+
+    if ([DocumentTypes.LICENCA_DE_IMPORTACAO, DocumentTypes.LPCO].includes(fileMap.type)) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NO_LI_LPCO_COMPLIANCE_FEATURE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
+      setIsNextChecklistButtonDisabled(false);
+      setLoading(false);
+      return;
+    }
+    if (fileMap.type === DocumentTypes.COMMERCIAL_INVOICE) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.MANUAL_COMPLIANCE_ALERT, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
+    }
+
     const textContent = await getTextContent(file.file);
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -1387,15 +1407,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
-    if (!checkImportLicenseDocuments(filledChecklists)) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE, type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
-    }
-
     const compareDocuments = new CompareDocuments({
       fileMappings: filledChecklists,
       sendBackgroundMessage,

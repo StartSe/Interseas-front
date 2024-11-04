@@ -12,6 +12,8 @@ export const messageUtils = {
   ALL_DOCUMENTS_VALIDATED_MESSAGE: 'Todos os seus documentos estão validados corretamente! Verifique cada um dos checklists abaixo detalhadamente',
   UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: 'Não foi possível verificar o checklist deste arquivo.',
   UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE: 'Não foi possível verificar os campos deste arquivo.',
+  NO_LI_LPCO_COMPLIANCE_FEATURE: 'Ainda não faço o compliance de LI/LPCO, por favor realizá-lo manualmente.',
+  MANUAL_COMPLIANCE_ALERT: 'Atenção: Se há LPCO já emitido para a operação, realizar compliance manual.',
 
   CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: 'Checklist not found in response',
 

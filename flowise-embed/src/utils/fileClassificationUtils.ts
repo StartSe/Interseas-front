@@ -74,8 +74,9 @@ Conferências:
 export const checklistCeMercante = `
 • Número do conhecimento de embarque
 • NCM
-• Dados do Importador - também chamado de Consignee, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
+• Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Embarcador - também chamado de Shipper / Exportador (nome, endereço, NIF)
 • Peso Bruto - (G.W)
 • Cubagem (m³)
 • Data de emissão
@@ -141,9 +142,9 @@ Conferências:
 • Somatório dos itens = valor total informado`;
 
 export const checklistConhecimentoBL = `
-• Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Consignatário - também chamado de Consignee (Razão social, endereço e CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
+• Dados do Consignee - também chamado de Consignatário (Razão social, endereço e CNPJ, CEP)
+• Dados do Notify - também chamado de Adquirente, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Número dos containers - (no formato <3 letras>U<7 números>)
 • Número dos lacres dos containers - (seal)
@@ -175,8 +176,8 @@ Dados de compliance:
 • Número do Conhecimento de Embarque`;
 
 export const checklistConhecimentoHawb = `
-• Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (razão social, endereço e CNPJ, CEP)
+• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
+• Dados do Consignee - também chamado de Importador, Importer, Ship To (razão social, endereço e CNPJ, CEP)
 • Notify - (razão social, endereço, CNPJ e CEP)
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Aeroporto de Partida
@@ -195,7 +196,6 @@ Dados de Compliance:
 • Final Destination - (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
 • Description of Goods - (Descrição resumida e completa das mercadorias)
 • Forma de pagamento - (Collect/Prepaid, por peso/valor ou outros encargos)
-• Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP) (Embarcador estrangeiro)
 • País do Shipper
 • CNPJ do Consignee - (Consignatário/Identificação)
 • MAWB/AWB associados
@@ -203,9 +203,9 @@ Dados de Compliance:
 `;
 
 export const checklistConhecimentoMawb = `
-• Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
+• Dados do Consignee - também chamado de Importador, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Aeroporto de Partida
 • Aeroporto de Destino
 • Peso Bruto - (G.W)
@@ -223,7 +223,7 @@ Tipo de frete = "Collect"`;
 
 export const checklistCRT = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Destinatário - (razão social, endereço, CNPJ e CEP)
 • Notificar
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
@@ -296,6 +296,8 @@ Conferências:
 • Somatório dos itens = valor total informado`;
 
 const checklistCCTAereo = `
+• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• Dados do Embarcador estrangeiro - também chamado de exportador (nome, endereço, CNPJ, CEP)
 • Identificação do conhecimento de carga - (número do HAWB)
 • Data da emissão
 • Aeroporto de partida
@@ -318,7 +320,7 @@ const checklistCCTAereo = `
 
 const checklistMicDta = `
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Destinatário - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
 • Moeda da mercadoria
 • País de origem

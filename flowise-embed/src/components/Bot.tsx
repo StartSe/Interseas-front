@@ -1782,6 +1782,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   sendMessageSound={props.textInput?.sendMessageSound}
                   sendSoundLocation={props.textInput?.sendSoundLocation}
                   startProcessingFiles={startProcessingFiles}
+                  setIsUploadModalOpen={setIsUploadModalOpen}
                 />
               )
             ) : (
@@ -1793,15 +1794,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       text={messageUtils.UPLOAD_BUTTON_LABEL}
                       disabled={isUploadButtonDisabled()}
                     />
-                    <FileUploadModal
-                      isOpen={isUploadModalOpen()}
-                      onClose={() => setIsUploadModalOpen(false)}
-                      onUploadSubmit={startProcessingFiles}
-                      modalTitle={messageUtils.MODAL_TITLE}
-                      uploadLabel={messageUtils.UPLOADING_LABEL}
-                      uploadingButtonLabel={messageUtils.MODAL_BUTTON}
-                      errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
-                    />
                   </>
                 ) : null}
               </>
@@ -1812,6 +1804,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             badgeBackgroundColor={props.badgeBackgroundColor}
             poweredByTextColor={props.poweredByTextColor}
             botContainer={botContainer}
+          />
+          <FileUploadModal
+            isOpen={isUploadModalOpen()}
+            onClose={() => setIsUploadModalOpen(false)}
+            onUploadSubmit={startProcessingFiles}
+            modalTitle={messageUtils.MODAL_TITLE}
+            uploadLabel={messageUtils.UPLOADING_LABEL}
+            uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+            errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
           />
         </div>
       </div>

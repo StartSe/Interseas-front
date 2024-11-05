@@ -1360,6 +1360,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const processNextChecklist = async () => {
     setUploading(true);
     setLoading(true);
+    let fileProcessed = null;
 
     const files = filesMapping();
 
@@ -1383,7 +1384,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+
+    if (![DocumentTypes.LICENCA_DE_IMPORTACAO.toString(), DocumentTypes.LPCO.toString()].includes(fileMap.type)) {
+      fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+    }
 
     if (fileProcessed != null) {
       let processedDocumentJson = JSON.parse(fileProcessed);

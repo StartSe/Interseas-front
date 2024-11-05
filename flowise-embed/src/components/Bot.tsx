@@ -1259,7 +1259,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (attempt === maxAttempts) {
           const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
 
-          const documentErrors = documentsChecklistError();
+          const documentErrors = [...documentsChecklistError()];
           documentErrors.push(fileMap.file.name);
           setDocumentsChecklistError(documentErrors);
 

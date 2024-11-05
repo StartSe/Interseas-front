@@ -1411,16 +1411,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
     } finally {
       setLoading(false);
+      setIsNextChecklistButtonDisabled(false);
     }
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
+      const isPlural = documentsChecklistError().length > 1;
 
       setMessages((prevMessages) => {
         const newMessage = {
-          message: complianceErrorMessage(errorMessages),
+          message: complianceErrorMessage(errorMessages, isPlural),
           type: 'apiMessage',
         } as MessageType;
         const updated = [...prevMessages, newMessage];

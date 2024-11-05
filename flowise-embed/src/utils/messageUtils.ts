@@ -58,6 +58,9 @@ export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
   * O código anterior era: **${oldNcm}**\n
   * O novo código é: **${newNcm}**\n\n`;
 }
-export function complianceErrorMessage(errorMessages: string): string {
-  return `Não foi possivel realizar a Análise de Compliance, os seguintes arquivos não puderam ser processados: ${errorMessages}`;
+export function complianceErrorMessage(errorMessages: string, isPlural: boolean): string {
+  if (isPlural) {
+    return `Não foi possivel realizar a Análise de Compliance, os seguintes arquivos não puderam ser processados: ${errorMessages}. Verifique os arquivos e tente novamente.`;
+  }
+  return `Não foi possivel realizar a Análise de Compliance, o seguinte arquivo não pôde ser processado: ${errorMessages}. Verifique o arquivo e tente novamente.`;
 }

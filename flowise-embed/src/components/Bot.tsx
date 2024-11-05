@@ -19,7 +19,7 @@ import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { messageUtils, ncmChangeMessage } from '@/utils/messageUtils';
+import { complianceErrorMessage, messageUtils, ncmChangeMessage } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
@@ -214,6 +214,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
   const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
+  const [documentsChecklistError, setDocumentsChecklistError] = createSignal<string[]>([]);
   const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
 
   onMount(() => {
@@ -1261,6 +1262,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (attempt === maxAttempts) {
           const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
 
+          const documentErrors = [...documentsChecklistError()];
+          documentErrors.push(fileMap.file.name);
+          setDocumentsChecklistError(documentErrors);
+
           setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
         }
       }
@@ -1410,6 +1415,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    if (documentsChecklistError().length > 0) {
+      const errorMessages = documentsChecklistError().join(', ');
+
+      setMessages((prevMessages) => {
+        const newMessage = {
+          message: complianceErrorMessage(errorMessages),
+          type: 'apiMessage',
+        } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
+
+      return;
+    }
+
     const compareDocuments = new CompareDocuments({
       fileMappings: filledChecklists,
       sendBackgroundMessage,

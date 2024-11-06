@@ -1383,7 +1383,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+
+    let fileProcessed = null;
+
+    if (![DocumentTypes.LICENCA_DE_IMPORTACAO.toString(), DocumentTypes.LPCO.toString()].includes(fileMap.type)) {
+      fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+    }
 
     if (fileProcessed != null) {
       let processedDocumentJson = JSON.parse(fileProcessed);
@@ -1411,16 +1416,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
     } finally {
       setLoading(false);
+      setIsNextChecklistButtonDisabled(false);
     }
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
+      const isPlural = documentsChecklistError().length > 1;
 
       setMessages((prevMessages) => {
         const newMessage = {
-          message: complianceErrorMessage(errorMessages),
+          message: complianceErrorMessage(errorMessages, isPlural),
           type: 'apiMessage',
         } as MessageType;
         const updated = [...prevMessages, newMessage];

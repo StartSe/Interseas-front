@@ -475,8 +475,8 @@ const documentNameAndTypeMapping = {
   'CONFIRMATION[_-\\s]OF[_-\\s]ORDER': DocumentTypes.CONFIRMATION_OF_ORDER,
   'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DIGITAL': DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL,
   'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM': DocumentTypes.CERTIFICADO_DE_ORIGEM,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE.*VINH(OS?)?': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
-  'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE': DocumentTypes.TEST_REPORT,
+  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE.*VINHO(S?)?': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
+  'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE(?!.*VINHO)': DocumentTypes.TEST_REPORT,
   'LABEL(?:S)?|(?:CONTRA[_\\-\\sR])?ROTULO(?:S)?': DocumentTypes.LABELS,
   'ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL':
     DocumentTypes.ANEXO_IX,

@@ -35,8 +35,8 @@ Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas 
 2. **Finalidade de Uso:**
 3. HS Code:
 4. Nome Técnico:
-5. Material Constitutivo (com percentuais, se aplicável): 
-6. Informações Complementares: 
+5. Material Constitutivo (com percentuais, se aplicável):
+6. Informações Complementares:
 7. Sinônimo:`,
   CRITICAL_ANALYSIS_TEMPLATE: `
 Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou faça o **upload** (ícone no canto inferior esquerdo da caixa de texto) de um documento contendo as informações e nosso time de especialistas irá analisá-los:
@@ -58,7 +58,7 @@ export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
   * O código anterior era: **${oldNcm}**\n
   * O novo código é: **${newNcm}**\n\n`;
 }
-export function complianceErrorMessage(errorMessages: string[], isPlural: boolean): string {
+export function complianceErrorMessage(errorMessages: string, isPlural: boolean): string {
   const pluralize = (word: string) => (isPlural ? `${word}s` : word);
   return `Não foi possivel realizar a Análise de Compliance. ${pluralize('O')} ${pluralize('seguinte')} ${pluralize('arquivo')} não ${
     isPlural ? 'puderam' : 'pôde'

@@ -29,5 +29,5 @@ export declare const messageUtils: {
     NO: string;
 };
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
-export declare function complianceErrorMessage(errorMessages: string): string;
+export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
 //# sourceMappingURL=messageUtils.d.ts.map

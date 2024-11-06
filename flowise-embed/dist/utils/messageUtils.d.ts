@@ -10,6 +10,8 @@ export declare const messageUtils: {
     ALL_DOCUMENTS_VALIDATED_MESSAGE: string;
     UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: string;
     UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE: string;
+    NO_LI_LPCO_COMPLIANCE_FEATURE: string;
+    MANUAL_COMPLIANCE_ALERT: string;
     CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: string;
     EX_TARIFF_CHECK_ALERT_MESSAGE: string;
     IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: string;
@@ -27,4 +29,5 @@ export declare const messageUtils: {
     NO: string;
 };
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
+export declare function complianceErrorMessage(errorMessages: string): string;
 //# sourceMappingURL=messageUtils.d.ts.map

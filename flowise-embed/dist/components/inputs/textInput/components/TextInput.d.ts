@@ -20,6 +20,7 @@ type Props = {
     sendMessageSound?: boolean;
     sendSoundLocation?: string;
     startProcessingFiles: (files: UploadFile[]) => Promise<void>;
+    setIsUploadModalOpen: Setter<boolean>;
 };
 export declare const TextInput: (props: Props) => import("solid-js").JSX.Element;
 export {};

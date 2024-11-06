@@ -24,7 +24,7 @@ import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
 import { isImage } from '@/utils/isImage';
-import { FileMapping } from '@/utils/fileUtils';
+import { DatabaseProvidedFile, FileMapping } from '@/utils/fileUtils';
 import { convertPdfToMultipleImages, pdfToText } from '@/utils/pdfUtils';
 import {
   defaultChecklist,
@@ -1144,7 +1144,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const fileMap = {
         file: file,
       } as FileMapping;
-      const docType = identifyDocumentType(fileMap.file.file.name);
+      const docType = identifyDocumentType(file.name);
       if (docType) {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
@@ -1371,7 +1371,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setIsNextChecklistButtonDisabled(true);
 
     const fileMap = files[currentChecklistNumber()];
-    const file = fileMap.file;
+    const file = fileMap.file as UploadFile;
     const urls = await processFileToSend(file.file);
 
     setCurrentChecklistNumber(currentChecklistNumber() + 1);
@@ -1387,7 +1387,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     let fileProcessed = null;
 
     if (![DocumentTypes.LICENCA_DE_IMPORTACAO.toString(), DocumentTypes.LPCO.toString()].includes(fileMap.type)) {
-      fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+      fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow, chatId());
     }
 
     if (fileProcessed != null) {
@@ -1435,12 +1435,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         addChatMessage(updated);
         return [...updated];
       });
-
       return;
     }
+    const filesCheckList = await documentService.getDocumentsByChatId(chatId());
+
+    const fileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
+      file: {
+        name: file.file_name,
+        mime: file.mime,
+        hash: file.hash,
+      } as DatabaseProvidedFile,
+      type: file.checklist_type,
+      content: file.checklist_result,
+      filledChecklist: file.checklist_result,
+    }));
 
     const compareDocuments = new CompareDocuments({
-      fileMappings: filledChecklists,
+      fileMappings: fileMappings || filledChecklists,
       sendBackgroundMessage,
       setMessages,
     });
@@ -1466,10 +1477,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const files = filesMapping().filter((item) => !!item);
     const fileMap = files[currentChecklistNumber()];
-    const file = fileMap.file;
+    const file = fileMap.file as UploadFile;
     const urls = await processFileToSend(file.file);
 
-    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow);
+    const fileProcessed = await documentService.checkDocumentForAlreadyProcessedData(fileMap, props.flow, chatId());
 
     if (fileProcessed) {
       let processedDocumentJson = JSON.parse(fileProcessed);

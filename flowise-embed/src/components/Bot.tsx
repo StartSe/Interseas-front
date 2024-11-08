@@ -209,6 +209,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
   const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = createSignal(false);
+  const [hiddenInput, setHiddenInput] = createSignal<boolean>(false);
   const [disableInput, setDisableInput] = createSignal(false);
   const [filesMapping, setFilesMapping] = createSignal<FileMapping[]>([]);
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
@@ -1176,7 +1177,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         break;
       default:
         await processNextChecklist();
-        setDocumentsUploaded(true);
+        // setDocumentsUploaded(true);
         setIsUploadButtonDisabled(false);
     }
   };
@@ -1414,6 +1415,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         lastMessage.text,
       );
     }
+    setHiddenInput(true);
   };
 
   const processFileCriticalAnalysis = async () => {
@@ -1772,28 +1774,25 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   sendMessageSound={props.textInput?.sendMessageSound}
                   sendSoundLocation={props.textInput?.sendSoundLocation}
                   startProcessingFiles={startProcessingFiles}
+                  hidden={hiddenInput()}
                 />
               )
             ) : (
               <>
-                {!isUploadButtonDisabled() && !disableInput() ? (
-                  <>
-                    <UploadButton
-                      onClick={() => setIsUploadModalOpen(true)}
-                      text={messageUtils.UPLOAD_BUTTON_LABEL}
-                      disabled={isUploadButtonDisabled()}
-                    />
-                    <FileUploadModal
-                      isOpen={isUploadModalOpen()}
-                      onClose={() => setIsUploadModalOpen(false)}
-                      onUploadSubmit={startProcessingFiles}
-                      modalTitle={messageUtils.MODAL_TITLE}
-                      uploadLabel={messageUtils.UPLOADING_LABEL}
-                      uploadingButtonLabel={messageUtils.MODAL_BUTTON}
-                      errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
-                    />
-                  </>
-                ) : null}
+                <UploadButton
+                  onClick={() => setIsUploadModalOpen(true)}
+                  text={messageUtils.UPLOAD_BUTTON_LABEL}
+                  disabled={isUploadButtonDisabled()}
+                />
+                <FileUploadModal
+                  isOpen={isUploadModalOpen()}
+                  onClose={() => setIsUploadModalOpen(false)}
+                  onUploadSubmit={startProcessingFiles}
+                  modalTitle={messageUtils.MODAL_TITLE}
+                  uploadLabel={messageUtils.UPLOADING_LABEL}
+                  uploadingButtonLabel={messageUtils.MODAL_BUTTON}
+                  errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+                />
               </>
             )}
           </div>

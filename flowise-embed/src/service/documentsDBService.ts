@@ -177,7 +177,7 @@ class DocumentsDBService {
     }
   }
 
-  public async checkDocumentForAlreadyProcessedData(fileMap: any, agentFlow: Flow, chatId: any): Promise<any> {
+  public async getProcessedDocumentData(fileMap: any, agentFlow: Flow, chatId: any): Promise<string | null> {
     const hashPdf = await pdfToHash(fileMap.file.file);
     const hasBeenProcessed = await this.checkDocumentHash(hashPdf, agentFlow, chatId);
     if (hasBeenProcessed) {

@@ -220,9 +220,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   onMount(() => {
     if (props.flow === Flow.CriticalAnalysis.toString()) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' }]);
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' }]);
-
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
       setDisableInput(false);
       setDocumentsUploaded(true);
     }
@@ -381,9 +390,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   // Handle errors
   const handleError = (message = 'Oops! There seems to be an error. Please try again.') => {
     setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { message: props.errorMessage || message, type: 'apiMessage' }];
-      addChatMessage(messages);
-      return messages;
+      const newMessage = { message: props.errorMessage || message, type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
     });
     setLoading(false);
     setUserInput('');
@@ -407,9 +417,24 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     updateMessages(inputValue, fileUploads);
     const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
     const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
-    setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
-    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INPUT_INSTRUCTIONS, type: 'apiMessage' }]);
-    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
+    setMessages((prevMessages) => {
+      const newMessage = { message: ncmAnalysis.text, type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
+    setMessages((prevMessages) => {
+      const newMessage = { message: messageUtils.NCM_INPUT_INSTRUCTIONS, type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
+    setMessages((prevMessages) => {
+      const newMessage = { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
     setIsNcmDiscoveringStep(false);
   };
 
@@ -1136,7 +1161,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const startProcessingFiles = async (files: UploadFile[]) => {
     if (isNcmDiscoveringStep()) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
       return;
     }
 
@@ -1170,13 +1200,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     setFilesMapping(orderedFiles);
 
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
-        type: 'apiMessage',
-      },
-    ]);
+    setMessages((prevMessages) => {
+      const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
 
     // TODO: send alert message if needed
     switch (props.flow) {
@@ -1272,7 +1301,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           documentErrors.push(fileMap.file.name);
           setDocumentsChecklistError(documentErrors);
 
-          setMessages((prevMessages) => [...prevMessages, { message: errorMessage, type: 'apiMessage' }]);
+          setMessages((prevMessages) => {
+            const newMessage = { message: errorMessage, type: 'apiMessage' } as MessageType;
+            const updated = [...prevMessages, newMessage];
+            addChatMessage(updated);
+            return [...updated];
+          });
         }
       }
     }
@@ -1330,7 +1364,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
     }
 
-    setMessages((prevMessages) => [...prevMessages, { message: checklistMessage, type: 'apiMessage' }]);
+    setMessages((prevMessages) => {
+      const newMessage = { message: checklistMessage, type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
 
     const conferences = jsonData['conferências'];
 
@@ -1339,7 +1378,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       ((Object.keys(conferences).includes('Máquina/Equipamento') && conferences['Máquina/Equipamento'] === 'true') ||
         (Object.keys(conferences).includes('Possui Ex-tarifário') && conferences['Possui Ex-tarifário'] === 'true'))
     ) {
-      setMessages((prevMessages) => [...prevMessages, { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' }]);
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.EX_TARIFF_CHECK_ALERT_MESSAGE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
     }
 
     if (!isChatFlowAvailableToStream()) {

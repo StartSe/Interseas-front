@@ -19,7 +19,7 @@ import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
 import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { complianceErrorMessage, messageUtils, ncmChangeMessage } from '@/utils/messageUtils';
+import { complianceErrorMessage, criticalAnalysisNcmPhase, messageUtils } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
@@ -34,7 +34,7 @@ import {
   DocumentTypes,
   sortUploadFiles,
 } from '@/utils/fileClassificationUtils';
-import { customBooleanValues, sanitizeJson } from '@/utils/jsonUtils';
+import { compareAndMergeArrays, customBooleanValues, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
@@ -215,6 +215,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
   const [documentsChecklistError, setDocumentsChecklistError] = createSignal<string[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = createSignal(false);
   const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
 
   onMount(() => {
@@ -397,9 +398,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const lastSelectionMessage = messages().findLast((message) => message.type === 'selectionMessage')?.message;
     const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
 
-    if (
-      [messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_HELP_QUESTION].includes(lastSelectionMessage ?? '')
-    ) {
+    if ([messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_RETRY].includes(lastSelectionMessage ?? '')) {
       setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
     }
   });
@@ -409,6 +408,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
     const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
     setMessages((prevMessages) => [...prevMessages, { message: ncmAnalysis.text, type: 'apiMessage' }]);
+    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_INPUT_INSTRUCTIONS, type: 'apiMessage' }]);
+    setMessages((prevMessages) => [...prevMessages, { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' }]);
     setIsNcmDiscoveringStep(false);
   };
 
@@ -531,9 +532,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (/pais/i.test(normalizedKey)) {
           jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.COUNTRY);
         }
+        if (/ncm/i.test(normalizedKey)) {
+          const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
+          if (jsonDataCriticalAnalysis[key].length > 0) {
+            jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
+            jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
+          }
+        }
       }
 
-      const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
       let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
@@ -547,30 +554,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         addChatMessage(updated);
         return [...updated];
       });
+      setIsDisabled(false);
 
-      if (Object.keys(jsonResponseCriticalAnalysis()).length !== 0) {
-        Object.keys(oldJson).forEach((key) => {
-          const keyIsNcm = /ncm/i.test(key);
-          const oldJsonHasKey = oldJson[key] !== null;
-          const jsonDataHasNcm = !!jsonDataCriticalAnalysis['NCM'];
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
 
-          if (keyIsNcm && oldJsonHasKey && jsonDataHasNcm) {
-            const oldNcm = oldJson[key];
-            const newNcm = jsonDataCriticalAnalysis['NCM'];
-            const areBothOldAndNewNcmsDefined = !!oldNcm && !!newNcm;
-            const cleanOldNcm = oldNcm.replace(/\./g, '');
-            const cleanNewNcm = newNcm.replace(/\./g, '');
-            if (areBothOldAndNewNcmsDefined && cleanOldNcm !== cleanNewNcm) {
-              setMessages((prevMessages) => {
-                const newMessage = { message: ncmChangeMessage(oldNcm, newNcm), type: 'apiMessage' } as MessageType;
-                const updated = [...prevMessages, newMessage];
-                addChatMessage(updated);
-                return [...updated];
-              });
-            }
-          }
-        });
-      }
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setLoading(false);
         setMessages((prevMessages) => {
@@ -580,25 +572,39 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...updated];
         });
       } else {
+        setIsAnalyzing(true);
         setMessages((prevMessages) => {
           const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
           addChatMessage(updated);
           return [...updated];
         });
-        setLoading(true);
-        setStartUploadingDocument(true);
+        for (const ncm of jsonDataCriticalAnalysis['NCM']) {
+          const newJsonDataCriticalAnalysis = { ...jsonDataCriticalAnalysis, NCM: [ncm] };
 
-        jsonCriticalAnalysisUpdate.text = JSON.stringify(jsonDataCriticalAnalysis);
+          setMessages((prevMessages) => {
+            const newMessage = { message: criticalAnalysisNcmPhase(ncm), type: 'apiMessage' } as MessageType;
+            const updated = [...prevMessages, newMessage];
+            addChatMessage(updated);
+            return [...updated];
+          });
 
-        const parallelApiExecutor = new ParallelApiExecutor({
-          jsonCriticalAnalysisUpdate,
-          setMessages,
-        });
+          setLoading(true);
+          setStartUploadingDocument(true);
 
-        await parallelApiExecutor.execute();
+          newJsonDataCriticalAnalysis.text = JSON.stringify(newJsonDataCriticalAnalysis);
 
-        setLoading(false);
+          const parallelApiExecutor = new ParallelApiExecutor({
+            jsonCriticalAnalysisUpdate: newJsonDataCriticalAnalysis,
+            setMessages,
+          });
+
+          await parallelApiExecutor.execute();
+
+          setLoading(false);
+        }
+        setIsAnalyzing(false);
+        setIsDisabled(false);
       }
 
       if (!isChatFlowAvailableToStream()) {
@@ -1575,7 +1581,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         fontSize={props.fontSize}
                       />
                     )}
-                    {message.type === 'selectionMessage' && (
+                    {message.type === 'selectionMessage' && !isAnalyzing() && (
                       <SelectionBubble
                         message={message}
                         fileAnnotations={message.fileAnnotations}

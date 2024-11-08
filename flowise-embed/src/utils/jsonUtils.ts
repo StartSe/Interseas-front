@@ -39,3 +39,44 @@ function shouldReplaceWithNull(keyValue: any): boolean {
 
   return ['n/a', 'null', 'undefined', ''].includes(keyValue.toString().toLowerCase());
 }
+
+export function sanitizeToFlatArray(input: any): any[] {
+  const result: any[] = [];
+
+  function recursiveSanitize(value: any): void {
+    if (Array.isArray(value)) {
+      value.forEach(recursiveSanitize);
+    } else if (value && typeof value === 'object') {
+      Object.values(value).forEach(recursiveSanitize);
+    } else if (typeof value === 'string') {
+      const sanitized = value.replace(/\D/g, '');
+      if (sanitized) {
+        result.push(sanitized);
+      }
+    } else if (typeof value === 'number') {
+      value = value.toString().replace(/\D/g, '');
+      result.push(value);
+    }
+  }
+
+  recursiveSanitize(input);
+  return result;
+}
+
+export const compareAndMergeArrays = (firstArray: any[], secondArray: any[]): any[] => {
+  if (!firstArray) {
+    return secondArray;
+  }
+  if (!secondArray) {
+    return firstArray;
+  }
+  const mergedArray = [...firstArray];
+
+  for (const item of secondArray) {
+    if (!mergedArray.includes(item)) {
+      mergedArray.push(item);
+    }
+  }
+
+  return mergedArray;
+};

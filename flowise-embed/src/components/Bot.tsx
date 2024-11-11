@@ -209,6 +209,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
   const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = createSignal(false);
+  const [hiddenInput, setHiddenInput] = createSignal<boolean>(false);
   const [disableInput, setDisableInput] = createSignal(false);
   const [filesMapping, setFilesMapping] = createSignal<FileMapping[]>([]);
   const [currentChecklistNumber, setCurrentChecklistNumber] = createSignal<number>(0);
@@ -1178,9 +1179,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         await processFileCriticalAnalysis();
         break;
       default:
-        await processNextChecklist();
         setDocumentsUploaded(true);
-        setIsUploadButtonDisabled(false);
+        setHiddenInput(true);
+        await processNextChecklist();
     }
   };
 
@@ -1455,6 +1456,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         lastMessage.text,
       );
     }
+    setIsUploadButtonDisabled(false);
   };
 
   const processFileCriticalAnalysis = async () => {
@@ -1743,7 +1745,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 />
               )}
 
-            {(startUploadingDocument() && documentsUploaded()) || !startUploadingDocument() ? (
+            {(startUploadingDocument() && documentsUploaded() && !hiddenInput()) || !startUploadingDocument() ? (
               isRecording() ? (
                 <>
                   {recordingNotSupported() ? (
@@ -1818,15 +1820,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               )
             ) : (
               <>
-                {!isUploadButtonDisabled() && !disableInput() ? (
-                  <>
-                    <UploadButton
-                      onClick={() => setIsUploadModalOpen(true)}
-                      text={messageUtils.UPLOAD_BUTTON_LABEL}
-                      disabled={isUploadButtonDisabled()}
-                    />
-                  </>
-                ) : null}
+                <UploadButton
+                  onClick={() => setIsUploadModalOpen(true)}
+                  text={messageUtils.UPLOAD_BUTTON_LABEL}
+                  disabled={isUploadButtonDisabled()}
+                />
               </>
             )}
           </div>

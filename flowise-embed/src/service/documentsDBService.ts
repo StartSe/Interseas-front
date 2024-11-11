@@ -100,6 +100,23 @@ class DocumentsDBService {
     }
   }
 
+  private async sendDeleteChatRequest(chatId: string): Promise<boolean> {
+    try {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDeleteChatRequest, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatId }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error finding chatId on DB:', ${error}`);
+    }
+  }
+
   private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
@@ -122,6 +139,10 @@ class DocumentsDBService {
 
   private async retrieveChatIdsForFlow(flow: string): Promise<string> {
     return await this.fetchChatIdsForFlow(flow);
+  }
+
+  private async removeChat(chatId: string): Promise<boolean> {
+    return await this.sendDeleteChatRequest(chatId);
   }
 
   private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
@@ -215,6 +236,16 @@ class DocumentsDBService {
     } catch (error) {
       console.error('Error finding chatIds by flow:', error);
       return null;
+    }
+  }
+
+  public async deleteChat(chatId: string): Promise<boolean> {
+    try {
+      const result = await this.removeChat(chatId);
+      return result;
+    } catch (error) {
+      console.error('Error deleting chatId:', error);
+      throw error;
     }
   }
 }

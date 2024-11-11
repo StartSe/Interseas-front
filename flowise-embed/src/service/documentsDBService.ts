@@ -100,20 +100,17 @@ class DocumentsDBService {
     }
   }
 
-  private async sendDeleteChatRequest(chatId: string): Promise<boolean> {
+  private async sendDeleteChatRequest(chatId: string): Promise<void> {
     try {
-      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDeleteChatRequest, {
+      await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDeleteChatRequest, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ chatId }),
       });
-
-      const data = await response.json();
-      return data;
     } catch (error) {
-      throw new Error(`Error finding chatId on DB:', ${error}`);
+      throw new Error(`Error deleting chatId:', ${error}`);
     }
   }
 
@@ -141,8 +138,8 @@ class DocumentsDBService {
     return await this.fetchChatIdsForFlow(flow);
   }
 
-  private async removeChat(chatId: string): Promise<boolean> {
-    return await this.sendDeleteChatRequest(chatId);
+  private async removeChat(chatId: string): Promise<void> {
+    await this.sendDeleteChatRequest(chatId);
   }
 
   private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
@@ -239,10 +236,9 @@ class DocumentsDBService {
     }
   }
 
-  public async deleteChat(chatId: string): Promise<boolean> {
+  public async deleteChat(chatId: string): Promise<void> {
     try {
-      const result = await this.removeChat(chatId);
-      return result;
+      await this.removeChat(chatId);
     } catch (error) {
       console.error('Error deleting chatId:', error);
       throw error;

@@ -29,6 +29,7 @@ export const constants = {
   n8nFlowFetchDocumentsByChatId: '6aa6bc8f-2aba-4d79-b7ce-b313bb23e797',
   n8nFlowFetchChatIdsForFlow: '8093dd32-25a4-4d40-80b4-ab105893d5c2',
   n8nFlowSendDeleteChatRequest: 'd92f2f25-788c-4545-b3b5-94e4c85d9ef5',
+  n8nFlowSendUpdateChatRequest: 'ebdf0721-9bba-467a-80fd-0c5c74965dfc',
 };
 
 export const defaultMenuProps: MenuProps = {

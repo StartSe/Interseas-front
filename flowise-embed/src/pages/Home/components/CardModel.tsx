@@ -6,12 +6,16 @@ export interface CardModelProps {
   title: string;
   onClick?: () => void;
   bgImage: string;
+  onIdChange?: (id: string) => void;
 }
 
 export const CardModel: Component<CardModelProps> = (props) => {
   const onClick = () => {
     if (props.onClick) {
       return props.onClick();
+    }
+    if (props.onIdChange) {
+      props.onIdChange(props.id);
     }
     window.location.href = `${props.id}.html`;
   };

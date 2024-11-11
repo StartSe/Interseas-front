@@ -1,12 +1,22 @@
-import { For } from 'solid-js';
+import { For, createSignal } from 'solid-js';
 import styles from './home.css';
 import { CardModel, CardModelProps } from './components/CardModel';
+import DocumentsDBService from '@/service/documentsDBService';
 
+const documentService = new DocumentsDBService();
 export interface HomeProps {
   items: CardModelProps[];
 }
 
 export const Home = (props: HomeProps) => {
+  const [currentId, setCurrentId] = createSignal('initialId');
+
+  const handleCardClick = (id: string) => {
+    setCurrentId(id);
+    localStorage.setItem('currentId', id);
+    documentService.getChatIdsByFlow(id);
+  };
+
   return (
     <>
       <style>{styles}</style>
@@ -16,7 +26,7 @@ export const Home = (props: HomeProps) => {
           <p>Escolha qual tarefa deseja realizar abaixo</p>
         </div>
         <div class="card-container">
-          <For each={props.items}>{(item) => <CardModel {...item} />}</For>
+          <For each={props.items}>{(item) => <CardModel {...item} onIdChange={handleCardClick} />}</For>
         </div>
       </main>
       <footer>

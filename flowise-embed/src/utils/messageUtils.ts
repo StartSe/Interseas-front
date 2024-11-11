@@ -26,8 +26,9 @@ export const messageUtils = {
   DATA_NOT_FOUND: 'não encontrado',
   NCM_INITIAL_QUESTION: 'Deseja descobrir o NCM?',
   NCM_CONTINUE_QUESTION: 'Deseja continuar com o especialista em Classificação Fiscal?',
-  NCM_HELP_QUESTION: 'Precisa de ajuda com a classificação Fiscal?',
+  NCM_RETRY: 'Deseja gerar novamente com outra descrição?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
+  NCM_INPUT_INSTRUCTIONS: 'Escolha o(s) NCM(s) desejado(s) e envie em formato texto. Exemplo: "NCM: 1234.56.78, 1234.56.78"',
   NCM_DISCOVER_TEMPLATE: `
 Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas informações. Por favor, envie uma **mensagem de texto** preenchendo os campos abaixo e nosso time de especialistas irá classificar fiscalmente:
 
@@ -63,4 +64,8 @@ export function complianceErrorMessage(errorMessages: string, isPlural: boolean)
   return `Não foi possivel realizar a Análise de Compliance. ${pluralize('O')} ${pluralize('seguinte')} ${pluralize('arquivo')} não ${
     isPlural ? 'puderam' : 'pôde'
   } ser ${pluralize('processado')}: ${errorMessages}. Verifique ${pluralize('o')} ${pluralize('arquivo')} e tente novamente.`;
+}
+
+export function criticalAnalysisNcmPhase(ncm: string): string {
+  return `Análise Crítica para o NCM: **${ncm}**`;
 }

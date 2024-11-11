@@ -4,6 +4,9 @@ import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
 import { XIcon } from '@/components/icons/XIcon';
+import DocumentsDBService from '@/service/documentsDBService';
+
+const documentService = new DocumentsDBService();
 export interface MenuProps {
   currentId: string;
   items: MenuItemProps[];
@@ -16,6 +19,7 @@ export const Menu = (props: MenuProps) => {
   const handleClick = (id: string) => {
     setCurrentId(id);
     localStorage.setItem('currentId', id);
+    documentService.getChatIdsByFlow(id);
   };
 
   return (

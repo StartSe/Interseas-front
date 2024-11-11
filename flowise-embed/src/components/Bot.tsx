@@ -390,10 +390,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   // Handle errors
   const handleError = (message = 'Oops! There seems to be an error. Please try again.') => {
     setMessages((prevMessages) => {
-      const newMessage = { message: props.errorMessage || message, type: 'apiMessage' } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
+      const messages: MessageType[] = [...prevMessages, { message: props.errorMessage || message, type: 'apiMessage' }];
+      addChatMessage(messages);
+      return messages;
     });
     setLoading(false);
     setUserInput('');

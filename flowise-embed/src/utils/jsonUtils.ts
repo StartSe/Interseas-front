@@ -64,21 +64,7 @@ export function sanitizeToFlatArray(input: any): any[] {
 }
 
 export const compareAndMergeArrays = (firstArray: any[], secondArray: any[]): any[] => {
-  if (!firstArray) {
-    return secondArray;
-  }
-  if (!secondArray) {
-    return firstArray;
-  }
-  const mergedArray = [...firstArray];
-
-  for (const item of secondArray) {
-    if (!mergedArray.includes(item)) {
-      mergedArray.push(item);
-    }
-  }
-
-  return mergedArray;
+  return Array.from(new Set([...(firstArray ?? []), ...(secondArray ?? [])]));
 };
 
 export const isNonEmptyArrayOrObject = (value: any): boolean => {

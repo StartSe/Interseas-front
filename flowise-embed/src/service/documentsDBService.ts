@@ -83,6 +83,23 @@ class DocumentsDBService {
     }
   }
 
+  private async fetchChatIdsForFlow(flow: string): Promise<any> {
+    try {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowFetchChatIdsForFlow, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ flow }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error finding chatId on DB:', ${error}`);
+    }
+  }
+
   private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
@@ -101,6 +118,10 @@ class DocumentsDBService {
 
   private async doesChatDocumentRelationExist(chatId: any, documentId: any): Promise<boolean> {
     return await this.fetchChatDocumentRelation(chatId, documentId);
+  }
+
+  private async retrieveChatIdsForFlow(flow: string): Promise<string> {
+    return await this.fetchChatIdsForFlow(flow);
   }
 
   private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
@@ -185,6 +206,16 @@ class DocumentsDBService {
       return document?.checklist_result;
     }
     return null;
+  }
+
+  public async getChatIdsByFlow(flow: string): Promise<string | null> {
+    try {
+      const chatIds = await this.retrieveChatIdsForFlow(flow);
+      return chatIds;
+    } catch (error) {
+      console.error('Error finding chatIds by flow:', error);
+      return null;
+    }
   }
 }
 

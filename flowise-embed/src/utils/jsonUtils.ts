@@ -80,3 +80,12 @@ export const compareAndMergeArrays = (firstArray: any[], secondArray: any[]): an
 
   return mergedArray;
 };
+
+export const isNonEmptyArrayOrObject = (value: any): boolean => {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  } else if (value && typeof value === 'object') {
+    return Object.keys(value).length > 0;
+  }
+  return value !== null;
+};

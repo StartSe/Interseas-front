@@ -34,7 +34,7 @@ import {
   DocumentTypes,
   sortUploadFiles,
 } from '@/utils/fileClassificationUtils';
-import { compareAndMergeArrays, customBooleanValues, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
+import { compareAndMergeArrays, customBooleanValues, isNonEmptyArrayOrObject, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
 import ParallelApiExecutor from '@/utils/parallelApiExecutor';
@@ -559,7 +559,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
         if (/ncm/i.test(normalizedKey)) {
           const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
-          if (jsonDataCriticalAnalysis[key].length > 0) {
+          if (isNonEmptyArrayOrObject(jsonDataCriticalAnalysis[key])) {
             jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
             jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
           }
@@ -628,6 +628,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
           setLoading(false);
         }
+        setJsonResponseCriticalAnalysis({});
         setIsAnalyzing(false);
         setIsDisabled(false);
       }

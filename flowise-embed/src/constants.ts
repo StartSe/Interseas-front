@@ -25,6 +25,8 @@ export const constants = {
   n8nSeventhStep: '916a955c-467e-4830-9d95-3bb3fc976698',
   n8nFlowSendDataToSupabase: '83faf03f-f684-4b7c-9c07-10f0fb237a26',
   n8nFlowGetDataFromSupabase: 'cce1b9da-cf8e-46cb-b36a-9028c13f1a4e',
+  n8nFlowFetchChatDocumentRelation: 'a4bc4d9b-e44c-4813-b8f2-885cd1a5380c',
+  n8nFlowFetchDocumentsByChatId: '6aa6bc8f-2aba-4d79-b7ce-b313bb23e797',
 };
 
 export const defaultMenuProps: MenuProps = {

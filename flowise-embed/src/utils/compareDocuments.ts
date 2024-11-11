@@ -106,8 +106,8 @@ export default class CompareDocuments {
     } else {
       return `
         CROSS_VALIDATION\n
-        ${firstFile.file.name} ${JSON.stringify(firstFile.content)}\n
-        ${secondFile.file.name} ${JSON.stringify(secondFile.content)}
+        ${firstFile.file.name} ${JSON.stringify(firstFile.content || firstFile.checklist)}\n
+        ${secondFile.file.name} ${JSON.stringify(secondFile.content || secondFile.checklist)}
       `;
     }
   }

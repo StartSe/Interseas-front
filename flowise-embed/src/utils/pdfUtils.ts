@@ -186,8 +186,8 @@ const extractTextLocally = async (file: File): Promise<string> => {
 };
 
 export const extractNewFileProperties = (fileName: string) => {
-  const versionMatch = fileName.match(/v\s*(\d+)/i);
-  const newFileName = fileName.replace(/v\s*\d+/i, '').trim();
+  const versionMatch = fileName.match(/\s*v\s*(\d+)/i);
+  const newFileName = fileName.replace(/\s*v\s*\d+/i, '').trim();
   const version = versionMatch ? versionMatch[1] : 0;
 
   return {

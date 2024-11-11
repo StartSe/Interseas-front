@@ -49,6 +49,40 @@ class DocumentsDBService {
     }
   }
 
+  private async fetchChatDocumentRelation(chatId: any, documentId: any): Promise<any> {
+    try {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowFetchChatDocumentRelation, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatId, documentId }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error finding document on DB:', ${error}`);
+    }
+  }
+
+  private async fetchDocumentsByChatId(chatId: any): Promise<any> {
+    try {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowFetchDocumentsByChatId, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatId }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error finding chatId on DB:', ${error}`);
+    }
+  }
+
   private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
@@ -57,11 +91,19 @@ class DocumentsDBService {
     }
   }
 
-  public async isHashInDatabase(hash: string, agentFlow: Flow): Promise<boolean> {
+  private async isHashInDatabase(hash: string, agentFlow: Flow): Promise<boolean> {
     return await this.getDocumentFromDBByHash(hash, agentFlow);
   }
 
-  public async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
+  private async isChatIdInDatabase(chatId: any): Promise<boolean> {
+    return await this.fetchDocumentsByChatId(chatId);
+  }
+
+  private async doesChatDocumentRelationExist(chatId: any, documentId: any): Promise<boolean> {
+    return await this.fetchChatDocumentRelation(chatId, documentId);
+  }
+
+  private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
     const hashPdf = await pdfToHash(fileMap.file.file);
     const documentId = uuidv4();
     const { fileName, version } = extractNewFileProperties(fileMap.file.file.name);
@@ -91,6 +133,16 @@ class DocumentsDBService {
     await this.saveChatDocumentData(chatId, documentData.id);
   }
 
+  public async getDocumentsByChatId(chatId: any): Promise<any> {
+    try {
+      const result = await this.isChatIdInDatabase(chatId);
+      return result;
+    } catch (error) {
+      console.error('Error checking chatId on database:', error);
+      return null;
+    }
+  }
+
   public async saveChatDocumentData(chatId: any, documentId: string): Promise<void> {
     const tableName = 'chats_documents';
     const chatDocumentData = {
@@ -100,20 +152,39 @@ class DocumentsDBService {
     await this.sendDataToDBThroughN8n(tableName, chatDocumentData);
   }
 
-  public async checkDocumentHash(hashPdf: any, agentFlow: Flow): Promise<any> {
+  public async checkDocumentHash(hashPdf: any, agentFlow: Flow, chatId: any): Promise<boolean> {
     try {
-      const result = await this.isHashInDatabase(hashPdf, agentFlow);
-      return result;
+      const isHashInDB = await this.isHashInDatabase(hashPdf, agentFlow);
+      if (!isHashInDB) {
+        return false;
+      }
+
+      const document = await this.getDocumentFromDBByHash(hashPdf, agentFlow);
+      if (!document || !document.id) {
+        return false;
+      }
+
+      const relationExists = await this.doesChatDocumentRelationExist(chatId, document.id);
+      if (relationExists) {
+        return true;
+      }
+
+      await this.saveChatDocumentData(chatId, document.id);
+      return true;
     } catch (error) {
       console.error('Error checking hash on database:', error);
-      return null;
+      return false;
     }
   }
 
-  public async checkDocumentForAlreadyProcessedData(fileMap: any, agentFlow: Flow): Promise<any> {
+  public async getProcessedDocumentData(fileMap: any, agentFlow: Flow, chatId: any): Promise<string | null> {
     const hashPdf = await pdfToHash(fileMap.file.file);
-    const fileProcessed = await this.checkDocumentHash(hashPdf, agentFlow);
-    return fileProcessed?.checklist_result;
+    const hasBeenProcessed = await this.checkDocumentHash(hashPdf, agentFlow, chatId);
+    if (hasBeenProcessed) {
+      const document = await this.getDocumentFromDBByHash(hashPdf, agentFlow);
+      return document?.checklist_result;
+    }
+    return null;
   }
 }
 

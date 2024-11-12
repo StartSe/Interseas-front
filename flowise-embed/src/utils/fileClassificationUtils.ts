@@ -254,7 +254,7 @@ export const checklistCRT = `
 • Declarações e observações - detalhamento do frete internacional e nacional
 • Carimbo e assinatura
 • Valor unitário de cada espécie de mercadoria
-• Descrição EX-tarifário - (formato "EX-[número]")
+• Descrição EX-tarifário - (true/false)
 
 Se mercadoria é máquina ou equipamento
 • Nº de Série
@@ -366,7 +366,7 @@ const checklistMicDta = `
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • Fatura Comercial - normalmente consta como "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml"
 • Assinatura
-• Descrição EX-tarifário - (formato "EX-[número]")
+• Descrição EX-tarifário - (true/false)
 
 Se mercadoria é máquina ou equipamento
 • Nº de Série

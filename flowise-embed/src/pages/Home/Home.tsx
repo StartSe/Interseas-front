@@ -9,12 +9,11 @@ export interface HomeProps {
 }
 
 export const Home = (props: HomeProps) => {
-  const [currentId, setCurrentId] = createSignal('initialId');
+  const [currentFlow, setCurrentFlow] = createSignal('');
 
-  const handleCardClick = (id: string) => {
-    setCurrentId(id);
-    localStorage.setItem('currentId', id);
-    documentService.getChatIdsByFlow(id);
+  const handleCardClick = (flow: string) => {
+    setCurrentFlow(flow);
+    localStorage.setItem('currentFlow', flow);
   };
 
   return (
@@ -26,7 +25,7 @@ export const Home = (props: HomeProps) => {
           <p>Escolha qual tarefa deseja realizar abaixo</p>
         </div>
         <div class="card-container">
-          <For each={props.items}>{(item) => <CardModel {...item} onIdChange={handleCardClick} />}</For>
+          <For each={props.items}>{(item) => <CardModel {...item} onFlowChange={handleCardClick} />}</For>
         </div>
       </main>
       <footer>

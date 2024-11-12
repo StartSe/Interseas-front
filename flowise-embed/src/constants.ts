@@ -33,7 +33,7 @@ export const constants = {
 };
 
 export const defaultMenuProps: MenuProps = {
-  currentId: '',
+  currentFlow: '',
   items: [],
   fillColor: '#F4F6FF',
 };

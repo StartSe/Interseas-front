@@ -4,18 +4,21 @@ import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
 import { XIcon } from '@/components/icons/XIcon';
+import DocumentsDBService from '@/service/documentsDBService';
+
+const documentService = new DocumentsDBService();
 export interface MenuProps {
-  currentId: string;
+  currentFlow: string;
   items: MenuItemProps[];
   fillColor?: string;
 }
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
-  const [currentId, setCurrentId] = createSignal(localStorage.getItem('currentId') || props.currentId);
+  const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
 
-  const handleClick = (id: string) => {
-    setCurrentId(id);
-    localStorage.setItem('currentId', id);
+  const handleClick = (flow: string) => {
+    setCurrentFLow(flow);
+    localStorage.setItem('currentFlow', flow);
   };
 
   return (
@@ -36,7 +39,7 @@ export const Menu = (props: MenuProps) => {
               <div class="menu-items">
                 <div class="menu-text">Escolha qual tarefa deseja realizar</div>
                 <For each={props.items}>
-                  {(item) => <MenuItem {...item} selected={item.id === currentId()} onClick={() => handleClick(item.id)} />}
+                  {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
               </div>
               <div class="menu-footer">

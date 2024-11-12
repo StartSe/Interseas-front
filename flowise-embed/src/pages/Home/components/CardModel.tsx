@@ -2,10 +2,11 @@ import { Component } from 'solid-js';
 import { RigthArrowIcon } from '@/components/icons/RigthArrowIcon';
 
 export interface CardModelProps {
-  id: string;
+  flow: string;
   title: string;
   onClick?: () => void;
   bgImage: string;
+  onFlowChange?: (flow: string) => void;
 }
 
 export const CardModel: Component<CardModelProps> = (props) => {
@@ -13,7 +14,10 @@ export const CardModel: Component<CardModelProps> = (props) => {
     if (props.onClick) {
       return props.onClick();
     }
-    window.location.href = `${props.id}.html`;
+    if (props.onFlowChange) {
+      props.onFlowChange(props.flow);
+    }
+    window.location.href = `${props.flow}.html`;
   };
 
   return (

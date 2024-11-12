@@ -83,6 +83,54 @@ class DocumentsDBService {
     }
   }
 
+  private async fetchChatIdsForFlow(flow: string): Promise<any> {
+    try {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowFetchChatIdsForFlow, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ flow }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error finding chatId on DB:', ${error}`);
+    }
+  }
+
+  private async sendDeleteChatRequest(chatId: string): Promise<void> {
+    try {
+      await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendDeleteChatRequest, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatId }),
+      });
+    } catch (error) {
+      throw new Error(`Error deleting chatId:', ${error}`);
+    }
+  }
+
+  private async sendUpdateChatRequest(chatId: string, chatName: string): Promise<any> {
+    try {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendUpdateChatRequest, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatId, chatName }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error updating ChatName:', ${error}`);
+    }
+  }
+
   private async sendDataToDBThroughN8n(tableName: string, data: any): Promise<void> {
     try {
       await this.sendDataToN8n(tableName, data);
@@ -101,6 +149,18 @@ class DocumentsDBService {
 
   private async doesChatDocumentRelationExist(chatId: any, documentId: any): Promise<boolean> {
     return await this.fetchChatDocumentRelation(chatId, documentId);
+  }
+
+  private async retrieveChatIdsForFlow(flow: string): Promise<string> {
+    return await this.fetchChatIdsForFlow(flow);
+  }
+
+  private async removeChat(chatId: string): Promise<void> {
+    await this.sendDeleteChatRequest(chatId);
+  }
+
+  private async updateChat(chatId: string, chatName: string): Promise<string | null> {
+    return await this.sendUpdateChatRequest(chatId, chatName);
   }
 
   private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
@@ -185,6 +245,35 @@ class DocumentsDBService {
       return document?.checklist_result;
     }
     return null;
+  }
+
+  public async getChatIdsByFlow(flow: string): Promise<string | null> {
+    try {
+      const chatIds = await this.retrieveChatIdsForFlow(flow);
+      return chatIds;
+    } catch (error) {
+      console.error('Error finding chatIds by flow:', error);
+      return null;
+    }
+  }
+
+  public async deleteChat(chatId: string): Promise<void> {
+    try {
+      await this.removeChat(chatId);
+    } catch (error) {
+      console.error('Error deleting chatId:', error);
+      throw error;
+    }
+  }
+
+  public async updateChatName(chatId: string, chatName: string): Promise<string | null> {
+    try {
+      const result = await this.updateChat(chatId, chatName);
+      return result;
+    } catch (error) {
+      console.error('Error updating chatName:', error);
+      throw error;
+    }
   }
 }
 

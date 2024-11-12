@@ -1,5 +1,5 @@
 export interface MenuItemProps {
-  id: string;
+  flow: string;
   title: string;
   subtitle?: string;
   selected?: boolean;
@@ -8,7 +8,7 @@ export interface MenuItemProps {
 
 export const MenuItem = (props: MenuItemProps) => {
   return (
-    <a href={`./${props.id}.html`} onClick={props.onClick}>
+    <a href={`./${props.flow}.html`} onClick={props.onClick}>
       <div class={`menu-item ${props.selected ? 'selected' : ''}`}>
         <p>
           <b>{props.title}</b>

@@ -27,10 +27,13 @@ export const constants = {
   n8nFlowGetDataFromSupabase: 'cce1b9da-cf8e-46cb-b36a-9028c13f1a4e',
   n8nFlowFetchChatDocumentRelation: 'a4bc4d9b-e44c-4813-b8f2-885cd1a5380c',
   n8nFlowFetchDocumentsByChatId: '6aa6bc8f-2aba-4d79-b7ce-b313bb23e797',
+  n8nFlowFetchChatIdsForFlow: '8093dd32-25a4-4d40-80b4-ab105893d5c2',
+  n8nFlowSendDeleteChatRequest: 'd92f2f25-788c-4545-b3b5-94e4c85d9ef5',
+  n8nFlowSendUpdateChatRequest: 'ebdf0721-9bba-467a-80fd-0c5c74965dfc',
 };
 
 export const defaultMenuProps: MenuProps = {
-  currentId: '',
+  currentFlow: '',
   items: [],
   fillColor: '#F4F6FF',
 };

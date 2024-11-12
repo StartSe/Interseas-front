@@ -83,9 +83,9 @@ export default class CompareDocuments {
       (firstFile.type === DocumentTypes.CE_MERCANTE && secondFile.type === DocumentTypes.CONHECIMENTO_BL) ||
       (firstFile.type === DocumentTypes.CONHECIMENTO_BL && secondFile.type === DocumentTypes.CE_MERCANTE);
 
-    const CRTxCOMERCIAL_INVOICE =
-      (firstFile.type === DocumentTypes.CONHECIMENTO_CRT && secondFile.type === DocumentTypes.COMMERCIAL_INVOICE) ||
-      (firstFile.type === DocumentTypes.COMMERCIAL_INVOICE && secondFile.type === DocumentTypes.CONHECIMENTO_CRT);
+    const CRTxMIC_DTA =
+      (firstFile.type === DocumentTypes.CONHECIMENTO_CRT && secondFile.type === DocumentTypes.CONHECIMENTO_MIC_DTA) ||
+      (firstFile.type === DocumentTypes.CONHECIMENTO_MIC_DTA && secondFile.type === DocumentTypes.CONHECIMENTO_CRT);
 
     const firstFileWithAddedKey = JSON.stringify({
       ...firstFile.filledChecklist,
@@ -101,7 +101,7 @@ export default class CompareDocuments {
       return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CCTCOMPLIANCE;
     } else if (CE_MERCANTExBL_CONHECIMENTO) {
       return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CE_MERCANTE;
-    } else if (CRTxCOMERCIAL_INVOICE) {
+    } else if (CRTxMIC_DTA) {
       return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CRT;
     } else {
       return `

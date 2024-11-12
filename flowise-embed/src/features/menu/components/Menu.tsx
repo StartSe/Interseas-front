@@ -17,7 +17,6 @@ export const Menu = (props: MenuProps) => {
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
 
   const handleClick = (flow: string) => {
-    console.log(props);
     setCurrentFLow(flow);
     localStorage.setItem('currentFlow', flow);
   };

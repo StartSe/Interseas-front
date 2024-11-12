@@ -17,7 +17,6 @@ export const CardModel: Component<CardModelProps> = (props) => {
     if (props.onFlowChange) {
       props.onFlowChange(props.flow);
     }
-    console.log(props);
     window.location.href = `${props.flow}.html`;
   };
 

@@ -125,7 +125,6 @@ class DocumentsDBService {
       });
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       throw new Error(`Error updating ChatName:', ${error}`);

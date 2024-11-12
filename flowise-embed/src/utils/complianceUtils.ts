@@ -148,7 +148,7 @@ COMPLIANCE NOTES - CRT X MIC-DTA
 - Peso Líquido: [VALOR DO CRT]
     - MIC-DTA - Peso Líquido: [VALOR DO MIC DTA]
 
-- Frete: [VALOR DO CRT]
+- Valor do Frete: [VALOR DO CRT]
     - MIC-DTA - Valor do frete: [VALOR DO MIC DTA]
 
 - Seguro: [VALOR DO CRT]

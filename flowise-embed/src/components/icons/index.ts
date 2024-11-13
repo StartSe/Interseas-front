@@ -12,3 +12,4 @@ export * from './TickIcon';
 export * from './AttachmentIcon';
 export * from './SparklesIcon';
 export * from './DotsHorizontal';
+export * from './PenEditIcon';

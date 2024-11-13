@@ -79,9 +79,14 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
             chatflowid={props.chatflowid}
             chatflowConfig={props.chatflowConfig}
             apiHost={props.apiHost}
+            onRequest={props.onRequest}
             isFullPage={true}
             observersConfig={props.observersConfig}
             starterPromptFontSize={props.theme?.chatWindow?.starterPromptFontSize}
+            clearChatOnReload={props.theme?.chatWindow?.clearChatOnReload}
+            disclaimer={props.theme?.disclaimer}
+            dateTimeToggle={props.theme?.chatWindow?.dateTimeToggle}
+            renderHTML={props.theme?.chatWindow?.renderHTML}
           />
         </div>
       </Show>

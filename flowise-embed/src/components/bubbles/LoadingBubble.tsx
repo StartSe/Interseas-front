@@ -1,4 +1,4 @@
-import { TypingBubble } from '@/components/TypingBubble';
+import { TypingBubble } from '@/components';
 import { UploadingBubble } from '@/components/UploadingBubble';
 import { Avatar } from '../avatars/Avatar';
 

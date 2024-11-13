@@ -1,15 +1,15 @@
 import { Show } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
-import { AddImageIcon } from '../icons';
+import { AttachmentIcon } from '../icons';
 
-type ImageUploadButtonProps = {
+type FileUploadButtonProps = {
   buttonColor?: string;
   isDisabled?: boolean;
   isLoading?: boolean;
   disableIcon?: boolean;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const ImageUploadButton = (props: ImageUploadButtonProps) => {
+export const AttachmentUploadButton = (props: FileUploadButtonProps) => {
   return (
     <button
       type="submit"
@@ -22,7 +22,7 @@ export const ImageUploadButton = (props: ImageUploadButtonProps) => {
       style={{ background: 'transparent', border: 'none' }}
     >
       <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
-        <AddImageIcon color={props.buttonColor} />
+        <AttachmentIcon color={props.buttonColor} />
       </Show>
     </button>
   );

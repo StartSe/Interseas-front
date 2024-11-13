@@ -6,6 +6,7 @@ export type BubbleTheme = {
   chatWindow?: ChatWindowTheme;
   button?: ButtonTheme;
   tooltip?: ToolTipTheme;
+  disclaimer?: DisclaimerPopUpTheme;
 };
 
 export type TextInputTheme = {
@@ -66,9 +67,13 @@ export type ChatWindowTheme = {
   textInput?: TextInputTheme;
   feedback?: FeedbackTheme;
   footer?: FooterTheme;
+  sourceDocsTitle?: string;
   poweredByTextColor?: string;
   starterPrompts?: string[];
   starterPromptFontSize?: number;
+  clearChatOnReload?: boolean;
+  dateTimeToggle?: DateTimeToggleTheme;
+  renderHTML?: boolean;
 };
 
 export type ButtonTheme = {
@@ -94,6 +99,17 @@ export type autoWindowOpenTheme = {
   autoOpen?: boolean; //parameter to control automatic window opening
   openDelay?: number; // Optional parameter for delay time in seconds
   autoOpenOnMobile?: boolean; // Optional parameter for opening on mobile
+};
+
+export type DisclaimerPopUpTheme = {
+  title?: string;
+  message?: string;
+  buttonText?: string;
+};
+
+export type DateTimeToggleTheme = {
+  date?: boolean;
+  time?: boolean;
 };
 
 export type ButtonInputTheme = {

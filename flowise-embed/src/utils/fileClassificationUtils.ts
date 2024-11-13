@@ -249,9 +249,9 @@ export const checklistCRT = `
 • Seguro (tipo, moeda e valor)
 • Outros gastos a pagar (tipo, moeda e valor)
 • Valor do frete externo
-• Declaração valor das mercadorias
+• Declaração valor das mercadorias (valor por extenso)
 • Documentos anexos
-• Declarações e observações - detalhamento do frete internacional e nacional
+• Declarações e observações - detalhamento do frete internacional e nacional 
 • Carimbo e assinatura
 • Valor unitário de cada espécie de mercadoria
 • Descrição EX-tarifário - (true/false)
@@ -270,7 +270,7 @@ Conferências:
 • Se INCOTERM de responsabilidade do importador:
     Tipo de frete = "Collect"
 
-• Documentos anexos - D.E. Estrangeira`;
+• Documentos anexos - D.E. Estrangeira - consta "destinácion" ou "permiso de exportacion"`;
 
 export const checklistPackingList = `
 • Referência à Ordem de Compra (OC) ou Fatura Comercial

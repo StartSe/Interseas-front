@@ -3,7 +3,7 @@ import styles from '../../../assets/menu.css';
 import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
-import { XIcon } from '@/components/icons/XIcon';
+import { XIcon, DotsHorizontal } from '@/components/icons';
 import DocumentsDBService from '@/service/documentsDBService';
 
 const documentService = new DocumentsDBService();
@@ -41,6 +41,15 @@ export const Menu = (props: MenuProps) => {
                 <For each={props.items}>
                   {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
+                <div class="menu-history">Histórico de chats - Análise Crítica</div>
+                {/* <button>+Novo Chat</button> */}
+                <span class="menu-history-date-label">Hoje</span>
+                <div class="menu-history-item-wrapper">
+                  <span>Título da conversa 1</span>
+                  <button class="menu-history-button">
+                    <DotsHorizontal />
+                  </button>
+                </div>
               </div>
               <div class="menu-footer">
                 <p>

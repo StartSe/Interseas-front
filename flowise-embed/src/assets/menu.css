@@ -9,7 +9,7 @@
     position: relative;
     z-index: 1000;
 }
-.menu button {
+.menu .menu-opener-button {
     padding: 1.09375rem 0.625rem;
     position: fixed;
     top: 0;
@@ -100,6 +100,35 @@
 .menu-item p b {
     font-weight: 500;
 }
+.menu-history {
+    display: flex;
+    font-family: var(--chatbot-container-font-family, sans-serif);
+    height: 3.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 18px;
+    align-items: center;
+}
+.menu-history-date-label {
+    font-size: .75rem;
+    font-family: var(--chatbot-container-font-family, sans-serif);
+    color: #C4C6CF;
+}
+.menu-history-item-wrapper {
+    display: flex;
+    height: 2.5rem;
+    width: 100%;
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: .0313rem solid #FD9102;
+}
+.menu-history-item-wrapper span {
+    font-family: var(--chatbot-container-font-family, sans-serif);
+    font-size: .875rem;
+    font-weight: 500;
+    letter-spacing: .0094rem;
+}
 .menu-footer {
     display: flex;
     justify-content: center;
@@ -107,10 +136,11 @@
 }
 .menu-footer p {
     color: #3C3C3B;
-    font-size: 0.625rem;
+    font-family: IBM Plex Sans, sans-serif;
+    font-size: .875rem;
     font-style: normal;
     font-weight: 400;
-    line-height: 120%;
+    line-height: 1.05rem;
     letter-spacing: 0.03125rem;
 }
 .menu-footer p b {

@@ -224,25 +224,37 @@ Tipo de frete = "Prepaid"
 Tipo de frete = "Collect"`;
 
 export const checklistCRT = `
+• Número do Documento
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
 • Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Destinatário - (razão social, endereço, CNPJ e CEP)
 • Notificar
-• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Declarações e observações - detalhamento do frete internacional e nacional
-• Declaração valor das mercadorias
+• Nome e endereço do transportador
 • Local de embarque
 • Local de Destino Final
-• Peso Bruto - (G.W)
-• Peso Líquido - (N.W)
 • Quantidade de Volumes - (crate/box/pallets)
 • Tipo de Volumes - (crate/box/pallets)
 • Informação Wooden Packing - (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Código/Referência das mercadorias
 • NCM - (4 dígitos a 8 dígitos de cada NCM)
-• Valor unitário de cada espécie de mercadoria
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
+• Fatura Comercial - normalmente consta como "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml"
+• Peso Bruto - (G.W)
+• Peso Líquido - (N.W)
+• Cubagem (m³)
+• INCOTERM
+• Valor da mercadoria
+• Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Seguro (tipo, moeda e valor)
+• Outros gastos a pagar (tipo, moeda e valor)
+• Valor do frete externo
+• Declaração valor das mercadorias (valor por extenso)
 • Documentos anexos
+• Declarações e observações - detalhamento do frete internacional e nacional 
 • Carimbo e assinatura
+• Valor unitário de cada espécie de mercadoria
+• Descrição EX-tarifário - (true/false)
 
 Se mercadoria é máquina ou equipamento
 • Nº de Série
@@ -256,7 +268,9 @@ Conferências:
 • Se INCOTERM de responsabilidade do exportador:
     Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
-    Tipo de frete = "Collect"`;
+    Tipo de frete = "Collect"
+
+• Documentos anexos - D.E. Estrangeira - consta "destinácion" ou "permiso de exportacion"`;
 
 export const checklistPackingList = `
 • Referência à Ordem de Compra (OC) ou Fatura Comercial
@@ -321,28 +335,38 @@ const checklistCCTAereo = `
 • MAWB/AWB associados`;
 
 const checklistMicDta = `
+• Número do documento
+• Data de emissão
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
 • Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Destinatário - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
-• Moeda da mercadoria
-• País de origem
-• Valor da mercadoria
-• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Valor do seguro
+• Nome e endereço do transportador
+• Local de Embarque
+• Local de Destino Final
+• Placa do Veículo
+• Placa do reboque/semireboque
+• Placa do veículo substituto
+• Placa do reboque/semireboque substituto
 • Número do CRT
-• Local de embarque
-• Local de destino Final
-• Peso Bruto - (G.W)
-• Documentos anexos
-• Quantidade de Volumes - (crate/box/pallets)
+• Aduana de destino
+• País de origem
+• Moeda da mercadoria
+• Valor da mercadoria - FOT
+• Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Valor do seguro
 • Tipo de Volumes - (crate/box/pallets)
+• Quantidade de Volumes - (crate/box/pallets)
+• Peso Bruto - (G.W)
+• Peso liquido - (N.W)
+• Documentos Anexos
 • Informação Wooden Packing - (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Código/Referência das mercadorias
 • NCM - (4 dígitos a 8 dígitos de cada NCM)
-• Placa do veículo
-• Placa do reboque/semireboque
-• Aduana de destino
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
+• Fatura Comercial - normalmente consta como "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml"
 • Assinatura
+• Descrição EX-tarifário - (true/false)
 
 Se mercadoria é máquina ou equipamento
 • Nº de Série
@@ -383,24 +407,24 @@ export const checklistAnaliseDeVinhos = `
 • Parâmetros não obrigatórios de acordo com o tipo de vinho - (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Aditivos Alimentares - (Aqui, além de verificar se consta o aditivo, a solução deve verificar se o valor está dentro do permitido para o tipo de vinho, de acordo com a tabela)`;
 export const checklistRotulosEContrarrotulosVinhos = `
-    • Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
-    • Produzido e engarrafado por - (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
-    • Dados do Exportador - (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
-    • Dados do Importador - (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-    • Distribuidor - (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-    • Ingredientes e aditivos alimentares - (Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”)
-    • Prazo de validade e conservação do produto - (Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”)
-    • Conteúdo líquido - (A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”)
-    • Graduação alcoólica - (Exemplo: “13,5% Vol.”)
-    • Safra - (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
-    • País de origem - (Informar o país de origem)
-    • EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
-    • “NÃO CONTÉM GLÚTEN”
-    • “PROIBIDA A VENDA PARA MENORES DE 18 ANOS”
-    • Lote - (Exemplo: “Lote: XXXXX. Lote: vide garrafa”)
-    • Marca - (Incluir a marca do produto)
-    • Símbolo de Grávida com o “r” de proibido
-    • Símbolo de retorno/reciclável`;
+• Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
+• Produzido e engarrafado por - (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
+• Dados do Exportador - (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
+• Dados do Importador - (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+• Distribuidor - (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+• Ingredientes e aditivos alimentares - (Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”)
+• Prazo de validade e conservação do produto - (Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”)
+• Conteúdo líquido - (A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”)
+• Graduação alcoólica - (Exemplo: “13,5% Vol.”)
+• Safra - (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
+• País de origem - (Informar o país de origem)
+• EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
+• “NÃO CONTÉM GLÚTEN”
+• “PROIBIDA A VENDA PARA MENORES DE 18 ANOS”
+• Lote - (Exemplo: “Lote: XXXXX. Lote: vide garrafa”)
+• Marca - (Incluir a marca do produto)
+• Símbolo de Grávida com o “r” de proibido
+• Símbolo de retorno/reciclável`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',

@@ -98,8 +98,65 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
     - Conhecimento BL - Quantidade de containers: [VALOR DO BL]`;
 
 export const CRT = `
-COMPLIANCE NOTES - CRT X FATURA COMERCIAL
+COMPLIANCE NOTES - CRT X MIC-DTA
 
-- Declaração de valor das mercadorias: [VALOR DO CRT]
-    - Valor Total (não zerado): [VALOR DA FATURA COMERCIAL]
+- Número do CRT: [VALOR DO CRT]
+    - MIC-DTA - Número do documento: [VALOR DO MIC DTA]
+
+- Remetente: [VALOR DO CRT]
+    - MIC-DTA - Remetente: [VALOR DO MIC DTA]
+
+- Destinatário: [VALOR DO CRT]
+    - MIC-DTA - Destinatário: [VALOR DO MIC DTA]
+
+- Consignatário: [VALOR DO CRT]
+    - MIC-DTA - Consignatário: [VALOR DO MIC DTA]
+
+- Local de Embarque: [VALOR DO CRT]
+    - MIC-DTA - Local de Embarque: [VALOR DO MIC DTA]
+
+- Local de destino final: [VALOR DO CRT]
+    - MIC-DTA - Local de destino final: [VALOR DO MIC DTA]
+
+- Tipos de volumes: [VALOR DO CRT]
+    - MIC-DTA - Tipos de volumes: [VALOR DO MIC DTA]
+
+- Quantidade de volumes: [VALOR DO CRT]
+    - MIC-DTA - Quantidade de volumes: [VALOR DO MIC DTA]
+
+- Informação "Wooden Packing": [VALOR DO CRT]
+    - MIC-DTA - Informação "Wooden Packing": [VALOR DO MIC DTA]
+
+- Descrição resumida das mercadorias: [VALOR DO CRT]
+    - MIC-DTA - Descrição resumida das mercadorias: [VALOR DO MIC DTA]
+
+- Código/Referência das mercadorias: [VALOR DO CRT]
+    - MIC-DTA - Código/Referência das mercadorias: [VALOR DO MIC DTA]
+
+- NCM: [VALOR DO CRT]
+    - MIC-DTA - NCM: [VALOR DO MIC DTA]
+
+- Número de série (máquinas e equipamentos): [VALOR DO CRT]
+    - MIC-DTA - Número de série (máquinas e equipamentos): [VALOR DO MIC DTA]
+
+- Fatura comercial: [VALOR DO CRT]
+    - MIC-DTA - Fatura comercial: [VALOR DO MIC DTA]
+
+- Peso Bruto: [VALOR DO CRT]
+    - MIC-DTA - Peso Bruto: [VALOR DO MIC DTA]
+
+- Peso Líquido: [VALOR DO CRT]
+    - MIC-DTA - Peso Líquido: [VALOR DO MIC DTA]
+
+- Valor do Frete: [VALOR DO CRT]
+    - MIC-DTA - Valor do frete: [VALOR DO MIC DTA]
+
+- Seguro: [VALOR DO CRT]
+    - MIC-DTA - Valor do seguro: [VALOR DO MIC DTA]
+
+- Declaração valor das mercadorias: [VALOR DO CRT]
+    - MIC-DTA - Valor da mercadoria: [VALOR DO MIC DTA]
+
+- Documentos anexos: [VALOR DO CRT]
+    - MIC-DTA - Documentos anexos: [VALOR DO MIC DTA]
 `;

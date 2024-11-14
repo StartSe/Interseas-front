@@ -1,4 +1,4 @@
-import { For, createEffect, createResource, createSignal } from 'solid-js';
+import { For, createEffect, createSignal } from 'solid-js';
 import styles from '../../../assets/menu.css';
 import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
@@ -21,33 +21,55 @@ interface ChatItem {
 }
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
-  const [openMenuOptions, setOpenMenuOptions] = createSignal<boolean>(false);
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
-  const [isEditing, setIsEditing] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
   const [chatItems, setChatItems] = createSignal<ChatItem[]>([]);
+  const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
+  const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
+  const [isEditing, setIsEditing] = createSignal<boolean>(false);
+  const [modalPosition, setModalPosition] = createSignal<'top' | 'bottom'>('bottom');
 
-  createEffect(async () => {
-    const data = await documentService.getChatIdsByFlow(currentFlow());
-    setChatItems(data);
-  });
   const handleClick = (flow: string) => {
     setCurrentFLow(flow);
     localStorage.setItem('currentFlow', flow);
   };
 
-  const toggleMenuOptions = () => {
-    setOpenMenuOptions(!openMenuOptions());
+  const toggleMenuOptions = (chatId: string, buttonRef: HTMLButtonElement) => {
+    const isOpen = openMenuOptions() === chatId;
+    setOpenMenuOptions(isOpen ? null : chatId);
+    setEditingChatId(null);
+
+    if (!isOpen) {
+      const buttonRect = buttonRef.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+
+      if (spaceBelow < 200 && spaceAbove > 200) {
+        setModalPosition('top');
+      } else {
+        setModalPosition('bottom');
+      }
+    }
   };
 
-  const toggleEditMode = () => {
-    setOpenMenuOptions(false);
-    setIsEditing(!isEditing());
+  const startEditing = (chatId: string) => {
+    setIsEditing(true);
+    setEditingChatId(chatId);
+    setOpenMenuOptions(null);
   };
+
+  const handleEditSubmit = (event: Event, chatId: string) => {
+    event.preventDefault();
+    console.log('editou');
+    setIsEditing(false);
+    setEditingChatId(null);
+  };
+
   const handleDeleteClick = () => {
     setIsOpenDeleteModal(!openDeleteModal());
-    setOpenMenuOptions(false);
+    setOpenMenuOptions(null);
   };
+
   const formatDateChat = (item: ChatItem) => {
     if (item.chat_name) {
       return item.chat_name;
@@ -56,6 +78,17 @@ export const Menu = (props: MenuProps) => {
       return `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
   };
+
+  createEffect(() => {
+    const fetchChatIds = async () => {
+      const data = await documentService.getChatIdsByFlow(currentFlow());
+      if (data && Array.isArray(data)) {
+        setChatItems(data as ChatItem[]);
+      }
+    };
+    fetchChatIds();
+  });
+
   return (
     <>
       <style>{styles}</style>
@@ -80,44 +113,49 @@ export const Menu = (props: MenuProps) => {
                 {/* <button>+Novo Chat</button> */}
                 <span class="menu-history-date-label">Hoje</span>
                 <div class="menu-history-item-wrapper">
-                  {!isEditing() ? (
-                    <For each={chatItems()}>
-                      {(item) => (
+                  <For each={chatItems()}>
+                    {(item) => {
+                      let buttonRef: HTMLButtonElement | null = null;
+                      return (
                         <div class="menu-history-item">
-                          <span>{formatDateChat(item)}</span>
-                          <button class="menu-history-button" onClick={() => toggleMenuOptions()}>
-                            <DotsHorizontal />
-                          </button>
+                          {editingChatId() === item.id && isEditing() ? (
+                            <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
+                              <input type="text" name="chatNameField" id={item.id} value={formatDateChat(item)} />
+                            </form>
+                          ) : (
+                            <>
+                              <span>{formatDateChat(item)}</span>
+                              <button
+                                class="menu-history-button"
+                                ref={(el) => (buttonRef = el)}
+                                onClick={() => toggleMenuOptions(item.id, buttonRef!)}
+                              >
+                                <DotsHorizontal />
+                              </button>
+                            </>
+                          )}
+                          {openMenuOptions() === item.id && (
+                            <div class={`menu-history-option ${modalPosition()}`}>
+                              <div class="menu-history-option-wrapper">
+                                <div class="menu-history-option-edit">
+                                  <button onClick={() => startEditing(item.id)}>
+                                    <PenEditIcon />
+                                    Renomear chat
+                                  </button>
+                                </div>
+                                <div class="menu-history-option-delete">
+                                  <button onClick={() => handleDeleteClick()}>
+                                    <TrashIcon color="#e41d1d" />
+                                    Excluir chat
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </For>
-                  ) : (
-                    <form
-                      onSubmit={() => {
-                        console.log('editou'), setIsEditing(false);
-                      }}
-                    >
-                      <input type="text" name="chatNameField" id="chatName" />
-                    </form>
-                  )}
-                  {openMenuOptions() && (
-                    <div class="menu-history-option">
-                      <div class="menu-history-option-wrapper">
-                        <div class="menu-history-option-edit">
-                          <button onClick={() => toggleEditMode()}>
-                            <PenEditIcon />
-                            Renomear chat
-                          </button>
-                        </div>
-                        <div class="menu-history-option-delete">
-                          <button onClick={() => handleDeleteClick()}>
-                            <TrashIcon color="#E41D1D" />
-                            Excluir
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                      );
+                    }}
+                  </For>
                 </div>
               </div>
               <div class="menu-footer">

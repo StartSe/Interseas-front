@@ -3,7 +3,7 @@ import styles from '../../../assets/menu.css';
 import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
-import { XIcon, DotsHorizontal } from '@/components/icons';
+import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icons';
 import DocumentsDBService from '@/service/documentsDBService';
 
 const documentService = new DocumentsDBService();
@@ -14,6 +14,9 @@ export interface MenuProps {
 }
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
+  const [openMenuOptions, setOpenMenuOptions] = createSignal<boolean>(false);
+  const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
+  const [isEditing, setIsEditing] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
 
   const handleClick = (flow: string) => {
@@ -21,6 +24,18 @@ export const Menu = (props: MenuProps) => {
     localStorage.setItem('currentFlow', flow);
   };
 
+  const toggleMenuOptions = () => {
+    setOpenMenuOptions(!openMenuOptions());
+  };
+
+  const toggleEditMode = () => {
+    setOpenMenuOptions(false);
+    setIsEditing(!isEditing());
+  };
+  const handleDeleteClick = () => {
+    setIsOpenDeleteModal(!openDeleteModal());
+    setOpenMenuOptions(false);
+  };
   return (
     <>
       <style>{styles}</style>
@@ -45,10 +60,38 @@ export const Menu = (props: MenuProps) => {
                 {/* <button>+Novo Chat</button> */}
                 <span class="menu-history-date-label">Hoje</span>
                 <div class="menu-history-item-wrapper">
-                  <span>Título da conversa 1</span>
-                  <button class="menu-history-button">
+                  {!isEditing() ? (
+                    <span>Título da conversa 1</span>
+                  ) : (
+                    <form
+                      onSubmit={() => {
+                        console.log('editou'), setIsEditing(false);
+                      }}
+                    >
+                      <input type="text" name="chatNameField" id="chatName" />
+                    </form>
+                  )}
+                  <button class="menu-history-button" onClick={() => toggleMenuOptions()}>
                     <DotsHorizontal />
                   </button>
+                  {openMenuOptions() && (
+                    <div class="menu-history-option">
+                      <div class="menu-history-option-wrapper">
+                        <div class="menu-history-option-edit">
+                          <button onClick={() => toggleEditMode()}>
+                            <PenEditIcon />
+                            Renomear chat
+                          </button>
+                        </div>
+                        <div class="menu-history-option-delete">
+                          <button onClick={() => handleDeleteClick()}>
+                            <TrashIcon color="#E41D1D" />
+                            Excluir
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div class="menu-footer">
@@ -56,13 +99,29 @@ export const Menu = (props: MenuProps) => {
                   Powered By <b>StartSe</b>
                 </p>
               </div>
+              <div class="menu-overlay" onClick={() => setOpen(false)} />
             </div>
-            <div class="menu-overlay" onClick={() => setOpen(false)} />
           </div>
         ) : (
           <MenuButton fillColor={props.fillColor} onClick={() => setOpen(true)} />
         )}
       </div>
+      {openDeleteModal() ? (
+        <div class="modal-delete">
+          <div class="modal-delete-wrapper">
+            <div class="modal-delete-content">
+              <h6>Excluir Chat</h6>
+              <span>Tem certeza que deseja excluir [nome do chat]? Essa é uma ação permanente</span>
+              <div class="modal-delete-btn-wrapper">
+                <button type="button" class="modal-delete-btn-cancel" onClick={() => setIsOpenDeleteModal(false)}>
+                  cancelar
+                </button>
+                <button class="modal-delete-btn-delete">excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };

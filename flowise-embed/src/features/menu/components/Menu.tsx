@@ -1,4 +1,4 @@
-import { For, createSignal } from 'solid-js';
+import { For, createEffect, createResource, createSignal } from 'solid-js';
 import styles from '../../../assets/menu.css';
 import { MenuButton } from './MenuButton';
 import { MenuItem, MenuItemProps } from './MenuItem';
@@ -12,13 +12,25 @@ export interface MenuProps {
   items: MenuItemProps[];
   fillColor?: string;
 }
+interface ChatItem {
+  agent_flow: string;
+  chat_name: string | null;
+  created_at: string;
+  id: string;
+  updated_at: string | null;
+}
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<boolean>(false);
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
   const [isEditing, setIsEditing] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
+  const [chatItems, setChatItems] = createSignal<ChatItem[]>([]);
 
+  createEffect(async () => {
+    const data = await documentService.getChatIdsByFlow(currentFlow());
+    setChatItems(data);
+  });
   const handleClick = (flow: string) => {
     setCurrentFLow(flow);
     localStorage.setItem('currentFlow', flow);
@@ -35,6 +47,14 @@ export const Menu = (props: MenuProps) => {
   const handleDeleteClick = () => {
     setIsOpenDeleteModal(!openDeleteModal());
     setOpenMenuOptions(false);
+  };
+  const formatDateChat = (item: ChatItem) => {
+    if (item.chat_name) {
+      return item.chat_name;
+    } else {
+      const date = new Date(item.created_at);
+      return `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
   };
   return (
     <>
@@ -61,7 +81,16 @@ export const Menu = (props: MenuProps) => {
                 <span class="menu-history-date-label">Hoje</span>
                 <div class="menu-history-item-wrapper">
                   {!isEditing() ? (
-                    <span>Título da conversa 1</span>
+                    <For each={chatItems()}>
+                      {(item) => (
+                        <div class="menu-history-item">
+                          <span>{formatDateChat(item)}</span>
+                          <button class="menu-history-button" onClick={() => toggleMenuOptions()}>
+                            <DotsHorizontal />
+                          </button>
+                        </div>
+                      )}
+                    </For>
                   ) : (
                     <form
                       onSubmit={() => {
@@ -71,9 +100,6 @@ export const Menu = (props: MenuProps) => {
                       <input type="text" name="chatNameField" id="chatName" />
                     </form>
                   )}
-                  <button class="menu-history-button" onClick={() => toggleMenuOptions()}>
-                    <DotsHorizontal />
-                  </button>
                   {openMenuOptions() && (
                     <div class="menu-history-option">
                       <div class="menu-history-option-wrapper">

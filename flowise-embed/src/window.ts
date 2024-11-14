@@ -1,4 +1,5 @@
 import { observersConfigType } from './components/Bot';
+import { BubbleTheme } from './features/bubble/types';
 import { MenuProps } from './features/menu';
 import { HomeProps } from './pages/Home/Home';
 
@@ -6,8 +7,10 @@ import { HomeProps } from './pages/Home/Home';
 type BotProps = {
   chatflowid: string;
   apiHost?: string;
+  onRequest?: (request: RequestInit) => Promise<void>;
   chatflowConfig?: Record<string, unknown>;
   observersConfig?: observersConfigType;
+  theme?: BubbleTheme;
 };
 
 let elementUsed: Element | undefined;

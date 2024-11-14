@@ -1,23 +1,43 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
-import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
-import { TextInput } from '@/components/inputs/textInput';
-import { GuestBubble } from '@/components/bubbles/GuestBubble';
-import { BotBubble } from '@/components/bubbles/BotBubble';
-import { LoadingBubble } from '@/components/bubbles/LoadingBubble';
-import { SourceBubble } from '@/components/bubbles/SourceBubble';
-import { StarterPromptBubble } from '@/components/bubbles/StarterPromptBubble';
-import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme } from '@/features/bubble/types';
-import { Badge } from '@/components/Badge';
+import {
+  sendMessageQuery,
+  upsertVectorStoreWithFormData,
+  isStreamAvailableQuery,
+  IncomingInput,
+  getChatbotConfig,
+  FeedbackRatingType,
+  createAttachmentWithFormData,
+} from '@/queries/sendMessageQuery';
+import { TextInput } from './inputs/textInput';
+import { GuestBubble } from './bubbles/GuestBubble';
+import { BotBubble } from './bubbles/BotBubble';
+import { LoadingBubble } from './bubbles/LoadingBubble';
+import { SourceBubble } from './bubbles/SourceBubble';
+import { StarterPromptBubble } from './bubbles/StarterPromptBubble';
+import {
+  BotMessageTheme,
+  FooterTheme,
+  TextInputTheme,
+  UserMessageTheme,
+  FeedbackTheme,
+  DisclaimerPopUpTheme,
+  DateTimeToggleTheme,
+} from '@/features/bubble/types';
+import { Badge } from './Badge';
 import socketIOClient from 'socket.io-client';
-import { Popup } from '@/features/popup';
+import { Popup, DisclaimerPopup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
-import { NewItemButton, SendButton } from '@/components/buttons/SendButton';
-import { CircleDotIcon, TrashIcon } from '@/components/icons';
-import { CancelButton } from '@/components/buttons/CancelButton';
+import { DeleteButton, SendButton } from '@/components/buttons/SendButton';
+import { FilePreview } from '@/components/inputs/textInput/components/FilePreview';
+import { CircleDotIcon, SparklesIcon, TrashIcon } from './icons';
+import { CancelButton } from './buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
-import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow } from '@/utils';
+import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow, setCookie, getCookie } from '@/utils';
+import { cloneDeep } from 'lodash';
+import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
+import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
 import { UploadButton } from '@/components/buttons/UploadButton';
 import { complianceErrorMessage, criticalAnalysisNcmPhase, messageUtils } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
@@ -52,15 +72,17 @@ export type FormEvent<T = EventTarget> = {
   currentTarget: T;
 };
 
-type ImageUploadConstraits = {
+type IUploadConstraits = {
   fileTypes: string[];
   maxUploadSize: number;
 };
 
 export type UploadsConfig = {
-  imgUploadSizeAndTypes: ImageUploadConstraits[];
+  imgUploadSizeAndTypes: IUploadConstraits[];
+  fileUploadSizeAndTypes: IUploadConstraits[];
   isImageUploadAllowed: boolean;
   isSpeechToTextEnabled: boolean;
+  isRAGFileUploadAllowed: boolean;
 };
 
 type FilePreviewData = string | ArrayBuffer;
@@ -79,6 +101,7 @@ export type IAgentReasoning = {
   agentName?: string;
   messages?: string[];
   usedTools?: any[];
+  artifacts?: FileUpload[];
   sourceDocuments?: any[];
   instructions?: string;
   nextAgent?: string;
@@ -106,9 +129,22 @@ export type MessageType = {
   sourceDocuments?: any;
   fileAnnotations?: any;
   fileUploads?: Partial<FileUpload>[];
+  artifacts?: Partial<FileUpload>[];
   agentReasoning?: IAgentReasoning[];
+  usedTools?: any[];
   action?: IAction | null;
+  rating?: FeedbackRatingType;
+  id?: string;
+  followUpPrompts?: string;
+  dateTime?: string;
 };
+
+type IUploads = {
+  data: FilePreviewData;
+  type: string;
+  name: string;
+  mime: string;
+}[];
 
 type observerConfigType = (accessor: string | boolean | object | MessageType[]) => void;
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
@@ -116,6 +152,7 @@ export type observersConfigType = Record<'observeUserInput' | 'observeLoading' |
 export type BotProps = {
   chatflowid: string;
   apiHost?: string;
+  onRequest?: (request: RequestInit) => Promise<void>;
   chatflowConfig?: Record<string, unknown>;
   welcomeMessage?: string;
   errorMessage?: string;
@@ -135,9 +172,14 @@ export type BotProps = {
   fontSize?: number;
   isFullPage?: boolean;
   footer?: FooterTheme;
+  sourceDocsTitle?: string;
   observersConfig?: observersConfigType;
-  starterPrompts?: string[];
+  starterPrompts?: string[] | Record<string, { prompt: string }>;
   starterPromptFontSize?: number;
+  clearChatOnReload?: boolean;
+  disclaimer?: DisclaimerPopUpTheme;
+  dateTimeToggle?: DateTimeToggleTheme;
+  renderHTML?: boolean;
 };
 
 export type LeadsConfig = {
@@ -185,12 +227,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [chatId, setChatId] = createSignal(
     (props.chatflowConfig?.vars as any)?.customerId ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}` : uuidv4(),
   );
+  const [isMessageStopping, setIsMessageStopping] = createSignal(false);
   const [starterPrompts, setStarterPrompts] = createSignal<string[]>([], { equals: false });
   const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
+  const [fullFileUpload, setFullFileUpload] = createSignal<boolean>(false);
   const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
   const [leadsConfig, setLeadsConfig] = createSignal<LeadsConfig>();
   const [isLeadSaved, setIsLeadSaved] = createSignal(false);
   const [leadEmail, setLeadEmail] = createSignal('');
+  const [disclaimerPopupOpen, setDisclaimerPopupOpen] = createSignal(false);
 
   // drag & drop file input
   // TODO: fix this type
@@ -202,8 +247,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [recordingNotSupported, setRecordingNotSupported] = createSignal(false);
   const [isLoadingRecording, setIsLoadingRecording] = createSignal(false);
 
+  // follow-up prompts
+  const [followUpPromptsStatus, setFollowUpPromptsStatus] = createSignal<boolean>(false);
+  const [followUpPrompts, setFollowUpPrompts] = createSignal<string[]>([]);
+
   // drag & drop
   const [isDragActive, setIsDragActive] = createSignal(false);
+  const [uploadedFiles, setUploadedFiles] = createSignal<{ file: File; type: string }[]>([]);
+
+  createMemo(() => {
+    const customerId = (props.chatflowConfig?.vars as any)?.customerId;
+    setChatId(customerId ? `${customerId.toString()}+${uuidv4()}` : uuidv4());
+  });
 
   // document uploading
   const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
@@ -312,35 +367,31 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   let hasSoundPlayed = false;
-  // TODO: this has the bug where first message is not showing: https://github.com/FlowiseAI/FlowiseChatEmbed/issues/158
-  // The solution is to use SSE
-  const updateLastMessage = (
-    text: string,
-    sourceDocuments: any,
-    fileAnnotations: any,
-    agentReasoning: IAgentReasoning[] = [],
-    action: IAction,
-    resultText?: string,
-  ) => {
-    setMessages((data) => {
-      const updated = data.map((item, i) => {
-        if (i === data.length - 1) {
-          if (resultText && !hasSoundPlayed) {
-            playReceiveSound();
-            hasSoundPlayed = true;
-          }
-          return { ...item, message: item.message + text, sourceDocuments, fileAnnotations, agentReasoning, action };
-        }
-        return item;
-      });
-      addChatMessage(updated);
-      return [...updated];
-    });
 
-    // Set hasSoundPlayed to false if resultText exists
-    if (resultText) {
-      hasSoundPlayed = false;
-    }
+  const updateLastMessage = (text: string) => {
+    setMessages((prevMessages) => {
+      const allMessages = [...cloneDeep(prevMessages)];
+      if (allMessages[allMessages.length - 1].type === 'userMessage') return allMessages;
+      if (!text) return allMessages;
+      allMessages[allMessages.length - 1].message += text;
+      allMessages[allMessages.length - 1].rating = undefined;
+      allMessages[allMessages.length - 1].dateTime = new Date().toISOString();
+      if (!hasSoundPlayed) {
+        playReceiveSound();
+        hasSoundPlayed = true;
+      }
+      addChatMessage(allMessages);
+      return allMessages;
+    });
+  };
+
+  const updateErrorMessage = (errorMessage: string) => {
+    setMessages((prevMessages) => {
+      const allMessages = [...cloneDeep(prevMessages)];
+      allMessages.push({ message: props.errorMessage || errorMessage, type: 'apiMessage' });
+      addChatMessage(allMessages);
+      return allMessages;
+    });
   };
 
   const updateLastMessageSourceDocuments = (sourceDocuments: any) => {
@@ -356,6 +407,26 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
+  const updateLastMessageUsedTools = (usedTools: any[]) => {
+    setMessages((prevMessages) => {
+      const allMessages = [...cloneDeep(prevMessages)];
+      if (allMessages[allMessages.length - 1].type === 'userMessage') return allMessages;
+      allMessages[allMessages.length - 1].usedTools = usedTools;
+      addChatMessage(allMessages);
+      return allMessages;
+    });
+  };
+
+  const updateLastMessageFileAnnotations = (fileAnnotations: any) => {
+    setMessages((prevMessages) => {
+      const allMessages = [...cloneDeep(prevMessages)];
+      if (allMessages[allMessages.length - 1].type === 'userMessage') return allMessages;
+      allMessages[allMessages.length - 1].fileAnnotations = fileAnnotations;
+      addChatMessage(allMessages);
+      return allMessages;
+    });
+  };
+
   const updateLastMessageAgentReasoning = (agentReasoning: string | IAgentReasoning[]) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -366,6 +437,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
       addChatMessage(updated);
       return [...updated];
+    });
+  };
+
+  const updateLastMessageArtifacts = (artifacts: FileUpload[]) => {
+    setMessages((prevMessages) => {
+      const allMessages = [...cloneDeep(prevMessages)];
+      if (allMessages[allMessages.length - 1].type === 'userMessage') return allMessages;
+      allMessages[allMessages.length - 1].artifacts = artifacts;
+      addChatMessage(allMessages);
+      return allMessages;
     });
   };
 
@@ -397,11 +478,397 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
     setLoading(false);
     setUserInput('');
+    setUploadedFiles([]);
     scrollToBottom();
+  };
+
+  const handleDisclaimerAccept = () => {
+    setDisclaimerPopupOpen(false); // Close the disclaimer popup
+    setCookie('chatbotDisclaimer', 'true', 365); // Disclaimer accepted
   };
 
   const promptClick = (prompt: string) => {
     handleSubmit(prompt);
+  };
+
+  const followUpPromptClick = (prompt: string) => {
+    setFollowUpPrompts([]);
+    handleSubmit(prompt);
+  };
+
+  const updateMetadata = (data: any, input: string) => {
+    if (data.chatId) {
+      setChatId(data.chatId);
+    }
+
+    // set message id that is needed for feedback
+    if (data.chatMessageId) {
+      setMessages((prevMessages) => {
+        const allMessages = [...cloneDeep(prevMessages)];
+        if (allMessages[allMessages.length - 1].type === 'apiMessage') {
+          allMessages[allMessages.length - 1].messageId = data.chatMessageId;
+        }
+        addChatMessage(allMessages);
+        return allMessages;
+      });
+    }
+
+    if (input === '' && data.question) {
+      // the response contains the question even if it was in an audio format
+      // so if input is empty but the response contains the question, update the user message to show the question
+      setMessages((prevMessages) => {
+        const allMessages = [...cloneDeep(prevMessages)];
+        if (allMessages[allMessages.length - 2].type === 'apiMessage') return allMessages;
+        allMessages[allMessages.length - 2].message = data.question;
+        addChatMessage(allMessages);
+        return allMessages;
+      });
+    }
+
+    if (data.followUpPrompts) {
+      setMessages((prevMessages) => {
+        const allMessages = [...cloneDeep(prevMessages)];
+        if (allMessages[allMessages.length - 1].type === 'userMessage') return allMessages;
+        allMessages[allMessages.length - 1].followUpPrompts = data.followUpPrompts;
+        addChatMessage(allMessages);
+        return allMessages;
+      });
+      setFollowUpPrompts(JSON.parse(data.followUpPrompts));
+    }
+  };
+
+  const fetchResponseFromEventStream = async (chatflowid: string, params: any) => {
+    const chatId = params.chatId;
+    const input = params.question;
+    params.streaming = true;
+    fetchEventSource(`${props.apiHost}/api/v1/prediction/${chatflowid}`, {
+      openWhenHidden: true,
+      method: 'POST',
+      body: JSON.stringify(params),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      async onopen(response) {
+        if (response.ok && response.headers.get('content-type') === EventStreamContentType) {
+          return; // everything's good
+        } else if (response.status === 429) {
+          const errMessage = (await response.text()) ?? 'Too many requests. Please try again later.';
+          handleError(errMessage);
+          throw new Error(errMessage);
+        } else if (response.status === 403) {
+          const errMessage = (await response.text()) ?? 'Unauthorized';
+          handleError(errMessage);
+          throw new Error(errMessage);
+        } else if (response.status === 401) {
+          const errMessage = (await response.text()) ?? 'Unauthenticated';
+          handleError(errMessage);
+          throw new Error(errMessage);
+        } else {
+          throw new Error();
+        }
+      },
+      async onmessage(ev) {
+        const payload = JSON.parse(ev.data);
+        switch (payload.event) {
+          case 'start':
+            setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
+            break;
+          case 'token':
+            updateLastMessage(payload.data);
+            break;
+          case 'sourceDocuments':
+            updateLastMessageSourceDocuments(payload.data);
+            break;
+          case 'usedTools':
+            updateLastMessageUsedTools(payload.data);
+            break;
+          case 'fileAnnotations':
+            updateLastMessageFileAnnotations(payload.data);
+            break;
+          case 'agentReasoning':
+            updateLastMessageAgentReasoning(payload.data);
+            break;
+          case 'action':
+            updateLastMessageAction(payload.data);
+            break;
+          case 'artifacts':
+            updateLastMessageArtifacts(payload.data);
+            break;
+          case 'metadata':
+            updateMetadata(payload.data, input);
+            break;
+          case 'error':
+            updateErrorMessage(payload.data);
+            break;
+          case 'abort':
+            abortMessage();
+            closeResponse();
+            break;
+          case 'end':
+            setLocalStorageChatflow(chatflowid, chatId);
+            closeResponse();
+            break;
+        }
+      },
+      async onclose() {
+        closeResponse();
+      },
+      onerror(err) {
+        console.error('EventSource Error: ', err);
+        closeResponse();
+        throw err;
+      },
+    });
+  };
+
+  const closeResponse = () => {
+    setLoading(false);
+    setUserInput('');
+    setUploadedFiles([]);
+    hasSoundPlayed = false;
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  };
+
+  const abortMessage = () => {
+    setIsMessageStopping(false);
+    setMessages((prevMessages) => {
+      const allMessages = [...cloneDeep(prevMessages)];
+      if (allMessages[allMessages.length - 1].type === 'userMessage') return allMessages;
+      const lastAgentReasoning = allMessages[allMessages.length - 1].agentReasoning;
+      if (lastAgentReasoning && lastAgentReasoning.length > 0) {
+        allMessages[allMessages.length - 1].agentReasoning = lastAgentReasoning.filter((reasoning) => !reasoning.nextAgent);
+      }
+      return allMessages;
+    });
+  };
+
+  const handleFileUploads = async (uploads: IUploads) => {
+    if (!uploadedFiles().length) return uploads;
+
+    if (fullFileUpload()) {
+      const filesWithFullUploadType = uploadedFiles().filter((file) => file.type === 'file:full');
+
+      if (filesWithFullUploadType.length > 0) {
+        const formData = new FormData();
+        for (const file of filesWithFullUploadType) {
+          formData.append('files', file.file);
+        }
+        formData.append('chatId', chatId());
+
+        const response = await createAttachmentWithFormData({
+          chatflowid: props.chatflowid,
+          apiHost: props.apiHost,
+          formData: formData,
+        });
+
+        if (!response.data) {
+          throw new Error('Unable to upload documents');
+        } else {
+          const data = response.data as any;
+          for (const extractedFileData of data) {
+            const content = extractedFileData.content;
+            const fileName = extractedFileData.name;
+
+            // find matching name in previews and replace data with content
+            const uploadIndex = uploads.findIndex((upload) => upload.name === fileName);
+            if (uploadIndex !== -1) {
+              uploads[uploadIndex] = {
+                ...uploads[uploadIndex],
+                data: content,
+                name: fileName,
+                type: 'file:full',
+              };
+            }
+          }
+        }
+      }
+    } else if (uploadsConfig()?.isRAGFileUploadAllowed) {
+      const filesWithRAGUploadType = uploadedFiles().filter((file) => file.type === 'file:rag');
+
+      if (filesWithRAGUploadType.length > 0) {
+        const formData = new FormData();
+        for (const file of filesWithRAGUploadType) {
+          formData.append('files', file.file);
+        }
+        formData.append('chatId', chatId());
+
+        const response = await upsertVectorStoreWithFormData({
+          chatflowid: props.chatflowid,
+          apiHost: props.apiHost,
+          formData: formData,
+        });
+
+        if (!response.data) {
+          throw new Error('Unable to upload documents');
+        } else {
+          // delay for vector store to be updated
+          const delay = (delayInms: number) => {
+            return new Promise((resolve) => setTimeout(resolve, delayInms));
+          };
+          await delay(2500); //TODO: check if embeddings can be retrieved using file name as metadata filter
+
+          uploads = uploads.map((upload) => {
+            return {
+              ...upload,
+              type: 'file:rag',
+            };
+          });
+        }
+      }
+    }
+    return uploads;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (value: string, action?: IAction | undefined | null) => {
+    if (value.trim() === '') {
+      const containsFile = previews().filter((item) => !item.mime.startsWith('image') && item.type !== 'audio').length > 0;
+      if (!previews().length || (previews().length && containsFile)) {
+        return;
+      }
+    }
+
+    setLoading(true);
+    scrollToBottom();
+    let uploads: IUploads = previews().map((item) => {
+      return {
+        data: item.data,
+        type: item.type,
+        name: item.name,
+        mime: item.mime,
+      };
+    });
+
+    try {
+      uploads = await handleFileUploads(uploads);
+    } catch (error) {
+      handleError('Unable to upload documents');
+      return;
+    }
+
+    clearPreviews();
+
+    switch (props.flow) {
+      case Flow.CriticalAnalysis.toString(): {
+        if (isNcmDiscoveringStep()) {
+          await discoverNcm(value, uploads);
+        } else {
+          setIsDisabled(true);
+          await processCriticalAnalysisMissingData(value, uploads);
+          setIsDisabled(false);
+        }
+        break;
+      }
+      default: {
+        setUploading(false);
+        setMessages((prevMessages) => {
+          const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage', fileUploads: uploads }];
+          addChatMessage(messages);
+          return messages;
+        });
+
+        const body: IncomingInput = {
+          question: value,
+          chatId: chatId(),
+        };
+
+        if (uploads && uploads.length > 0) body.uploads = uploads;
+
+        if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+
+        if (leadEmail()) body.leadEmail = leadEmail();
+
+        if (action) body.action = action;
+
+        if (isChatFlowAvailableToStream()) {
+          fetchResponseFromEventStream(props.chatflowid, body);
+        } else {
+          const result = await sendMessageQuery({
+            chatflowid: props.chatflowid,
+            apiHost: props.apiHost,
+            body,
+            onRequest: props.onRequest,
+          });
+
+          if (result.data) {
+            const data = result.data;
+
+            let text = '';
+            if (data.text) text = data.text;
+            else if (data.json) text = JSON.stringify(data.json, null, 2);
+            else text = JSON.stringify(data, null, 2);
+
+            if (data?.chatId) setChatId(data.chatId);
+
+            playReceiveSound();
+
+            setMessages((prevMessages) => {
+              const allMessages = [...cloneDeep(prevMessages)];
+              const newMessage = {
+                message: text,
+                id: data?.chatMessageId,
+                sourceDocuments: data?.sourceDocuments,
+                usedTools: data?.usedTools,
+                fileAnnotations: data?.fileAnnotations,
+                agentReasoning: data?.agentReasoning,
+                action: data?.action,
+                artifacts: data?.artifacts,
+                type: 'apiMessage' as messageType,
+                feedback: null,
+                dateTime: new Date().toISOString(),
+              };
+              allMessages.push(newMessage);
+              addChatMessage(allMessages);
+              return allMessages;
+            });
+
+            updateMetadata(data, value);
+            setLoading(false);
+            setUserInput('');
+            setUploadedFiles([]);
+            scrollToBottom();
+          }
+          if (result.error) {
+            const error = result.error;
+            console.error(error);
+            if (typeof error === 'object') {
+              handleError(`Error: ${error?.message.replaceAll('Error:', ' ')}`);
+              return;
+            }
+            if (typeof error === 'string') {
+              handleError(error);
+              return;
+            }
+            handleError();
+            return;
+          }
+          break;
+        }
+
+        // Update last question to avoid saving base64 data to localStorage
+        if (uploads && uploads.length > 0) {
+          setMessages((data) => {
+            const messages = data.map((item, i) => {
+              if (i === data.length - 2 && item.type === 'userMessage') {
+                if (item.fileUploads) {
+                  const fileUploads = item?.fileUploads.map((file) => ({
+                    type: file.type,
+                    name: file.name,
+                    mime: file.mime,
+                  }));
+                  return { ...item, fileUploads };
+                }
+              }
+              return item;
+            });
+            addChatMessage(messages);
+            return [...messages];
+          });
+        }
+      }
+    }
   };
 
   createEffect(() => {
@@ -443,93 +910,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const promptInformMissingData = `CORRIGE_JSON\n${JSON.stringify(jsonResponseCriticalAnalysis())}\ntext:${inputValue}`;
     const jsonCriticalAnalysisUpdate = await sendBackgroundMessage(promptInformMissingData, fileUploads);
     await processCriticalAnalysisUpdate(jsonCriticalAnalysisUpdate);
-  };
-
-  const handleSubmit = async (inputValue: string, action?: IAction | null) => {
-    try {
-      setUserInput(inputValue);
-      setLoading(true);
-      scrollToBottom();
-      clearPreviews();
-
-      const fileUploads = getFileUploads();
-
-      switch (props.flow) {
-        case Flow.CriticalAnalysis.toString(): {
-          if (isNcmDiscoveringStep()) {
-            await discoverNcm(inputValue, fileUploads);
-          } else {
-            setIsDisabled(true);
-            await processCriticalAnalysisMissingData(inputValue, fileUploads);
-            setIsDisabled(false);
-          }
-          break;
-        }
-        default: {
-          updateMessages(inputValue, fileUploads);
-          const body: IncomingInput = {
-            question: inputValue,
-            chatId: chatId(),
-          };
-          if (fileUploads && fileUploads.length > 0) body.uploads = fileUploads;
-          if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
-          if (leadEmail()) body.leadEmail = leadEmail();
-          if (action) body.action = action;
-          if (isChatFlowAvailableToStream()) {
-            body.socketIOClientId = socketIOClientId();
-          } else {
-            setUploading(false);
-            setMessages((prevMessages) => {
-              const newMessage = { message: '', type: 'apiMessage' } as MessageType;
-              const updated = [...prevMessages, newMessage];
-              addChatMessage(updated);
-              return [...updated];
-            });
-          }
-
-          const result = await sendMessageQuery({
-            chatflowid: props.chatflowid,
-            apiHost: props.apiHost,
-            body,
-          });
-          if (result.data) {
-            const data = result.data;
-            let text = '';
-            if (data.text) text = data.text;
-            else if (data.json) text = JSON.stringify(data.json, null, 2);
-            else text = JSON.stringify(data, null, 2);
-            updateLastMessage(text, data?.sourceDocuments, data?.fileAnnotations, data?.agentReasoning, data?.action, data.text);
-          }
-          if (result.error) {
-            const error = result.error;
-            console.error(error);
-            let errorMessage = error.toString();
-            if (typeof error === 'object') {
-              errorMessage = `Error: ${error?.message.replaceAll('Error:', ' ')}`;
-            }
-            handleError(errorMessage);
-            return;
-          }
-          break;
-        }
-      }
-
-      setLoading(false);
-      setUserInput('');
-      scrollToBottom();
-    } catch (error) {
-      console.error('Error in handleSubmit:', error);
-      handleError();
-    }
-  };
-
-  const getFileUploads = () => {
-    return previews().map((item) => ({
-      data: item.data,
-      type: item.type,
-      name: item.name,
-      mime: item.mime,
-    }));
   };
 
   const updateMessages = (inputValue: string, fileUploads: any[]) => {
@@ -634,21 +1014,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       if (!isChatFlowAvailableToStream()) {
-        updateLastMessage(
-          criticalAnalysisMessage,
-          jsonCriticalAnalysisUpdate?.sourceDocuments || null,
-          jsonCriticalAnalysisUpdate?.fileAnnotations || null,
-          jsonCriticalAnalysisUpdate?.agentReasoning || null,
-          jsonCriticalAnalysisUpdate?.action || null,
-        );
+        updateLastMessage(criticalAnalysisMessage);
       } else {
-        updateLastMessage(
-          '',
-          jsonCriticalAnalysisUpdate?.sourceDocuments || null,
-          jsonCriticalAnalysisUpdate?.fileAnnotations || null,
-          jsonCriticalAnalysisUpdate?.agentReasoning || null,
-          jsonCriticalAnalysisUpdate?.action || null,
-        );
+        updateLastMessage('');
       }
     } catch (error) {
       console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
@@ -691,6 +1059,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
+      setUploadedFiles([]);
       window.location.reload();
 
       const messages: MessageType[] = [
@@ -715,10 +1084,29 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  createEffect(() => {
-    if (props.starterPrompts && props.starterPrompts.length > 0) {
-      const prompts = Object.values(props.starterPrompts).map((prompt) => prompt);
+  onMount(() => {
+    if (props.clearChatOnReload) {
+      clearChat();
+      window.addEventListener('beforeunload', clearChat);
+      return () => {
+        window.removeEventListener('beforeunload', clearChat);
+      };
+    }
+  });
 
+  createEffect(() => {
+    if (props.starterPrompts) {
+      let prompts: string[];
+
+      if (Array.isArray(props.starterPrompts)) {
+        // If starterPrompts is an array
+        prompts = props.starterPrompts;
+      } else {
+        // If starterPrompts is a JSON object
+        prompts = Object.values(props.starterPrompts).map((promptObj: { prompt: string }) => promptObj.prompt);
+      }
+
+      // Filter out any empty prompts
       return setStarterPrompts(prompts.filter((prompt) => prompt !== ''));
     }
   });
@@ -740,6 +1128,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   // eslint-disable-next-line solid/reactivity
   createEffect(async () => {
+    if (props.disclaimer) {
+      if (getCookie('chatbotDisclaimer') == 'true') {
+        setDisclaimerPopupOpen(false);
+      } else {
+        setDisclaimerPopupOpen(true);
+      }
+    } else {
+      setDisclaimerPopupOpen(false);
+    }
+
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
       if (chatMessage.chatId) setChatId(chatMessage.chatId);
@@ -755,12 +1153,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 messageId: message?.messageId,
                 message: message.message,
                 type: message.type,
+                rating: message.rating,
+                dateTime: message.dateTime,
               };
               if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
               if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
               if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
               if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
               if (message.action) chatHistory.action = message.action;
+              if (message.artifacts) chatHistory.artifacts = message.artifacts;
+              if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
               return chatHistory;
             })
           : [{ message: props.welcomeMessage ?? defaultWelcomeMessage, type: 'apiMessage' }];
@@ -773,6 +1175,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const { data } = await isStreamAvailableQuery({
       chatflowid: props.chatflowid,
       apiHost: props.apiHost,
+      onRequest: props.onRequest,
     });
 
     if (data) {
@@ -783,6 +1186,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await getChatbotConfig({
       chatflowid: props.chatflowid,
       apiHost: props.apiHost,
+      onRequest: props.onRequest,
     });
 
     if (result.data) {
@@ -807,6 +1211,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           setMessages((prevMessages) => [...prevMessages, { message: '', type: 'leadCaptureMessage' }]);
         }
       }
+      if (chatbotConfig.followUpPrompts) {
+        setFollowUpPromptsStatus(chatbotConfig.followUpPrompts.status);
+      }
+      if (chatbotConfig.fullFileUpload) {
+        setFullFileUpload(chatbotConfig.fullFileUpload.status);
+      }
     }
 
     const socket = socketIOClient(props.apiHost as string);
@@ -830,6 +1240,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     // eslint-disable-next-line solid/reactivity
     return () => {
       setUserInput('');
+      setUploadedFiles([]);
       setLoading(false);
       setMessages([
         {
@@ -842,6 +1253,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setSocketIOClientId('');
       }
     };
+  });
+
+  createEffect(() => {
+    if (followUpPromptsStatus() && messages().length > 0) {
+      const lastMessage = messages()[messages().length - 1];
+      if (lastMessage.type === 'apiMessage' && lastMessage.followUpPrompts) {
+        setFollowUpPrompts(JSON.parse(lastMessage.followUpPrompts));
+      } else if (lastMessage.type === 'userMessage') {
+        setFollowUpPrompts([]);
+      }
+    }
   });
 
   const isValidURL = (url: string): URL | undefined => {
@@ -903,6 +1325,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       });
     }
+    if (fullFileUpload()) {
+      return true;
+    }
+    if (uploadsConfig() && uploadsConfig()?.isRAGFileUploadAllowed && uploadsConfig()?.fileUploadSizeAndTypes) {
+      const fileExt = file.name.split('.').pop();
+      if (fileExt) {
+        uploadsConfig()?.fileUploadSizeAndTypes.map((allowed) => {
+          if (allowed.fileTypes.length === 1 && allowed.fileTypes[0] === '*') {
+            acceptFile = true;
+          } else if (allowed.fileTypes.includes(`.${fileExt}`)) {
+            acceptFile = true;
+          }
+        });
+      }
+    }
     if (!acceptFile) {
       alert(`Cannot upload file. Kindly check the allowed file types and maximum allowed size.`);
     }
@@ -915,9 +1352,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
     const filesList = [];
+    const uploadedFiles = [];
     for (const file of files) {
       if (isFileAllowedForUpload(file) === false) {
         return;
+      }
+      // Only add files
+      if (
+        !uploadsConfig()
+          ?.imgUploadSizeAndTypes.map((allowed) => allowed.fileTypes)
+          .join(',')
+          .includes(file.type)
+      ) {
+        uploadedFiles.push({ file, type: fullFileUpload() ? 'file:full' : 'file:rag' });
       }
       const reader = new FileReader();
       const { name } = file;
@@ -942,11 +1389,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     const newFiles = await Promise.all(filesList);
+    setUploadedFiles(uploadedFiles);
     setPreviews((prevPreviews) => [...prevPreviews, ...(newFiles as FilePreview[])]);
   };
 
+  const isFileUploadAllowed = () => {
+    if (fullFileUpload()) {
+      return true;
+    } else if (uploadsConfig()?.isRAGFileUploadAllowed) {
+      return true;
+    }
+    return false;
+  };
+
   const handleDrag = (e: DragEvent) => {
-    if (uploadsConfig()?.isImageUploadAllowed) {
+    if (uploadsConfig()?.isImageUploadAllowed || isFileUploadAllowed()) {
       e.preventDefault();
       e.stopPropagation();
       if (e.type === 'dragenter' || e.type === 'dragover') {
@@ -958,16 +1415,26 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const handleDrop = async (e: InputEvent | DragEvent) => {
-    if (!uploadsConfig()?.isImageUploadAllowed) {
+    if (!uploadsConfig()?.isImageUploadAllowed && !isFileUploadAllowed) {
       return;
     }
     e.preventDefault();
     setIsDragActive(false);
     const files = [];
+    const uploadedFiles = [];
     if (e.dataTransfer && e.dataTransfer.files.length > 0) {
       for (const file of e.dataTransfer.files) {
         if (isFileAllowedForUpload(file) === false) {
           return;
+        }
+        // Only add files
+        if (
+          !uploadsConfig()
+            ?.imgUploadSizeAndTypes.map((allowed) => allowed.fileTypes)
+            .join(',')
+            .includes(file.type)
+        ) {
+          uploadedFiles.push({ file, type: fullFileUpload() ? 'file:full' : 'file:rag' });
         }
         const reader = new FileReader();
         const { name } = file;
@@ -998,6 +1465,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       const newFiles = await Promise.all(files);
+      setUploadedFiles(uploadedFiles);
       setPreviews((prevPreviews) => [...prevPreviews, ...(newFiles as FilePreview[])]);
     }
 
@@ -1087,6 +1555,38 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       };
     }),
   );
+
+  const previewDisplay = (item: FilePreview) => {
+    if (item.mime.startsWith('image/')) {
+      return (
+        <button
+          class="group w-12 h-12 flex items-center justify-center relative rounded-[10px] overflow-hidden transition-colors duration-200"
+          onClick={() => handleDeletePreview(item)}
+        >
+          <img class="w-full h-full bg-cover" src={item.data as string} />
+          <span class="absolute hidden group-hover:flex items-center justify-center z-10 w-full h-full top-0 left-0 bg-black/10 rounded-[10px] transition-colors duration-200">
+            <TrashIcon />
+          </span>
+        </button>
+      );
+    } else if (item.mime.startsWith('audio/')) {
+      return (
+        <div
+          class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
+          style={{
+            width: `${chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'}px`,
+          }}
+        >
+          <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
+          <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
+            <TrashIcon color="white" />
+          </button>
+        </div>
+      );
+    } else {
+      return <FilePreview disabled={getInputDisabled()} item={item} onDelete={() => handleDeletePreview(item)} />;
+    }
+  };
 
   const readImagesUrls = (imagesToUpload: any[]) => {
     // Logic from handleSubmit function
@@ -1208,7 +1708,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return [...updated];
     });
 
-    // TODO: send alert message if needed
     switch (props.flow) {
       case Flow.CriticalAnalysis.toString():
         await processFileCriticalAnalysis();
@@ -1388,23 +1887,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     if (!isChatFlowAvailableToStream()) {
-      updateLastMessage(
-        checklistMessage,
-        resultFromBackgroundMessage?.sourceDocuments || null,
-        resultFromBackgroundMessage?.fileAnnotations || null,
-        resultFromBackgroundMessage?.agentReasoning || null,
-        resultFromBackgroundMessage?.action || null,
-        checklistMessage,
-      );
+      updateLastMessage(checklistMessage);
     } else {
-      updateLastMessage(
-        '',
-        resultFromBackgroundMessage?.sourceDocuments || null,
-        resultFromBackgroundMessage?.fileAnnotations || null,
-        resultFromBackgroundMessage?.agentReasoning || null,
-        resultFromBackgroundMessage?.action || null,
-        checklistMessage,
-      );
+      updateLastMessage('');
     }
   };
 
@@ -1509,14 +1994,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const lastMessage = await compareDocuments.execute();
 
     if (lastMessage) {
-      updateLastMessage(
-        '',
-        lastMessage?.sourceDocuments,
-        lastMessage?.fileAnnotations,
-        lastMessage?.agentReasoning,
-        lastMessage?.action,
-        lastMessage.text,
-      );
+      updateLastMessage('');
     }
     setIsUploadButtonDisabled(false);
   };
@@ -1570,18 +2048,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         ref={botContainer}
         class={'relative flex w-full h-full text-base overflow-hidden bg-cover bg-center flex-col items-center chatbot-container ' + props.class}
       >
-        {isDragActive() && uploadsConfig()?.isImageUploadAllowed && (
+        {isDragActive() && (uploadsConfig()?.isImageUploadAllowed || isFileUploadAllowed()) && (
           <div
             class="absolute top-0 left-0 bottom-0 right-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm text-white z-40 gap-2 border-2 border-dashed"
             style={{ 'border-color': props.bubbleBackgroundColor }}
           >
             <h2 class="text-xl font-semibold">Drop here to upload</h2>
-            <For each={uploadsConfig()?.imgUploadSizeAndTypes}>
+            <For each={[...(uploadsConfig()?.imgUploadSizeAndTypes || []), ...(uploadsConfig()?.fileUploadSizeAndTypes || [])]}>
               {(allowed) => {
                 return (
                   <>
                     <span>{allowed.fileTypes?.join(', ')}</span>
-                    <span>Max Allowed Size: {allowed.maxUploadSize} MB</span>
+                    {allowed.maxUploadSize && <span>Max Allowed Size: {allowed.maxUploadSize} MB</span>}
                   </>
                 );
               }}
@@ -1611,16 +2089,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             </Show>
             <div style={{ flex: 1 }} />
             <div style={{ 'padding-right': '0.625rem' }}>
-              <NewItemButton
+              <DeleteButton
                 newItemText={messageUtils.NEW_CHAT_BUTTON_LABEL}
                 sendButtonColor={props.bubbleTextColor}
                 type="button"
                 isDisabled={messages().length === 1}
                 class="my-2 ml-2"
-                on:click={() => {
-                  clearChat();
-                }}
-              />
+                on:click={clearChat}
+              >
+                <span>Clear</span>
+              </DeleteButton>
             </div>
           </div>
         ) : null}
@@ -1644,6 +2122,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         showAvatar={props.userMessage?.showAvatar}
                         avatarSrc={props.userMessage?.avatarSrc}
                         fontSize={props.fontSize}
+                        renderHTML={props.renderHTML}
                       />
                     )}
                     {message.type === 'selectionMessage' && !isAnalyzing() && (
@@ -1688,6 +2167,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         isLoading={loading() && index() === messages().length - 1}
                         showAgentMessages={props.showAgentMessages}
                         handleActionClick={(label, action) => handleActionClick(label, action)}
+                        sourceDocsTitle={props.sourceDocsTitle}
+                        handleSourceDocumentsClick={(sourceDocuments) => {
+                          setSourcePopupSrc(sourceDocuments);
+                          setSourcePopupOpen(true);
+                        }}
+                        dateTimeToggle={props.dateTimeToggle}
+                        renderHTML={props.renderHTML}
                       />
                     )}
                     {message.type === 'leadCaptureMessage' && leadsConfig()?.status && !getLocalStorageChatflow(props.chatflowid)?.lead && (
@@ -1711,7 +2197,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                     {message.type === 'userMessage' && loading() && index() === messages().length - 1 && (
                       <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
                     )}
-                    {message.type === 'apiMessage' && loading() && index() === messages().length - 1 && (
+                    {message.type === 'apiMessage' && message.message === '' && loading() && index() === messages().length - 1 && (
                       <LoadingBubble typeLoading={uploading() ? 'upload' : 'typing'} />
                     )}
                     {message.sourceDocuments && message.sourceDocuments.length && (
@@ -1742,54 +2228,30 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               }}
             </For>
           </div>
-          <Show when={messages().length === 1}>
-            <Show when={starterPrompts().length > 0}>
-              <div class="w-full flex flex-row flex-wrap px-5 py-[10px] gap-2">
-                <For each={[...starterPrompts()]}>
-                  {(key) => (
-                    <StarterPromptBubble
-                      prompt={key}
-                      onPromptClick={() => promptClick(key)}
-                      starterPromptFontSize={botProps.starterPromptFontSize} // Pass it here as a number
-                    />
-                  )}
-                </For>
-              </div>
+          <Show when={messages().length > 2 && followUpPromptsStatus()}>
+            <Show when={followUpPrompts().length > 0}>
+              <>
+                <div class="flex items-center gap-1 px-5">
+                  <SparklesIcon class="w-4 h-4" />
+                  <span class="text-sm text-gray-700">Try these prompts</span>
+                </div>
+                <div class="w-full flex flex-row flex-wrap px-5 py-[10px] gap-2">
+                  <For each={[...followUpPrompts()]}>
+                    {(prompt, index) => (
+                      <FollowUpPromptBubble
+                        prompt={prompt}
+                        onPromptClick={() => followUpPromptClick(prompt)}
+                        starterPromptFontSize={botProps.starterPromptFontSize} // Pass it here as a number
+                      />
+                    )}
+                  </For>
+                </div>
+              </>
             </Show>
           </Show>
           <Show when={previews().length > 0}>
             <div class="w-full flex items-center justify-start gap-2 px-5 pt-2 border-t border-[#eeeeee]">
-              <For each={[...previews()]}>
-                {(item) => (
-                  <>
-                    {item.mime.startsWith('image/') ? (
-                      <button
-                        class="group w-12 h-12 flex items-center justify-center relative rounded-[10px] overflow-hidden transition-colors duration-200"
-                        onClick={() => handleDeletePreview(item)}
-                      >
-                        <img class="w-full h-full bg-cover" src={item.data as string} />
-                        <span class="absolute hidden group-hover:flex items-center justify-center z-10 w-full h-full top-0 left-0 bg-black/10 rounded-[10px] transition-colors duration-200">
-                          <TrashIcon />
-                        </span>
-                      </button>
-                    ) : (
-                      <div
-                        class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
-                        style={{
-                          width: `${
-                            chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'
-                          }px`,
-                        }}
-                      >
-                        <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
-                        <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
-                          <TrashIcon color="white" />
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </For>
+              <For each={[...previews()]}>{(item) => <>{previewDisplay(item)}</>}</For>
             </div>
           </Show>
           <div class="w-full px-5 pt-2 pb-1">
@@ -1868,14 +2330,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   autoFocus={props.textInput?.autoFocus}
                   fontSize={props.fontSize}
                   disabled={getInputDisabled() || disableInput()}
-                  defaultValue={userInput()}
+                  inputValue={userInput()}
+                  onInputChange={(value) => setUserInput(value)}
                   onSubmit={handleSubmit}
                   uploadsConfig={uploadsConfig()}
+                  isFullFileUpload={fullFileUpload()}
                   setPreviews={setPreviews}
                   onMicrophoneClicked={onMicrophoneClicked}
                   handleFileChange={handleFileChange}
                   sendMessageSound={props.textInput?.sendMessageSound}
                   sendSoundLocation={props.textInput?.sendSoundLocation}
+                  enableInputHistory={true}
+                  maxHistorySize={10}
                   startProcessingFiles={startProcessingFiles}
                   setIsUploadModalOpen={setIsUploadModalOpen}
                 />
@@ -1908,6 +2374,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         </div>
       </div>
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
+
+      {disclaimerPopupOpen() && (
+        <DisclaimerPopup
+          isOpen={disclaimerPopupOpen()}
+          onAccept={handleDisclaimerAccept}
+          title={props.disclaimer?.title}
+          message={props.disclaimer?.message}
+          buttonText={props.disclaimer?.buttonText}
+        />
+      )}
     </>
   );
 };

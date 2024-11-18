@@ -109,11 +109,19 @@
     font-weight: 500;
     line-height: 18px;
     align-items: center;
+    padding-top: 2rem;
 }
 .menu-history-date-label {
     font-size: .75rem;
     font-family: var(--chatbot-container-font-family, sans-serif);
     color: #C4C6CF;
+    padding: .5rem 0px;
+}
+.menu-history-item-group {
+    display: flex;
+    flex-direction: column;
+    gap: .3125rem;
+    width: 100%;
 }
 .menu-history-item-wrapper {
     position: relative;

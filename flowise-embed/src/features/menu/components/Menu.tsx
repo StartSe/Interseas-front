@@ -24,14 +24,23 @@ export const Menu = (props: MenuProps) => {
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
   const [chatItems, setChatItems] = createSignal<ChatItem[]>([]);
+  const [groupedChatItems, setGroupedChatItems] = createSignal<{ groups: any; labels: any }>({ groups: {}, labels: {} });
   const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
   const [isEditing, setIsEditing] = createSignal<boolean>(false);
+  const [inputValue, setInputValue] = createSignal<string>('');
   const [modalPosition, setModalPosition] = createSignal<'top' | 'bottom'>('bottom');
+  const [selectedChatId, setSelectedChatId] = createSignal<string | null>(null);
+  const [selectedChatName, setSelectedChatName] = createSignal<string | null>(null);
 
   const handleClick = (flow: string) => {
     setCurrentFLow(flow);
     localStorage.setItem('currentFlow', flow);
+  };
+
+  const handleInputChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    setInputValue(target.value);
   };
 
   const toggleMenuOptions = (chatId: string, buttonRef: HTMLButtonElement) => {
@@ -58,16 +67,29 @@ export const Menu = (props: MenuProps) => {
     setOpenMenuOptions(null);
   };
 
-  const handleEditSubmit = (event: Event, chatId: string) => {
-    event.preventDefault();
-    console.log('editou');
-    setIsEditing(false);
-    setEditingChatId(null);
+  const handleOpenDeleteModal = (chatId: string, chatName: string) => {
+    setSelectedChatId(chatId);
+    setSelectedChatName(chatName);
+    setIsOpenDeleteModal(true);
+    setOpenMenuOptions(null);
   };
 
-  const handleDeleteClick = () => {
-    setIsOpenDeleteModal(!openDeleteModal());
-    setOpenMenuOptions(null);
+  const handleConfirmDelete = async () => {
+    setIsOpenDeleteModal(false);
+    if (selectedChatId()) {
+      await documentService.deleteChat(selectedChatId() as string);
+      fetchChatIds();
+    }
+  };
+
+  const getChatHistoryTitle = () => {
+    if (currentFlow() === 'compliance') {
+      return 'Análise de Compliance';
+    } else if (currentFlow() === 'critical_analysis') {
+      return 'Análise Crítica';
+    } else {
+      return 'Estimativa de Custos';
+    }
   };
 
   const formatDateChat = (item: ChatItem) => {
@@ -79,13 +101,65 @@ export const Menu = (props: MenuProps) => {
     }
   };
 
-  createEffect(() => {
-    const fetchChatIds = async () => {
-      const data = await documentService.getChatIdsByFlow(currentFlow());
-      if (data && Array.isArray(data)) {
-        setChatItems(data as ChatItem[]);
-      }
+  const preprocessChatItems = (chatItems: ChatItem[]) => {
+    const groups = {
+      today: [] as ChatItem[],
+      yesterday: [] as ChatItem[],
+      lastWeek: [] as ChatItem[],
+      lastMonth: [] as ChatItem[],
+      older: [] as ChatItem[],
     };
+    const labels = {
+      today: 'Hoje',
+      yesterday: 'Ontem',
+      lastWeek: 'Últimos 7 dias',
+      lastMonth: 'Últimos 30 dias',
+      older: '30 dias ou mais atrás',
+    };
+
+    chatItems.forEach((item) => {
+      const date = new Date(item.created_at);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - date.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        groups.today.push(item);
+      } else if (diffDays === 1) {
+        groups.yesterday.push(item);
+      } else if (diffDays <= 7) {
+        groups.lastWeek.push(item);
+      } else if (diffDays <= 30) {
+        groups.lastMonth.push(item);
+      } else {
+        groups.older.push(item);
+      }
+    });
+
+    return { groups, labels };
+  };
+
+  const fetchChatIds = async () => {
+    const data = await documentService.getChatIdsByFlow(currentFlow());
+    if (data && Array.isArray(data)) {
+      setChatItems(data as ChatItem[]);
+      setGroupedChatItems(preprocessChatItems(data as ChatItem[]));
+    }
+  };
+
+  const handleEditSubmit = async (event: Event, chatId: string) => {
+    event.preventDefault();
+    if (chatId.length > 0) {
+      await documentService.updateChatName(chatId, inputValue());
+      fetchChatIds();
+    } else {
+      console.log('Chat ID inválido');
+    }
+    setIsEditing(false);
+    setEditingChatId(null);
+  };
+
+  createEffect(() => {
     fetchChatIds();
   });
 
@@ -109,52 +183,60 @@ export const Menu = (props: MenuProps) => {
                 <For each={props.items}>
                   {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
-                <div class="menu-history">Histórico de chats - Análise Crítica</div>
+                <div class="menu-history">Histórico de chats - {getChatHistoryTitle()} </div>
                 {/* <button>+Novo Chat</button> */}
-                <span class="menu-history-date-label">Hoje</span>
                 <div class="menu-history-item-wrapper">
-                  <For each={chatItems()}>
-                    {(item) => {
-                      let buttonRef: HTMLButtonElement | null = null;
-                      return (
-                        <div class="menu-history-item">
-                          {editingChatId() === item.id && isEditing() ? (
-                            <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
-                              <input type="text" name="chatNameField" id={item.id} value={formatDateChat(item)} />
-                            </form>
-                          ) : (
-                            <>
-                              <span>{formatDateChat(item)}</span>
-                              <button
-                                class="menu-history-button"
-                                ref={(el) => (buttonRef = el)}
-                                onClick={() => toggleMenuOptions(item.id, buttonRef!)}
-                              >
-                                <DotsHorizontal />
-                              </button>
-                            </>
-                          )}
-                          {openMenuOptions() === item.id && (
-                            <div class={`menu-history-option ${modalPosition()}`}>
-                              <div class="menu-history-option-wrapper">
-                                <div class="menu-history-option-edit">
-                                  <button onClick={() => startEditing(item.id)}>
-                                    <PenEditIcon />
-                                    Renomear chat
-                                  </button>
+                  <For each={Object.entries(groupedChatItems().groups)}>
+                    {([key, items]) =>
+                      (items as ChatItem[]).length > 0 && (
+                        <div class="menu-history-item-group">
+                          <span class="menu-history-date-label">{groupedChatItems().labels[key]}</span>
+                          <For each={items as ChatItem[]}>
+                            {(item) => {
+                              let buttonRef: HTMLButtonElement | null = null;
+                              return (
+                                <div class="menu-history-item">
+                                  {editingChatId() === item.id && isEditing() ? (
+                                    <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
+                                      <input type="text" name="chatNameField" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
+                                    </form>
+                                  ) : (
+                                    <>
+                                      <span>{formatDateChat(item)}</span>
+                                      <button
+                                        class="menu-history-button"
+                                        ref={(element) => (buttonRef = element)}
+                                        onClick={() => buttonRef && toggleMenuOptions(item.id, buttonRef)}
+                                      >
+                                        <DotsHorizontal />
+                                      </button>
+                                    </>
+                                  )}
+                                  {openMenuOptions() === item.id && (
+                                    <div class={`menu-history-option ${modalPosition()}`}>
+                                      <div class="menu-history-option-wrapper">
+                                        <div class="menu-history-option-edit">
+                                          <button onClick={() => startEditing(item.id)}>
+                                            <PenEditIcon />
+                                            Renomear chat
+                                          </button>
+                                        </div>
+                                        <div class="menu-history-option-delete">
+                                          <button onClick={() => handleOpenDeleteModal(item.id, formatDateChat(item))}>
+                                            <TrashIcon color="#e41d1d" />
+                                            Excluir chat
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                                <div class="menu-history-option-delete">
-                                  <button onClick={() => handleDeleteClick()}>
-                                    <TrashIcon color="#e41d1d" />
-                                    Excluir chat
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                              );
+                            }}
+                          </For>
                         </div>
-                      );
-                    }}
+                      )
+                    }
                   </For>
                 </div>
               </div>
@@ -175,12 +257,14 @@ export const Menu = (props: MenuProps) => {
           <div class="modal-delete-wrapper">
             <div class="modal-delete-content">
               <h6>Excluir Chat</h6>
-              <span>Tem certeza que deseja excluir [nome do chat]? Essa é uma ação permanente</span>
+              <span>Tem certeza que deseja excluir {selectedChatName()}? Essa é uma ação permanente</span>
               <div class="modal-delete-btn-wrapper">
                 <button type="button" class="modal-delete-btn-cancel" onClick={() => setIsOpenDeleteModal(false)}>
                   cancelar
                 </button>
-                <button class="modal-delete-btn-delete">excluir</button>
+                <button class="modal-delete-btn-delete" onClick={() => handleConfirmDelete()}>
+                  excluir
+                </button>
               </div>
             </div>
           </div>

@@ -137,6 +137,7 @@ export type MessageType = {
   id?: string;
   followUpPrompts?: string;
   dateTime?: string;
+  disabled?: boolean;
 };
 
 type IUploads = {
@@ -209,7 +210,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [isNcmDiscoveringStep, setIsNcmDiscoveringStep] = createSignal(false);
-  const [isDisabled, setIsDisabled] = createSignal(false);
 
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -383,6 +383,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(allMessages);
       return allMessages;
     });
+  };
+
+  const disableLastSelectionMessage = () => {
+    const messagesArray = messages();
+    for (let i = messagesArray.length - 1; i >= 0; i--) {
+      if (messagesArray[i].type === 'selectionMessage') {
+        setMessages((prev) => {
+          const updatedMessages = [...prev];
+          updatedMessages[i] = { ...updatedMessages[i], disabled: true };
+          return updatedMessages;
+        });
+        break;
+      }
+    }
   };
 
   const updateErrorMessage = (errorMessage: string) => {
@@ -772,9 +786,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (isNcmDiscoveringStep()) {
           await discoverNcm(value, uploads);
         } else {
-          setIsDisabled(true);
+          disableLastSelectionMessage();
           await processCriticalAnalysisMissingData(value, uploads);
-          setIsDisabled(false);
         }
         break;
       }
@@ -919,6 +932,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
+    setLoading(false);
     setIsNcmDiscoveringStep(false);
   };
 
@@ -969,7 +983,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }
-      console.log(jsonDataCriticalAnalysis);
 
       setMessages((prevMessages) => {
         const newMessage = { message: criticalAnalysisMessage, type: 'apiMessage' } as MessageType;
@@ -977,7 +990,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         addChatMessage(updated);
         return [...updated];
       });
-      setIsDisabled(false);
 
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setLoading(false);
@@ -1021,7 +1033,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
         setJsonResponseCriticalAnalysis({});
         setIsAnalyzing(false);
-        setIsDisabled(false);
       }
 
       setMessages((prevMessages) => {
@@ -1721,7 +1732,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     switch (props.flow) {
       case Flow.CriticalAnalysis.toString():
-        setIsDisabled(true);
+        disableLastSelectionMessage();
         await processFileCriticalAnalysis();
         break;
       default:
@@ -2162,8 +2173,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         handleSubmit={handleSubmit}
                         clearChat={clearChat}
                         selectionOptions={basicQuestionOptions}
-                        isDisabled={isDisabled()}
-                        setIsDisabled={setIsDisabled}
+                        isDisabled={message.disabled || false}
+                        setIsDisabled={disableLastSelectionMessage}
+                        messageIndex={messages().indexOf(message)}
                         printCriticalAnalysisData={printCriticalAnalysisData}
                       />
                     )}

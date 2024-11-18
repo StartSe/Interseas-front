@@ -1,4 +1,4 @@
-import { Show, onMount, createEffect, For, Setter } from 'solid-js';
+import { Show, onMount, For, Setter } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
 import { IAction, MessageType } from '../Bot';
@@ -27,6 +27,7 @@ type Props = {
   selectionOptions: string[];
   isDisabled: boolean;
   setIsDisabled: Setter<boolean>;
+  printCriticalAnalysisData: () => void;
 };
 
 const defaultBackgroundColor = colorTheme.secondaryColor;
@@ -70,13 +71,7 @@ export const SelectionBubble = (props: Props) => {
       ]);
     }
     if (label === props.selectionOptions[1]) {
-      props.setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE,
-          type: 'apiMessage',
-        },
-      ]);
+      props.printCriticalAnalysisData();
     }
     props.setIsDisabled(true);
     return;

@@ -12,6 +12,7 @@ type Props = {
   modalTitle?: string;
   uploadingButtonLabel?: string;
   errorMessage?: string;
+  uploadLimit?: number;
 };
 
 export const UploadFileForm = (props: Props) => {
@@ -75,6 +76,11 @@ export const UploadFileForm = (props: Props) => {
                 </a>
               </h3>
               <p class="formacts">Formatos suportados: {Object.keys(acceptedFileTypes).join(', ')}</p>
+              {props.uploadLimit && (
+                <p class="uploadLimit" style={{ color: files().length > props.uploadLimit ? 'red' : '' }}>
+                  Limite de arquivos: {props.uploadLimit}
+                </p>
+              )}{' '}
             </div>
           </div>
         </div>
@@ -98,7 +104,7 @@ export const UploadFileForm = (props: Props) => {
         onSubmit={onSubmit}
         backgroundColor={props.buttonInput?.backgroundColor}
         textColor={props.buttonInput?.textColor}
-        disabled={files().length === 0 || error().length > 0}
+        disabled={files().length === 0 || error().length > 0 || files().length > (props.uploadLimit ?? 10)}
       >
         {props.uploadingButtonLabel}
       </ConfirmUploadButton>

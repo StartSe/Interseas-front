@@ -28,9 +28,10 @@ export const messageUtils = {
   DATA_NOT_FOUND: 'não encontrado',
   NCM_INITIAL_QUESTION: 'Deseja descobrir o NCM?',
   NCM_CONTINUE_QUESTION: 'Deseja continuar com o especialista em Classificação Fiscal?',
-  NCM_RETRY: 'Deseja gerar novamente com outra descrição?',
+  NCM_RETRY: 'Deseja classificar novamente?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
-  NCM_INPUT_INSTRUCTIONS: 'Escolha o(s) NCM(s) desejado(s) e envie em formato texto. Exemplo: "NCM: 1234.56.78, 1234.56.78"',
+  NCM_INPUT_INSTRUCTIONS:
+    'Informe o(s) NCM(s) desejado(s) no campo de texto - Exemplo: "NCM: 1234.56.78, 1234.56.78". Se preferir, realize uma nova classificação.',
   NCM_DISCOVER_TEMPLATE: `
 Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas informações. Por favor, envie uma **mensagem de texto** preenchendo os campos abaixo e nosso time de especialistas irá classificar fiscalmente:
 

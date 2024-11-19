@@ -384,18 +384,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return allMessages;
     });
   };
-
   const disableLastSelectionMessage = () => {
-    const messagesArray = messages();
-    for (let i = messagesArray.length - 1; i >= 0; i--) {
-      if (messagesArray[i].type === 'selectionMessage') {
-        setMessages((prev) => {
-          const updatedMessages = [...prev];
-          updatedMessages[i] = { ...updatedMessages[i], disabled: true };
-          return updatedMessages;
-        });
-        break;
-      }
+    const lastSelectionMessageIndex = messages().findLastIndex((message) => message.type === 'selectionMessage');
+    if (lastSelectionMessageIndex !== -1) {
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        updatedMessages[lastSelectionMessageIndex] = { ...updatedMessages[lastSelectionMessageIndex], disabled: true };
+        return updatedMessages;
+      });
     }
   };
 
@@ -409,7 +405,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const printCriticalAnalysisData = () => {
-    let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
+    let criticalAnalysisMessage = messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL;
 
     for (const [key, value] of Object.entries(jsonResponseCriticalAnalysis())) {
       criticalAnalysisMessage += generateItemToPrint(key, value as string, false);
@@ -979,7 +975,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
-      let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
+      let criticalAnalysisMessage = messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL;
       for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }

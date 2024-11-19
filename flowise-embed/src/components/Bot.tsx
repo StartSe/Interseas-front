@@ -137,6 +137,7 @@ export type MessageType = {
   id?: string;
   followUpPrompts?: string;
   dateTime?: string;
+  disabled?: boolean;
 };
 
 type IUploads = {
@@ -209,7 +210,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [isNcmDiscoveringStep, setIsNcmDiscoveringStep] = createSignal(false);
-  const [isDisabled, setIsDisabled] = createSignal(false);
 
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -384,6 +384,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return allMessages;
     });
   };
+  const disableLastSelectionMessage = () => {
+    const lastSelectionMessageIndex = messages().findLastIndex((message) => message.type === 'selectionMessage');
+    if (lastSelectionMessageIndex !== -1) {
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        updatedMessages[lastSelectionMessageIndex] = { ...updatedMessages[lastSelectionMessageIndex], disabled: true };
+        return updatedMessages;
+      });
+    }
+  };
 
   const updateErrorMessage = (errorMessage: string) => {
     setMessages((prevMessages) => {
@@ -391,6 +401,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       allMessages.push({ message: props.errorMessage || errorMessage, type: 'apiMessage' });
       addChatMessage(allMessages);
       return allMessages;
+    });
+  };
+
+  const printCriticalAnalysisData = () => {
+    let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
+
+    for (const [key, value] of Object.entries(jsonResponseCriticalAnalysis())) {
+      criticalAnalysisMessage += generateItemToPrint(key, value as string, false);
+    }
+    setMessages((prevMessages) => {
+      const newMessage = {
+        message: Object.keys(jsonResponseCriticalAnalysis()).length === 0 ? messageUtils.CRITICAL_ANALYSIS_TEMPLATE : criticalAnalysisMessage,
+        type: 'apiMessage',
+      } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
     });
   };
 
@@ -755,9 +782,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (isNcmDiscoveringStep()) {
           await discoverNcm(value, uploads);
         } else {
-          setIsDisabled(true);
+          disableLastSelectionMessage();
           await processCriticalAnalysisMissingData(value, uploads);
-          setIsDisabled(false);
         }
         break;
       }
@@ -902,6 +928,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
+    setLoading(false);
     setIsNcmDiscoveringStep(false);
   };
 
@@ -948,21 +975,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
-      let criticalAnalysisMessage = `<b>Dados Necessários para Análise Crítica:</b><br>`;
+      let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
       for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }
 
       setMessages((prevMessages) => {
         const newMessage = { message: criticalAnalysisMessage, type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
-      setIsDisabled(false);
-
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];
         addChatMessage(updated);
         return [...updated];
@@ -1010,8 +1029,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
         setJsonResponseCriticalAnalysis({});
         setIsAnalyzing(false);
-        setIsDisabled(false);
       }
+
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(criticalAnalysisMessage);
@@ -1701,18 +1726,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     setFilesMapping(orderedFiles);
 
-    setMessages((prevMessages) => {
-      const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
-    });
-
     switch (props.flow) {
       case Flow.CriticalAnalysis.toString():
+        disableLastSelectionMessage();
         await processFileCriticalAnalysis();
         break;
       default:
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
         setDocumentsUploaded(true);
         setHiddenInput(true);
         await processNextChecklist();
@@ -2001,7 +2026,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processFileCriticalAnalysis = async () => {
     setLoading(true);
-    setIsDisabled(true);
     setDisableInput(false);
     setIsUploadButtonDisabled(false);
 
@@ -2009,6 +2033,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const fileMap = files[currentChecklistNumber()];
     const file = fileMap.file as UploadFile;
     const urls = await processFileToSend(file.file);
+    setMessages((prevMessages) => {
+      const newMessage = { message: `${file.name}`, type: 'userMessage', fileUploads: urls } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
 
     const fileProcessed = await documentService.getProcessedDocumentData(fileMap, props.flow, chatId());
 
@@ -2025,13 +2055,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   async function processNewFileData(file: any, files: any[], urls: Partial<FileUpload>[]) {
     const textContent = await getTextContent(file.file);
-
-    setMessages((prevMessages) => {
-      const newMessage = { message: `${file.name}`, type: 'userMessage', fileUploads: urls } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
-    });
 
     const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
@@ -2146,8 +2169,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         handleSubmit={handleSubmit}
                         clearChat={clearChat}
                         selectionOptions={basicQuestionOptions}
-                        isDisabled={isDisabled()}
-                        setIsDisabled={setIsDisabled}
+                        isDisabled={message.disabled || false}
+                        setIsDisabled={disableLastSelectionMessage}
+                        messageIndex={messages().indexOf(message)}
+                        printCriticalAnalysisData={printCriticalAnalysisData}
                       />
                     )}
                     {message.type === 'apiMessage' && (
@@ -2370,6 +2395,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             uploadLabel={messageUtils.UPLOADING_LABEL}
             uploadingButtonLabel={messageUtils.MODAL_BUTTON}
             errorMessage={messageUtils.FILE_TYPE_NOT_SUPPORTED}
+            uploadLimit={props.flow === Flow.CriticalAnalysis.toString() ? 1 : undefined}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Show, onMount, createEffect, For, Setter } from 'solid-js';
+import { Show, onMount, For, Setter } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
 import { IAction, MessageType } from '../Bot';
@@ -26,7 +26,9 @@ type Props = {
   clearChat: () => void;
   selectionOptions: string[];
   isDisabled: boolean;
-  setIsDisabled: Setter<boolean>;
+  setIsDisabled: () => void;
+  messageIndex: number;
+  printCriticalAnalysisData: () => void;
 };
 
 const defaultBackgroundColor = colorTheme.secondaryColor;
@@ -45,7 +47,6 @@ export const SelectionBubble = (props: Props) => {
   let botDetailsElement: HTMLDetailsElement | undefined;
 
   onMount(() => {
-    props.setIsDisabled(false);
     if (botMessageElement) {
       botMessageElement.innerHTML = Marked.parse(props.message.message);
       botMessageElement.querySelectorAll('a').forEach((link) => {
@@ -70,15 +71,9 @@ export const SelectionBubble = (props: Props) => {
       ]);
     }
     if (label === props.selectionOptions[1]) {
-      props.setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE,
-          type: 'apiMessage',
-        },
-      ]);
+      props.printCriticalAnalysisData();
     }
-    props.setIsDisabled(true);
+    props.setIsDisabled();
     return;
   };
 
@@ -102,8 +97,8 @@ export const SelectionBubble = (props: Props) => {
               <span ref={botMessageElement} data-testid="host-bubble" />
               <div
                 style={{
-                  display: props.isDisabled ? 'none' : 'flex',
-                  'margin-bottom': props.isDisabled ? '0px' : '5px',
+                  display: 'flex',
+                  'margin-bottom': '5px',
                   'flex-direction': 'row',
                   'margin-top': '5px',
                 }}

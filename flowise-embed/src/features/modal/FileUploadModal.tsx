@@ -13,6 +13,7 @@ type Props = ParentProps & {
   uploadLabel?: string;
   uploadingButtonLabel?: string;
   errorMessage?: string;
+  uploadLimit?: number;
 };
 
 export const FileUploadModal = (props: Props) => {
@@ -36,6 +37,7 @@ export const FileUploadModal = (props: Props) => {
               uploadLabel={props.uploadLabel}
               uploadingButtonLabel={props.uploadingButtonLabel}
               errorMessage={props.errorMessage}
+              uploadLimit={props.uploadLimit}
             />
           </div>
         </div>

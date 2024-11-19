@@ -405,7 +405,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const printCriticalAnalysisData = () => {
-    let criticalAnalysisMessage = messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL;
+    let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
 
     for (const [key, value] of Object.entries(jsonResponseCriticalAnalysis())) {
       criticalAnalysisMessage += generateItemToPrint(key, value as string, false);
@@ -975,7 +975,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       setJsonResponseCriticalAnalysis(jsonDataCriticalAnalysis);
 
-      let criticalAnalysisMessage = messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL;
+      let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
       for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }

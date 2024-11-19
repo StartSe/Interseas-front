@@ -21,7 +21,7 @@ export const messageUtils = {
 
   EX_TARIFF_CHECK_ALERT_MESSAGE: 'Atenção, compare se a descrição referente está conforme a plataforma do EX-tarifário',
   IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: 'Dados de LI/Licença de importação não encontrados, revise os documentos enviados',
-  CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL: `<b>Dados Necessários para Análise Crítica:</b><br>`,
+  CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL: `Dados Necessários para Análise Crítica:`,
   CRITICAL_ANALYSIS_MISSING_DATA: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos.',
   CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: 'Dados enviados para análise crítica!',
   CRITICAL_ANALYSIS_PROCESSING_ERROR: 'Error processing critical analysis update.',

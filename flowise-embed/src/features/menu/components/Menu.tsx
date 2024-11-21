@@ -5,6 +5,7 @@ import { MenuItem, MenuItemProps } from './MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
 import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icons';
 import DocumentsDBService from '@/service/documentsDBService';
+import DeleteModal from './DeleteModal';
 
 const documentService = new DocumentsDBService();
 export interface MenuProps {
@@ -23,8 +24,10 @@ export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
-  const [chatItems, setChatItems] = createSignal<ChatItem[]>([]);
-  const [groupedChatItems, setGroupedChatItems] = createSignal<{ groups: any; labels: any }>({ groups: {}, labels: {} });
+  const [groupedChatItems, setGroupedChatItems] = createSignal<{ groups: Record<string, ChatItem[]>; labels: Record<string, string> }>({
+    groups: {},
+    labels: {},
+  });
   const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
   const [isEditing, setIsEditing] = createSignal<boolean>(false);
@@ -117,10 +120,25 @@ export const Menu = (props: MenuProps) => {
       older: '30 dias ou mais atrás',
     };
 
+    const adjustToBrazilTime = (date: Date) => {
+      // Manual adjustment for Brazil time zone (UTC-3)
+      const offset = -3 * 60; // UTC-3 in minutes
+      const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+      return new Date(utcDate.getTime() + offset * 60000);
+    };
+
+    // Sort chatItems by created_at in descending order
+    chatItems.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
     chatItems.forEach((item) => {
-      const date = new Date(item.created_at);
-      const now = new Date();
-      const diffTime = Math.abs(now.getTime() - date.getTime());
+      const date = adjustToBrazilTime(new Date(item.created_at));
+      const now = adjustToBrazilTime(new Date());
+
+      // Zero out hours, minutes, seconds, and milliseconds for day comparison
+      const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      const diffTime = Math.abs(nowOnly.getTime() - dateOnly.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (diffDays === 0) {
@@ -142,7 +160,6 @@ export const Menu = (props: MenuProps) => {
   const fetchChatIds = async () => {
     const data = await documentService.getChatIdsByFlow(currentFlow());
     if (data && Array.isArray(data)) {
-      setChatItems(data as ChatItem[]);
       setGroupedChatItems(preprocessChatItems(data as ChatItem[]));
     }
   };
@@ -152,8 +169,6 @@ export const Menu = (props: MenuProps) => {
     if (chatId.length > 0) {
       await documentService.updateChatName(chatId, inputValue());
       fetchChatIds();
-    } else {
-      console.log('Chat ID inválido');
     }
     setIsEditing(false);
     setEditingChatId(null);
@@ -252,24 +267,12 @@ export const Menu = (props: MenuProps) => {
           <MenuButton fillColor={props.fillColor} onClick={() => setOpen(true)} />
         )}
       </div>
-      {openDeleteModal() ? (
-        <div class="modal-delete">
-          <div class="modal-delete-wrapper">
-            <div class="modal-delete-content">
-              <h6>Excluir Chat</h6>
-              <span>Tem certeza que deseja excluir {selectedChatName()}? Essa é uma ação permanente</span>
-              <div class="modal-delete-btn-wrapper">
-                <button type="button" class="modal-delete-btn-cancel" onClick={() => setIsOpenDeleteModal(false)}>
-                  cancelar
-                </button>
-                <button class="modal-delete-btn-delete" onClick={() => handleConfirmDelete()}>
-                  excluir
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <DeleteModal
+        chatName={selectedChatName() || ''}
+        isOpen={openDeleteModal()}
+        onCancel={() => setIsOpenDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 };

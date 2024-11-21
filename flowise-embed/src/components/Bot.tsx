@@ -923,7 +923,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return [...updated];
     });
     setMessages((prevMessages) => {
-      const newMessage = { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' } as MessageType;
+      const newMessage = { message: messageUtils.NCM_RETRY, type: 'selectionMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
       addChatMessage(updated);
       return [...updated];

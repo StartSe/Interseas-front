@@ -129,7 +129,7 @@ export default class CompareDocuments {
   private unifyDifferentValues() {
     try {
       this.parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
-        if (dataDocument.data[0].value.toLowerCase() !== dataDocument.data[1].value.toLowerCase()) {
+        if (dataDocument.data[0].value?.toLowerCase() !== dataDocument.data[1].value?.toLowerCase()) {
           const differentValue = {
             [dataDocument.data[0].key_identifier]: [
               {

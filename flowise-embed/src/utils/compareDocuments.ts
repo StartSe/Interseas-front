@@ -9,6 +9,8 @@ export default class CompareDocuments {
 
   private parsedJsonExtractResponse: any;
 
+  private parsedSpecificJsonExtractResponse: any;
+
   private lastMessage: any;
 
   constructor(
@@ -63,12 +65,15 @@ export default class CompareDocuments {
 
   private async checkFilesInPairs(firstFile: FileMapping, secondFile: FileMapping) {
     const prompt = this.comparePairForSpecificCompliance(firstFile, secondFile);
+    const promptToCrossValidation = `CROSS_VALIDATION\n
+    ${firstFile.file.name} ${JSON.stringify(firstFile.content || firstFile.checklist)}\n
+    ${secondFile.file.name} ${JSON.stringify(secondFile.content || secondFile.checklist)}`;
 
-    await this.analyseFilesWithAI(prompt);
+    await this.analyseFilesWithAI(promptToCrossValidation);
 
     if (prompt.includes('Specific compliance')) {
-      this.sendMessageToChat(this.parsedJsonExtractResponse);
-      return;
+      await this.analyseFilesWithAI(prompt);
+      this.sendMessageToChat(this.parsedSpecificJsonExtractResponse);
     }
 
     this.unifyDifferentValues();
@@ -103,20 +108,16 @@ export default class CompareDocuments {
       return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CE_MERCANTE;
     } else if (CRTxMIC_DTA) {
       return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CRT;
-    } else {
-      return `
-        CROSS_VALIDATION\n
-        ${firstFile.file.name} ${JSON.stringify(firstFile.content || firstFile.checklist)}\n
-        ${secondFile.file.name} ${JSON.stringify(secondFile.content || secondFile.checklist)}
-      `;
     }
+
+    return '';
   }
 
   private async analyseFilesWithAI(prompt: string) {
     const response = await this.dependencies.sendBackgroundMessage(prompt, []);
 
     if (prompt.includes('Specific compliance')) {
-      this.parsedJsonExtractResponse = response;
+      this.parsedSpecificJsonExtractResponse = response;
       return;
     }
 
@@ -128,7 +129,7 @@ export default class CompareDocuments {
   private unifyDifferentValues() {
     try {
       this.parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
-        if (dataDocument.data[0].value.toLowerCase() !== dataDocument.data[1].value.toLowerCase()) {
+        if (dataDocument.data[0].value?.toLowerCase() !== dataDocument.data[1].value?.toLowerCase()) {
           const differentValue = {
             [dataDocument.data[0].key_identifier]: [
               {

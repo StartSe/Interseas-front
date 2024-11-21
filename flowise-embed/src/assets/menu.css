@@ -4,8 +4,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500;600;700&family=Inter:wght@100;300;400;500;600;700&display=swap');
 
+:host {
+    --chatbot-container-font-family: "Inter", sans-serif;
+    --chatbot-container-font-family-secondary: "IBM Plex Sans", sans-serif;
+    --menu-content-background-color: #FAFAFA;
+    --orange-border-color: #FBA115;
+}
 .menu {
-    font-family: "IBM Plex Sans", sans-serif;
+    font-family: var(--chatbot-container-font-family-secondary);
     position: relative;
     z-index: 1000;
 }
@@ -30,14 +36,14 @@
 }
 .menu-content {
     height: 100vh;
-    background-color: #FAFAFA;
-    padding: 2rem .5rem;
+    background-color: var(--menu-content-background-color);
+    padding: 2rem .5rem .5rem 1rem;
     display: grid;
     grid-template-rows: auto 1fr auto;
     gap: .25rem;
     overflow: auto;
     overflow-x: hidden;
-    border-radius: 0px .25rem .25rem 0px;
+    border-radius: 0 .25rem .25rem 0;
 }
 .menu-overlay {
     width: 100%;
@@ -57,7 +63,6 @@
     position: static;
     padding: 0;
     padding-right: 1.25rem;
-    font-family: sans-serif;
     font-weight: lighter;
     letter-spacing: .0625rem;
 }
@@ -66,9 +71,10 @@
     flex-direction: column;
     gap: .3125rem;
     overflow-y: scroll;
+    scrollbar-width: none;
 }
 .menu-text{
-    font-family: sans-serif;
+    font-family: var(--chatbot-container-font-family-secondary);
     font-size: .875rem;
     font-weight: 350;
 }
@@ -77,9 +83,9 @@
     height: 3.5rem;
     align-items: center;
     flex-shrink: 0;
-    padding: 0px 1rem;
+    padding: 0 1rem;
     align-self: stretch;
-    border-bottom: .5008px solid #FBA115;
+    border-bottom: .0313rem solid var(--orange-border-color);
 }
 .menu-item.selected,
 .menu-item:hover {
@@ -88,7 +94,7 @@
 }
 .menu-item.selected p,
 .menu-item:hover p {
-    color: #FAFAFA;
+    color: var(--menu-content-background-color);
 }
 .menu-item p {
     color: #136FEE;
@@ -103,30 +109,32 @@
 }
 .menu-history {
     display: flex;
-    font-family: var(--chatbot-container-font-family, sans-serif);
+    font-family: var(--chatbot-container-font-family-secondary);
     height: 3.5rem;
     font-size: .875rem;
     font-weight: 500;
-    line-height: 18px;
+    line-height: 1.125rem;
     align-items: center;
     padding-top: 2rem;
 }
 .menu-history-date-label {
     font-size: .75rem;
-    font-family: var(--chatbot-container-font-family, sans-serif);
+    font-family: var(--chatbot-container-font-family-secondary);
     color: #C4C6CF;
-    padding: .5rem 0px;
+    padding: .5rem 0;
 }
 .menu-history-item-group {
     display: flex;
     flex-direction: column;
     gap: .3125rem;
     width: 100%;
+    min-height: 50dvh;
 }
 .menu-history-item-wrapper {
     position: relative;
     width: 100%;
     overflow-y: scroll;
+    scrollbar-width: none;
 }
 .menu-history-item{
     display: flex;
@@ -136,18 +144,18 @@
     overflow: visible;
     justify-content: space-between;
     align-items: center;
-    border-bottom: .0313rem solid #FD9102;
+    border-bottom: .0313rem solid var(--orange-border-color);
 }
 .menu-history-item-wrapper form {
-    height: 40px;
+    height: 2.5rem;
     width: 100%;
 }
 .menu-history-item-wrapper form input {
     font-family: var(--chatbot-container-font-family, sans-serif);
     width: 100%;
     height: 100%;
-    border: 2.5px solid #136FEE;
-    padding: 0 15px;
+    border: .1563rem solid #136FEE;
+    padding: 0 .9375rem;
 }
 .menu-history-item-wrapper span {
     font-family: var(--chatbot-container-font-family, sans-serif);
@@ -158,13 +166,12 @@
 .menu-history-option{
     position: absolute;
     border-radius: .3125rem;
-
-    padding: 3px 9px;
+    padding: .1875rem .5625rem;
     width: 10.375rem;
     height: 6.375rem;
     z-index: 1002;
-    background-color: #ECECEC;
-    box-shadow: 0px 4px 4px 0px #00000040;
+    background-color: var(--menu-content-background-color);
+    box-shadow: 0 .25rem .25rem 0 #00000040;
 }
 .menu-history-option.bottom {
     top: 100%;
@@ -176,18 +183,16 @@
 }
 .menu-history-option-wrapper{
     display: flex;
-    width: 100%;
-    height: 100%;
     align-items: center;
     justify-content: space-around;
     flex-direction: column;
 }
-.menu-history-option-edit, .menu-history-option-delete{
+.menu-history-option-wrapper, .menu-history-option-edit, .menu-history-option-delete{
     width: 100%;
     height: 100%;
 }
 .menu-history-option-edit {
-    border-bottom: .5008px solid #FD9102;
+    border-bottom: .0313rem solid var(--orange-border-color);
 }
 .menu-history-option-delete button {
     color: #E41D1D;
@@ -227,31 +232,31 @@
     padding: 1.75rem 1rem;
     width: 20.75rem;
     height: 13.125rem;
-    font-family: var(--chatbot-container-font-family, sans-serif);
+    font-family: var(--chatbot-container-font-family);
     border-radius: .25rem;
-    background-color: #DFE9EB;
+    background-color: var(--menu-content-background-color);
 }
 .modal-delete-content h6{
     font-weight: 700;
-    font-size: 16px;
+    font-size: 1rem;
     margin-bottom: .5rem;
 }
 .modal-delete-content span{
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
     margin-bottom: 2rem;
 }
 .modal-delete-btn-wrapper {
     display: flex;
     width: 100%;
     height: 100%;
-    gap: 10px;
+    gap: .625rem;
 }
 .modal-delete-btn-wrapper button {
-    padding: 9px 14px;
+    padding: .5625rem .875rem;
     text-transform: uppercase;
     width: 50%;
-    height: 49px;
+    height: 3.0625rem;
 }
 .modal-delete-btn-cancel{
     color: #136FEE;
@@ -265,10 +270,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 1rem;
 }
 .menu-footer p {
     color: #3C3C3B;
-    font-family: IBM Plex Sans, sans-serif;
+    font-family: var(--chatbot-container-font-family-secondary);
     font-size: .875rem;
     font-style: normal;
     font-weight: 400;

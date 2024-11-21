@@ -5,6 +5,7 @@ export type BubbleTheme = {
     chatWindow?: ChatWindowTheme;
     button?: ButtonTheme;
     tooltip?: ToolTipTheme;
+    disclaimer?: DisclaimerPopUpTheme;
 };
 export type TextInputTheme = {
     backgroundColor?: string;
@@ -59,9 +60,13 @@ export type ChatWindowTheme = {
     textInput?: TextInputTheme;
     feedback?: FeedbackTheme;
     footer?: FooterTheme;
+    sourceDocsTitle?: string;
     poweredByTextColor?: string;
     starterPrompts?: string[];
     starterPromptFontSize?: number;
+    clearChatOnReload?: boolean;
+    dateTimeToggle?: DateTimeToggleTheme;
+    renderHTML?: boolean;
 };
 export type ButtonTheme = {
     size?: 'small' | 'medium' | 'large' | number;
@@ -84,6 +89,15 @@ export type autoWindowOpenTheme = {
     autoOpen?: boolean;
     openDelay?: number;
     autoOpenOnMobile?: boolean;
+};
+export type DisclaimerPopUpTheme = {
+    title?: string;
+    message?: string;
+    buttonText?: string;
+};
+export type DateTimeToggleTheme = {
+    date?: boolean;
+    time?: boolean;
 };
 export type ButtonInputTheme = {
     backgroundColor?: string;

@@ -21,7 +21,9 @@ type Props = {
     clearChat: () => void;
     selectionOptions: string[];
     isDisabled: boolean;
-    setIsDisabled: Setter<boolean>;
+    setIsDisabled: () => void;
+    messageIndex: number;
+    printCriticalAnalysisData: () => void;
 };
 export declare const SelectionBubble: (props: Props) => import("solid-js").JSX.Element;
 export {};

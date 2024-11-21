@@ -6,6 +6,8 @@ export declare const messageUtils: {
     UPLOADING_LABEL: string;
     NEXT_CHECKLIST_BUTTON_LABEL: string;
     NEW_CHAT_BUTTON_LABEL: string;
+    UPLOAD_LIMIT: string;
+    SUPPORTED_FILE_TYPES: string;
     ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE: string;
     ALL_DOCUMENTS_VALIDATED_MESSAGE: string;
     UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: string;
@@ -15,14 +17,16 @@ export declare const messageUtils: {
     CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: string;
     EX_TARIFF_CHECK_ALERT_MESSAGE: string;
     IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: string;
+    CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL: string;
     CRITICAL_ANALYSIS_MISSING_DATA: string;
     CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: string;
     CRITICAL_ANALYSIS_PROCESSING_ERROR: string;
     DATA_NOT_FOUND: string;
     NCM_INITIAL_QUESTION: string;
     NCM_CONTINUE_QUESTION: string;
-    NCM_HELP_QUESTION: string;
+    NCM_RETRY: string;
     NCM_TEXT_INPUT_REQUIRED: string;
+    NCM_INPUT_INSTRUCTIONS: string;
     NCM_DISCOVER_TEMPLATE: string;
     CRITICAL_ANALYSIS_TEMPLATE: string;
     YES: string;
@@ -30,4 +34,5 @@ export declare const messageUtils: {
 };
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
 export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
+export declare function criticalAnalysisNcmPhase(ncm: string): string;
 //# sourceMappingURL=messageUtils.d.ts.map

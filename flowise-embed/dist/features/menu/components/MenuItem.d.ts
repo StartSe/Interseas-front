@@ -1,5 +1,5 @@
 export interface MenuItemProps {
-    id: string;
+    flow: string;
     title: string;
     subtitle?: string;
     selected?: boolean;

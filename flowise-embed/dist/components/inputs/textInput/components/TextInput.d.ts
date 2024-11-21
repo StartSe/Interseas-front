@@ -1,16 +1,18 @@
 import { Setter } from 'solid-js';
 import { FileEvent, UploadsConfig } from '@/components/Bot';
 import { UploadFile } from '@solid-primitives/upload';
-type Props = {
+type TextInputProps = {
     placeholder?: string;
     backgroundColor?: string;
     textColor?: string;
     sendButtonColor?: string;
-    defaultValue?: string;
+    inputValue: string;
     fontSize?: number;
     disabled?: boolean;
     onSubmit: (value: string) => void;
+    onInputChange: (value: string) => void;
     uploadsConfig?: Partial<UploadsConfig>;
+    isFullFileUpload?: boolean;
     setPreviews: Setter<unknown[]>;
     onMicrophoneClicked: () => void;
     handleFileChange: (event: FileEvent<HTMLInputElement>) => void;
@@ -19,9 +21,11 @@ type Props = {
     autoFocus?: boolean;
     sendMessageSound?: boolean;
     sendSoundLocation?: string;
+    enableInputHistory?: boolean;
+    maxHistorySize?: number;
     startProcessingFiles: (files: UploadFile[]) => Promise<void>;
     setIsUploadModalOpen: Setter<boolean>;
 };
-export declare const TextInput: (props: Props) => import("solid-js").JSX.Element;
+export declare const TextInput: (props: TextInputProps) => import("solid-js").JSX.Element;
 export {};
 //# sourceMappingURL=TextInput.d.ts.map

@@ -15,6 +15,11 @@ export declare const constants: {
     n8nSeventhStep: string;
     n8nFlowSendDataToSupabase: string;
     n8nFlowGetDataFromSupabase: string;
+    n8nFlowFetchChatDocumentRelation: string;
+    n8nFlowFetchDocumentsByChatId: string;
+    n8nFlowFetchChatIdsForFlow: string;
+    n8nFlowSendDeleteChatRequest: string;
+    n8nFlowSendUpdateChatRequest: string;
 };
 export declare const defaultMenuProps: MenuProps;
 export declare const defaultHomeProps: HomeProps;

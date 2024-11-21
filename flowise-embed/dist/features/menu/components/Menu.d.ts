@@ -1,6 +1,6 @@
 import { MenuItemProps } from './MenuItem';
 export interface MenuProps {
-    currentId: string;
+    currentFlow: string;
     items: MenuItemProps[];
     fillColor?: string;
 }

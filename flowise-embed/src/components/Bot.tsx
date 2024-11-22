@@ -1004,7 +1004,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...updated];
         });
         for (const ncm of jsonDataCriticalAnalysis['NCM']) {
-          const newJsonDataCriticalAnalysis = { ...jsonDataCriticalAnalysis, NCM: [ncm] };
+          const newJsonDataCriticalAnalysis = { ...jsonDataCriticalAnalysis, NCM: ncm };
 
           setMessages((prevMessages) => {
             const newMessage = { message: criticalAnalysisNcmPhase(ncm), type: 'apiMessage' } as MessageType;

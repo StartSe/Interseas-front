@@ -108,26 +108,21 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 
 - Valor da Capatazia: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Valor da Capatazia: [VALOR DO BL]
-
-- Valor do frete total (Prepaid/Collect; moeda; valor): [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Valor do frete: [VALOR DO BL]
-
-- Número dos containers (formato <3 letras>U<7 números>): [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Número dos containers: [VALOR DO BL]
-
-- Quantidade de containers: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Quantidade de containers: [VALOR DO BL]
-
+   
 - Frete: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Frete: [VALOR DO BL]
-
+    
 - Taxas: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Taxas: [VALOR DO BL]
-
-- Tipo de carga: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Tipo de carga: [VALOR DO BL]
     
-
+- Tipo de carga: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Tipo de carga: [VALOR DO BL]    
+    
+- Número dos containers (formato <3 letras>U<7 números>): [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Número dos containers: [VALOR DO BL]
+    
+- Quantidade de containers: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Quantidade de containers: [VALOR DO BL]
 
     `;
 

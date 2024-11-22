@@ -6,6 +6,7 @@ import { LogoInterseas } from '@/components/icons/LogoInterseas';
 import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icons';
 import DocumentsDBService from '@/service/documentsDBService';
 import DeleteModal from './DeleteModal';
+import { group } from 'console';
 
 const documentService = new DocumentsDBService();
 export interface MenuProps {
@@ -14,20 +15,17 @@ export interface MenuProps {
   fillColor?: string;
 }
 interface ChatItem {
-  agent_flow: string;
-  chat_name: string | null;
-  created_at: string;
+  agentFlow: string;
+  chatName: string | null;
+  createdAt: string;
   id: string;
-  updated_at: string | null;
+  updatedAt: string | null;
 }
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
-  const [groupedChatItems, setGroupedChatItems] = createSignal<{ groups: Record<string, ChatItem[]>; labels: Record<string, string> }>({
-    groups: {},
-    labels: {},
-  });
+  const [groupedChatItems, setGroupedChatItems] = createSignal<object>({ groups: {} });
   const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
   const [isEditing, setIsEditing] = createSignal<boolean>(false);
@@ -55,8 +53,9 @@ export const Menu = (props: MenuProps) => {
       const buttonRect = buttonRef.getBoundingClientRect();
       const spaceBelow = window.innerHeight - buttonRect.bottom;
       const spaceAbove = buttonRect.top;
+      const minSpaceForModal = 200;
 
-      if (spaceBelow < 200 && spaceAbove > 200) {
+      if (spaceBelow < minSpaceForModal && spaceAbove > minSpaceForModal) {
         setModalPosition('top');
       } else {
         setModalPosition('bottom');
@@ -86,81 +85,87 @@ export const Menu = (props: MenuProps) => {
   };
 
   const getChatHistoryTitle = () => {
-    if (currentFlow() === 'compliance') {
-      return 'Análise de Compliance';
-    } else if (currentFlow() === 'critical_analysis') {
-      return 'Análise Crítica';
-    } else {
-      return 'Estimativa de Custos';
+    const flowTitleMapping = {
+      compliance: 'Análise de Compliance',
+      critical_analysis: 'Análise Crítica',
+    };
+    try {
+      return flowTitleMapping[currentFlow() as keyof typeof flowTitleMapping];
+    } catch (error) {
+      return '';
     }
   };
 
   const formatDateChat = (item: ChatItem) => {
-    if (item.chat_name) {
-      return item.chat_name;
+    if (item.chatName) {
+      return item.chatName;
     } else {
-      const date = new Date(item.created_at);
+      const date = new Date(item.createdAt);
       return `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
   };
 
-  const preprocessChatItems = (chatItems: ChatItem[]) => {
-    const groups = {
-      today: [] as ChatItem[],
-      yesterday: [] as ChatItem[],
-      lastWeek: [] as ChatItem[],
-      lastMonth: [] as ChatItem[],
-      older: [] as ChatItem[],
-    };
-    const labels = {
-      today: 'Hoje',
-      yesterday: 'Ontem',
-      lastWeek: 'Últimos 7 dias',
-      lastMonth: 'Últimos 30 dias',
-      older: '30 dias ou mais atrás',
-    };
+  const groupChatItemsByDate = (chatItems: ChatItem[]) => {
+    const groups = [
+      { label: 'Hoje', items: [] as ChatItem[], minDaysDiff: 0, maxDaysDiff: 0 },
+      { label: 'Ontem', items: [] as ChatItem[], minDaysDiff: 1, maxDaysDiff: 1 },
+      { label: 'Últimos 7 dias', items: [] as ChatItem[], minDaysDiff: 2, maxDaysDiff: 7 },
+      { label: 'Últimos 30 dias', items: [] as ChatItem[], minDaysDiff: 8, maxDaysDiff: 30 },
+      { label: 'Mais antigos', items: [] as ChatItem[], minDaysDiff: 31, maxDaysDiff: null },
+    ];
 
-    const adjustToBrazilTime = (date: Date) => {
-      // Manual adjustment for Brazil time zone (UTC-3)
-      const offset = -3 * 60; // UTC-3 in minutes
-      const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-      return new Date(utcDate.getTime() + offset * 60000);
-    };
+    function adjustDateToBrazilianTime(date: Date): Date {
+      const brazilTimezoneOffset = -180;
+      const milisecondsInAMinute = 60000;
+      const localTimezoneOffset = date.getTimezoneOffset();
+      const offsetDifference = brazilTimezoneOffset - localTimezoneOffset;
+      return new Date(date.getTime() + offsetDifference * milisecondsInAMinute);
+    }
 
     // Sort chatItems by created_at in descending order
-    chatItems.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    chatItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    let currentGroupIndex = 0;
 
     chatItems.forEach((item) => {
-      const date = adjustToBrazilTime(new Date(item.created_at));
-      const now = adjustToBrazilTime(new Date());
+      const milisecondsInASecond = 1000;
+      const hoursInADay = 24;
+      const secondsInMinutes = 60;
+      const date = adjustDateToBrazilianTime(new Date(item.createdAt));
+      const now = adjustDateToBrazilianTime(new Date());
 
-      // Zero out hours, minutes, seconds, and milliseconds for day comparison
       const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
       const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
       const diffTime = Math.abs(nowOnly.getTime() - dateOnly.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.ceil(diffTime / (milisecondsInASecond * secondsInMinutes * secondsInMinutes * hoursInADay));
 
-      if (diffDays === 0) {
-        groups.today.push(item);
-      } else if (diffDays === 1) {
-        groups.yesterday.push(item);
-      } else if (diffDays <= 7) {
-        groups.lastWeek.push(item);
-      } else if (diffDays <= 30) {
-        groups.lastMonth.push(item);
-      } else {
-        groups.older.push(item);
+      for (let groupIndex = currentGroupIndex; groupIndex < groups.length; groupIndex++) {
+        const currentGroup = groups[groupIndex];
+        if (
+          (currentGroup.minDaysDiff === null || diffDays >= currentGroup.minDaysDiff) &&
+          (currentGroup.maxDaysDiff === null || diffDays <= currentGroup.maxDaysDiff)
+        ) {
+          currentGroup.items.push(item);
+          return;
+        }
+        currentGroupIndex++;
       }
     });
-
-    return { groups, labels };
+    return groups;
   };
 
   const fetchChatIds = async () => {
     const data = await documentService.getChatIdsByFlow(currentFlow());
     if (data && Array.isArray(data)) {
-      setGroupedChatItems(preprocessChatItems(data as ChatItem[]));
+      const formatCamelCaseData = data.map((item) => ({
+        agentFlow: item.agent_flow,
+        chatName: item.chat_name,
+        createdAt: item.created_at,
+        id: item.id,
+        updatedAt: item.updated_at,
+      }));
+      setGroupedChatItems(groupChatItemsByDate(formatCamelCaseData as ChatItem[]));
     }
   };
 
@@ -199,21 +204,20 @@ export const Menu = (props: MenuProps) => {
                   {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
                 <div class="menu-history">Histórico de chats - {getChatHistoryTitle()} </div>
-                {/* <button>+Novo Chat</button> */}
                 <div class="menu-history-item-wrapper">
-                  <For each={Object.entries(groupedChatItems().groups)}>
-                    {([key, items]) =>
-                      (items as ChatItem[]).length > 0 && (
-                        <div class="menu-history-item-group">
-                          <span class="menu-history-date-label">{groupedChatItems().labels[key]}</span>
-                          <For each={items as ChatItem[]}>
+                  <For each={Object.values(groupedChatItems())}>
+                    {(group) =>
+                      group.items.length > 0 && (
+                        <div class={`menu-history-item-group ${group.items.length < 5 ? 'min-height' : ''}`}>
+                          <span class="menu-history-date-label">{group.label}</span>
+                          <For each={group.items}>
                             {(item) => {
                               let buttonRef: HTMLButtonElement | null = null;
                               return (
                                 <div class="menu-history-item">
                                   {editingChatId() === item.id && isEditing() ? (
                                     <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
-                                      <input type="text" name="chatNameField" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
+                                      <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
                                     </form>
                                   ) : (
                                     <>

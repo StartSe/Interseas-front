@@ -1,10 +1,11 @@
 import { Show } from 'solid-js';
+import { messageUtils } from '../../../utils/messageUtils';
 
 type DeleteModalProps = {
   chatName: string;
   isOpen: boolean;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (chatId: string) => void;
 };
 
 const DeleteModal = (props: DeleteModalProps) => {
@@ -14,13 +15,13 @@ const DeleteModal = (props: DeleteModalProps) => {
         <div class="modal-delete-wrapper">
           <div class="modal-delete-content">
             <h6>Excluir Chat</h6>
-            <span>Tem certeza que deseja excluir {props.chatName}? Essa é uma ação permanente</span>
+            <span>{messageUtils.DELETE_CONFIRMATION(props.chatName)}</span>
             <div class="modal-delete-btn-wrapper">
               <button type="button" class="modal-delete-btn-cancel" onClick={() => props.onCancel()}>
-                cancelar
+                {messageUtils.CANCEL_BUTTON}
               </button>
-              <button class="modal-delete-btn-delete" onClick={() => props.onConfirm()}>
-                excluir
+              <button class="modal-delete-btn-delete" onClick={() => props.onConfirm(props.chatName)}>
+                {messageUtils.DELETE_BUTTON}
               </button>
             </div>
           </div>

@@ -55,6 +55,9 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
 8. **Estado do Importador:**`,
   YES: 'Sim',
   NO: 'Não',
+  DELETE_CONFIRMATION: (chatName: string) => `Tem certeza que deseja excluir ${chatName}? Essa é uma ação permanente.`,
+  CANCEL_BUTTON: 'Cancelar',
+  DELETE_BUTTON: 'Excluir'
 };
 
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {

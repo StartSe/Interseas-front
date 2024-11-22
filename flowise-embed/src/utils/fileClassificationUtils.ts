@@ -74,19 +74,54 @@ Conferências:
 • Possui Ex-tarifário - (Sim/Não, sempre justificando)`;
 
 export const checklistCeMercante = `
+• Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
 • Número do conhecimento de embarque
 • NCM
+• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
 • Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Embarcador - também chamado de Shipper / Exportador (nome, endereço, NIF)
+• Descrição da mercadora - Campo "Descrição da mercadoria" em "Consulta de conhecimento"
 • Peso Bruto - (G.W)
 • Cubagem (m³)
 • Data de emissão
 • Porto de origem
-• Porto de descarregamento
+• Porto de destino
+• Shipper/Exporter (Campo "Identificação do Exportador" em "Consulta de conhecimento")
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Quantidade de containers 
-• Número dos containers - (no formato <3 letras>U<7 números>)`;
+• Taxas - valores, moedas e tipos
+Transbordo - navio 1º transporte - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
+Tipos de carga - Campos "Tipo" em "Consultar todos os itens"
+• Quantidade de containers - Traga os dados do container para todos os containers
+  • Dados do container - (Número dos  containers - (no formato <3 letras>U<7 números>), Número dos lacres dos containers - (seal))
+
+Se tipo de "carga contêiner":
+• Quantidade de containers
+• Tipo containers - Campo "Tipo Contêiner" em "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• Número dos containers -	prefixo de três letras+letra U+7 números (identificação); Campos "Identificação do Contêiner" em  "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• Cubagem da carga nos containers (m3) -	Campos "Cubagem da Carga no Contêiner (m³)" em  "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• Peso bruto da carga nos containers (Kg) -	Campos "Peso Bruto da Carga noContêiner (Kg)" em  "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• Lacres - Campos "Lacres" em  "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• Carga perigosa - Código Indicador	Campos "Código Indicador de Mercadoria Perigosa" em "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• Carga perigosa - Classe	Campos "Classe de Mercadoria Perigosa" em  "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+• NCMs - Campos "NCM" em  "DADOS DO ITEM CONTÊINER" em "Consultar Item de Carga"
+
+Se tipo de carga "carga solta":	
+• Tipo de Embalagem - Campos "Tipo de Embalagem" em "DADOS DO ITEM CARGA SOLTA" em "Consultar Item de Carga"
+• Quantidade - Campos "Quantidade" em "DADOS DO ITEM CARGA SOLTA" em "Consultar Item de Carga"
+• Cubagem - item de carga	Campos "Cubagem" em "DADOS DO ITEM CARGA SOLTA" em "Consultar Item de Carga"
+• Peso Bruto - item de carga	Campos "Peso bruto (Kg) em  "DADOS DO ITEM CARGA SOLTA" em "Consultar Item de Carga"
+• Carga perigosa - Código Indicador	Campos "Código Indicador de Mercadoria Perigosa" em  "DADOS DO ITEM CARGA SOLTA" em "Consultar Item de Carga"
+• Carga perigosa - Classe	Campos "Classe de Mercadoria Perigosa" em  "DADOS DO ITEM CARGA SOLTA" em"Consultar Item de Carga"
+• NCMs - campos "NCM" em  "DADOS DO ITEM CARGA SOLTA" em "Consultar Item de Carga"
+
+Se tipo de carga "granel":	
+• Cubagem - item de carga	Campo "Cubagem" em "DADOS DO ITEM CARGA GRANEL" em "Consultar Item de Carga"
+• Peso Bruto - item de carga	Campo "Peso bruto (kg)" em "DADOS DO ITEM CARGA GRANEL" em "Consultar Item de Carga"
+• Carga perigosa - Código Indicador	Campo "Código Indicador de Mercadoria Perigosa" em "DADOS DO ITEM CARGA GRANEL" em "Consultar Item de Carga"
+• Carga perigosa - Classe	Campo "Classe de Mercadoria Perigosa" em "DADOS DO ITEM CARGA GRANEL" em "Consultar Item de Carga"
+• NCMs - Campo "NCM" em "DADOS DO ITEM CARGA GRANEL" em "Consultar Item de Carga"
+`;
 
 export const checklistCertificadoOrigem = `
 • Dados do Exportador - (nome, endereço, NIF)
@@ -144,20 +179,30 @@ Conferências:
 • Somatório dos itens = valor total informado`;
 
 export const checklistConhecimentoBL = `
+• Número do documento
+• Data
 • Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
 • Dados do Consignee - também chamado de Consignatário (Razão social, endereço e CNPJ, CEP)
+• "To order of" - identificar se consta "To order of" junto ao consignee - (true/false)
+• Navio - Campo "Vessel", também popde constar como "Vessel/Voyage"
+• Carga Perigosa - Código Indicador
+• Carga Perigosa - Classe
+• Tipo de carga -	Identificar se FCL, LCL, FCL/LCL, Breakbulk, Bulk (granel);
 • Dados do Notify - também chamado de Adquirente, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Número dos containers - (no formato <3 letras>U<7 números>)
-• Número dos lacres dos containers - (seal)
+• Taxas
+• Dados do container - Trazer todas as informações referentes ao container. Trazer o Número dos  containers - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
 • Local de Recebimento
 • Porto de Embarque
 • Porto de Desembarque
 • Local de Destino
 • Peso Bruto (G.W)
 • Cubagem (m³)
-• Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
+• Quantidade e tipo de volumes - (crate/box/pallets)
+• Peso bruto por tipo de volume
+• Cubagem por tipo de volume
+• Código/Referência das mercadorias
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • Informação Wooden Packing - (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM - (primeiros 4 dígitos)

@@ -65,7 +65,22 @@ export const CE_MERCANTE = `
 COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 
 - Número do conhecimento de embarque: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Número do conhecimento de embarque: [VALOR DO BL]
+    - Conhecimento BL - Número do documento: [VALOR DO BL]
+
+- Data de emissão: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Data: [VALOR DO BL]
+
+- Shipper/Exporter: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Shipper: [VALOR DO BL]
+
+- Dados do Consignatário: [VALOR DO CE MERCANTE]
+    - Conhecimento BL - Consignee: [VALOR DO BL]
+
+- Dados do Notify: [VALOR DO CE MERCANTE]
+    - Conhecimento BL - Notify: [VALOR DO BL]
+    
+- Navio: [VALOR DO CE MERCANTE]
+    - Conhecimento BL - Navio: [VALOR DO BL]
 
 - NCM: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - NCM: [VALOR DO BL]
@@ -82,11 +97,17 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 - Cubagem: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Cubagem: [VALOR DO BL]
 
+- Cubagem: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Cubagem: [VALOR DO BL]
+
 - Porto de origem: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Porto de embarque: [VALOR DO BL]
 
-- Porto de descarregamento: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Local de desembarque: [VALOR DO BL]
+- Porto de destino: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Porto de desembarque: [VALOR DO BL]
+
+- Valor da Capatazia: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Valor da Capatazia: [VALOR DO BL]
 
 - Valor do frete total (Prepaid/Collect; moeda; valor): [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Valor do frete: [VALOR DO BL]
@@ -95,7 +116,20 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
     - Conhecimento BL - Número dos containers: [VALOR DO BL]
 
 - Quantidade de containers: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Quantidade de containers: [VALOR DO BL]`;
+    - Conhecimento BL - Quantidade de containers: [VALOR DO BL]
+
+- Frete: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Frete: [VALOR DO BL]
+
+- Taxas: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Taxas: [VALOR DO BL]
+
+- Tipo de carga: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Tipo de carga: [VALOR DO BL]
+    
+
+
+    `;
 
 export const CRT = `
 COMPLIANCE NOTES - CRT X MIC-DTA

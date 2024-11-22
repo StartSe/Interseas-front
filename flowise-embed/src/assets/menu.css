@@ -128,7 +128,9 @@
     flex-direction: column;
     gap: .3125rem;
     width: 100%;
-    min-height: 50dvh;
+}
+.menu-history-item-group.min-height {
+    min-height: 12.5rem; 
 }
 .menu-history-item-wrapper {
     position: relative;

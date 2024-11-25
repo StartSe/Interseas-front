@@ -76,4 +76,4 @@ export function criticalAnalysisNcmPhase(ncm: string): string {
   return `Análise Crítica para o NCM: **${ncm}**`;
 }
 
-export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

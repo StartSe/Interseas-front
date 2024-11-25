@@ -212,7 +212,7 @@ export const Menu = (props: MenuProps) => {
                               let buttonRef: HTMLButtonElement | null = null;
                               return (
                                 <div class="menu-history-item">
-                                  {editingChatId() === item.id && editingChatId() !== null ? (
+                                  {!!editingChatId() && editingChatId() === item.id ? (
                                     <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
                                       <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
                                     </form>

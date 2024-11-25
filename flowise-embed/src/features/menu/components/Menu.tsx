@@ -6,7 +6,7 @@ import { LogoInterseas } from '@/components/icons/LogoInterseas';
 import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icons';
 import DocumentsDBService from '@/service/documentsDBService';
 import DeleteModal from './DeleteModal';
-import { group } from 'console';
+import { DEFAULT_CHAT_NAME } from '@/utils/messageUtils';
 
 const documentService = new DocumentsDBService();
 export interface MenuProps {
@@ -28,7 +28,6 @@ export const Menu = (props: MenuProps) => {
   const [groupedChatItems, setGroupedChatItems] = createSignal<object>({ groups: {} });
   const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
-  const [isEditing, setIsEditing] = createSignal<boolean>(false);
   const [inputValue, setInputValue] = createSignal<string>('');
   const [modalPosition, setModalPosition] = createSignal<'top' | 'bottom'>('bottom');
   const [selectedChatId, setSelectedChatId] = createSignal<string | null>(null);
@@ -64,7 +63,6 @@ export const Menu = (props: MenuProps) => {
   };
 
   const startEditing = (chatId: string) => {
-    setIsEditing(true);
     setEditingChatId(chatId);
     setOpenMenuOptions(null);
   };
@@ -101,7 +99,7 @@ export const Menu = (props: MenuProps) => {
       return item.chatName;
     } else {
       const date = new Date(item.createdAt);
-      return `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      return DEFAULT_CHAT_NAME(date);
     }
   };
 
@@ -116,10 +114,10 @@ export const Menu = (props: MenuProps) => {
 
     function adjustDateToBrazilianTime(date: Date): Date {
       const brazilTimezoneOffset = -180;
-      const milisecondsInAMinute = 60000;
+      const millisecondsInAMinute = 60000;
       const localTimezoneOffset = date.getTimezoneOffset();
       const offsetDifference = brazilTimezoneOffset - localTimezoneOffset;
-      return new Date(date.getTime() + offsetDifference * milisecondsInAMinute);
+      return new Date(date.getTime() + offsetDifference * millisecondsInAMinute);
     }
 
     // Sort chatItems by created_at in descending order
@@ -128,7 +126,7 @@ export const Menu = (props: MenuProps) => {
     let currentGroupIndex = 0;
 
     chatItems.forEach((item) => {
-      const milisecondsInASecond = 1000;
+      const millisecondsInASecond = 1000;
       const hoursInADay = 24;
       const secondsInMinutes = 60;
       const date = adjustDateToBrazilianTime(new Date(item.createdAt));
@@ -138,7 +136,7 @@ export const Menu = (props: MenuProps) => {
       const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
       const diffTime = Math.abs(nowOnly.getTime() - dateOnly.getTime());
-      const diffDays = Math.ceil(diffTime / (milisecondsInASecond * secondsInMinutes * secondsInMinutes * hoursInADay));
+      const diffDays = Math.ceil(diffTime / (millisecondsInASecond * secondsInMinutes * secondsInMinutes * hoursInADay));
 
       for (let groupIndex = currentGroupIndex; groupIndex < groups.length; groupIndex++) {
         const currentGroup = groups[groupIndex];
@@ -175,7 +173,6 @@ export const Menu = (props: MenuProps) => {
       await documentService.updateChatName(chatId, inputValue());
       fetchChatIds();
     }
-    setIsEditing(false);
     setEditingChatId(null);
   };
 
@@ -215,7 +212,7 @@ export const Menu = (props: MenuProps) => {
                               let buttonRef: HTMLButtonElement | null = null;
                               return (
                                 <div class="menu-history-item">
-                                  {editingChatId() === item.id && isEditing() ? (
+                                  {editingChatId() === item.id && editingChatId() !== null ? (
                                     <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
                                       <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
                                     </form>

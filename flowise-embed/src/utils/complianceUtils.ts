@@ -82,14 +82,14 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 - Navio: [VALOR DO CE MERCANTE]
     - Conhecimento BL - Navio: [VALOR DO BL]
 
-- NCM: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - NCM: [VALOR DO BL]
+- Porto de origem: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Porto de embarque: [VALOR DO BL]
+    
+- Porto de destino: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Porto de desembarque: [VALOR DO BL]
 
-- Dados do Importador (Consignee) - Razão social e CNPJ: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Dados do Consignatário (Consignee): [VALOR DO BL]
-
-- Dados do Adquirente (Notify) - Razão social: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Dados do adquirente (Notify): [VALOR DO BL]
+- Tipo de carga: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Tipo de carga: [VALOR DO BL]
 
 - Peso Bruto: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Peso Bruto: [VALOR DO BL]
@@ -97,33 +97,20 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 - Cubagem: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Cubagem: [VALOR DO BL]
 
-- Cubagem: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Cubagem: [VALOR DO BL]
+- Descrição da mercadoria: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Descrição resumida das mercadorias: [VALOR DO BL]
 
-- Porto de origem: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Porto de embarque: [VALOR DO BL]
-
-- Porto de destino: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Porto de desembarque: [VALOR DO BL]
-
-- Valor da Capatazia: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Valor da Capatazia: [VALOR DO BL]
-   
 - Frete: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Frete: [VALOR DO BL]
-    
-- Taxas: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Taxas: [VALOR DO BL]
-    
-- Tipo de carga: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Tipo de carga: [VALOR DO BL]    
-    
-- Número dos containers (formato <3 letras>U<7 números>): [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Número dos containers: [VALOR DO BL]
-    
-- Quantidade de containers: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Quantidade de containers: [VALOR DO BL]
 
+- Taxas: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Taxas: [VALOR DO BL]   
+
+- Valor da Capatazia (THC): [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Valor da Capatazia: [VALOR DO BL]
+
+- Dados dos containeres: [VALOR DO CE MERCANTE TRATADO E SEM \n]  
+    - Conhecimento BL - Dados dos containeres: [VALOR DO BL TRATADO E SEM \n]    
     `;
 
 export const CRT = `

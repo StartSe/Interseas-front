@@ -4,6 +4,7 @@ export default class CompareDocuments {
     private processedPairs;
     private listDifferentKeys;
     private parsedJsonExtractResponse;
+    private parsedSpecificJsonExtractResponse;
     private lastMessage;
     constructor(dependencies: {
         fileMappings: FileMapping[];

@@ -1791,6 +1791,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         addChatMessage(updated);
         return [...updated];
       });
+      // Hack to re-enable loading bubble
+      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' } as MessageType]);
     }
 
     const textContent = await getTextContent(file.file);
@@ -1882,7 +1884,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       checklistMessage += generateChecklistItemToPrint(key, value);
     }
 
-    if (Object.keys(jsonData).includes('conferências') && Object.keys(jsonData['conferências']).length > 0) {
+    if (Object.keys(jsonData).includes('conferências') && jsonData['conferências'] !== null && Object.keys(jsonData['conferências']).length > 0) {
       checklistMessage += `<br><b>Conferências:</b><br>`;
       for (const [key, value] of Object.entries(jsonData['conferências'])) {
         checklistMessage += generateChecklistItemToPrint(key, value);
@@ -2175,7 +2177,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         printCriticalAnalysisData={printCriticalAnalysisData}
                       />
                     )}
-                    {message.type === 'apiMessage' && (
+                    {message.type === 'apiMessage' && message.message !== '' && (
                       <BotBubble
                         message={message}
                         fileAnnotations={message.fileAnnotations}

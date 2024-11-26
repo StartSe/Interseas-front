@@ -1802,7 +1802,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const checklistPrompt = `CHECKLIST\n${fileMap.checklist}\n\nPlain-text: ${textContent}\n\njson: `;
         const resultFromBackgroundMessage = await sendBackgroundMessage(checklistPrompt, urls);
 
-        let jsonData = JSON.parse(resultFromBackgroundMessage.text);
+        let jsonData = JSON.parse(resultFromBackgroundMessage?.text || '{}');
         jsonData = sanitizeJson(jsonData);
 
         if (Object.keys(jsonData).includes('error') && Object.keys(jsonData).length === 1) {

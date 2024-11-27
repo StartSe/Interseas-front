@@ -90,7 +90,7 @@ export const checklistCeMercante = `
 • Transbordo - navio 1º transporte - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Tipos de carga - Campos "Tipo" em "Relação de itens da carga"
-• Quantidade de containers - Traga os dados do container para todos os containers
+• Quantidade de containers por tipo - Traga os dados do container para todos os containers
 • Dados dos containeres - Trazer todas as informações referentes à Relação de itens de carga mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p><p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
 
 `;
@@ -194,7 +194,6 @@ Tipo de frete = "Prepaid"
 Tipo de frete = "Collect"
 Dados de compliance:
 • Número do Conhecimento de Embarque`;
-// • Dados dos containeres - Trazer todas as informações referentes a containeres mantendo o label da informação em todos: - Número do Container (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem e Tipo de carga. Traga uma string com todos estes dados separando os mesmos pelo lacre. Não converta os atributos internos dos containers para json.
 
 export const checklistConhecimentoHawb = `
 • Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)

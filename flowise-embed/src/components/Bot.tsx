@@ -1815,7 +1815,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
-        documentService.saveDocumentData(fileMap, textContent, props.flow, chatId());
+        await documentService.saveDocumentData(fileMap, textContent, props.flow, chatId());
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
 
         break;

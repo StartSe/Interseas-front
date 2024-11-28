@@ -65,16 +65,31 @@ export const CE_MERCANTE = `
 COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 
 - Número do conhecimento de embarque: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Número do conhecimento de embarque: [VALOR DO BL]
+    - Conhecimento BL - Número do documento: [VALOR DO BL]
 
-- NCM: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - NCM: [VALOR DO BL]
+- Data de emissão: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Data: [VALOR DO BL]
 
-- Dados do Importador (Consignee) - Razão social e CNPJ: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Dados do Consignatário (Consignee): [VALOR DO BL]
+- Shipper/Exporter: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Shipper: [VALOR DO BL]
 
-- Dados do Adquirente (Notify) - Razão social: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Dados do adquirente (Notify): [VALOR DO BL]
+- Dados do Consignatário: [VALOR DO CE MERCANTE]
+    - Conhecimento BL - Consignee: [VALOR DO BL]
+
+- Dados do Notify: [VALOR DO CE MERCANTE]
+    - Conhecimento BL - Notify: [VALOR DO BL]
+    
+- Navio: [VALOR DO CE MERCANTE]
+    - Conhecimento BL - Navio: [VALOR DO BL]
+
+- Porto de origem: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Porto de embarque: [VALOR DO BL]
+    
+- Porto de destino: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Porto de desembarque: [VALOR DO BL]
+
+- Tipo de carga: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Tipo de carga: [VALOR DO BL]
 
 - Peso Bruto: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Peso Bruto: [VALOR DO BL]
@@ -82,20 +97,21 @@ COMPLIANCE NOTES - CE MERCANTE X CONHECIMENTO BL
 - Cubagem: [VALOR DO CE MERCANTE]  
     - Conhecimento BL - Cubagem: [VALOR DO BL]
 
-- Porto de origem: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Porto de embarque: [VALOR DO BL]
+- Descrição da mercadoria: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Descrição resumida das mercadorias: [VALOR DO BL]
 
-- Porto de descarregamento: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Local de desembarque: [VALOR DO BL]
+- Frete: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Frete: [VALOR DO BL]
 
-- Valor do frete total (Prepaid/Collect; moeda; valor): [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Valor do frete: [VALOR DO BL]
+- Taxas: [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Taxas: [VALOR DO BL]   
 
-- Número dos containers (formato <3 letras>U<7 números>): [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Número dos containers: [VALOR DO BL]
+- Valor da Capatazia (THC): [VALOR DO CE MERCANTE]  
+    - Conhecimento BL - Valor da Capatazia: [VALOR DO BL]
 
-- Quantidade de containers: [VALOR DO CE MERCANTE]  
-    - Conhecimento BL - Quantidade de containers: [VALOR DO BL]`;
+- Dados dos containeres: [VALOR DO CE MERCANTE TRATADO E SEM \n]  
+    - Conhecimento BL - Dados dos containeres: [VALOR DO BL TRATADO E SEM \n]    
+    `;
 
 export const CRT = `
 COMPLIANCE NOTES - CRT X MIC-DTA

@@ -74,19 +74,24 @@ Conferências:
 • Possui Ex-tarifário - (Sim/Não, sempre justificando)`;
 
 export const checklistCeMercante = `
+• Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
 • Número do conhecimento de embarque
-• NCM
-• Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
-• Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Dados do Embarcador - também chamado de Shipper / Exportador (nome, endereço, NIF)
-• Peso Bruto - (G.W)
-• Cubagem (m³)
 • Data de emissão
+• Cubagem (m³)
+• Peso Bruto - (G.W)
 • Porto de origem
-• Porto de descarregamento
+• Porto de destino
+• Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
+• Dados do Embarcador (Campo "Identificação do Exportador" em "Consulta de conhecimento")
+• Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Descrição da mercadora - Campo "Descrição da mercadoria" em "Consulta de conhecimento"
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Quantidade de containers 
-• Número dos containers - (no formato <3 letras>U<7 números>)`;
+• Taxas - valores, moedas e tipos
+• Transbordo - navio 1º transporte - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
+• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
+• Tipos de carga - Campos "Tipo" em "Relação de itens da carga"
+• Quantidade de containers por tipo - Traga os dados do container para todos os containers
+• Dados dos containeres - Trazer todas as informações referentes à Relação de itens de carga mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.`;
 
 export const checklistCertificadoOrigem = `
 • Dados do Exportador - (nome, endereço, NIF)
@@ -144,23 +149,34 @@ Conferências:
 • Somatório dos itens = valor total informado`;
 
 export const checklistConhecimentoBL = `
+• Número do documento
+• Data
 • Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
 • Dados do Consignee - também chamado de Consignatário (Razão social, endereço e CNPJ, CEP)
+• "To order of" - identificar se consta "To order of" junto ao consignee - (true/false)
 • Dados do Notify - também chamado de Adquirente, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Número dos containers - (no formato <3 letras>U<7 números>)
-• Número dos lacres dos containers - (seal)
-• Local de Recebimento
-• Porto de Embarque
-• Porto de Desembarque
-• Local de Destino
-• Peso Bruto (G.W)
+• Navio - Campo "Vessel", também popde constar como "Vessel/Voyage"
+• Tipo de carga -	Identificar se FCL, LCL, FCL/LCL, Breakbulk, Bulk (granel);
+• Quantidade e tipos de containers
+• Números dos containers - (no formato <3 letras>U<7 números>)
+• Números dos lacres dos containers - (seal)
+• Peso Bruto por container
+• Cubagem por container
+• Peso Bruto 
 • Cubagem (m³)
-• Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
+• Quantidade e tipo de volumes - (crate/box/pallets)
+• Peso bruto por tipo de volume
+• Cubagem por tipo de volume
 • Informação Wooden Packing - (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Código/Referência das mercadorias
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • NCM - (primeiros 4 dígitos)
+• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Taxas
+• Carga Perigosa - Código Indicador
+• Carga Perigosa - Classe
+• Dados dos containeres - Trazer todas as informações referentes à containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Descrição EX-tarifário - (no formato "EX-[número]")
 Se mercadoria é máquina ou equipamento

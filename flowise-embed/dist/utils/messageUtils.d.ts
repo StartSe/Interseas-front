@@ -31,8 +31,12 @@ export declare const messageUtils: {
     CRITICAL_ANALYSIS_TEMPLATE: string;
     YES: string;
     NO: string;
+    DELETE_CONFIRMATION: (chatName: string) => string;
+    CANCEL_BUTTON: string;
+    DELETE_BUTTON: string;
 };
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
 export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
 export declare function criticalAnalysisNcmPhase(ncm: string): string;
+export declare const DEFAULT_CHAT_NAME: (date: Date) => string;
 //# sourceMappingURL=messageUtils.d.ts.map

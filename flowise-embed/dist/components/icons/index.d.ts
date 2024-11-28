@@ -11,4 +11,6 @@ export * from './XIcon';
 export * from './TickIcon';
 export * from './AttachmentIcon';
 export * from './SparklesIcon';
+export * from './DotsHorizontal';
+export * from './PenEditIcon';
 //# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"DeleteModal.d.ts","sourceRoot":"","sources":["../../../../src/features/menu/components/DeleteModal.tsx"],"names":[],"mappings":"AAGA,KAAK,gBAAgB,GAAG;IACtB,QAAQ,EAAE,MAAM,CAAC;IACjB,MAAM,EAAE,OAAO,CAAC;IAChB,QAAQ,EAAE,MAAM,IAAI,CAAC;IACrB,SAAS,EAAE,CAAC,MAAM,EAAE,MAAM,KAAK,IAAI,CAAC;CACrC,CAAC;AAEF,QAAA,MAAM,WAAW,UAAW,gBAAgB,mCAqB3C,CAAC;AAEF,eAAe,WAAW,CAAC"}

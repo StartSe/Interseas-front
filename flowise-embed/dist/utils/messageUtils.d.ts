@@ -35,6 +35,10 @@ export declare const messageUtils: {
     CANCEL_BUTTON: string;
     DELETE_BUTTON: string;
 };
+export declare const criticalAnalysisStepNameMapping: {
+    [key: number]: string;
+};
+export declare function ncmStepFailureMessage(stepNumber: number): string;
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
 export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
 export declare function criticalAnalysisNcmPhase(ncm: string): string;

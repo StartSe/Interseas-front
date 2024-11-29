@@ -90,8 +90,4 @@ export function criticalAnalysisNcmPhase(ncm: string): string {
   return `Análise Crítica para o NCM: **${ncm}**`;
 }
 
-export function criticalAnalysisFailureMessage(): string {
-  return 'Não foi possível realizar a Análise Crítica. Por favor, tente novamente.';
-}
-
 export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

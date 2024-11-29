@@ -41,7 +41,8 @@ export default class ParallelApiExecutor {
         this.sendMessageToChat(message);
       } catch (error) {
         console.error('Error:', error);
-        this.sendMessageToChat(ncmStepFailureMessage(stepCount));
+        const errorMessage = { message: ncmStepFailureMessage(stepCount), type: 'apiMessage' } as MessageType;
+        this.sendMessageToChat(errorMessage);
       } finally {
         stepCount++;
       }

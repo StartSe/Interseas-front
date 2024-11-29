@@ -60,6 +60,20 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   DELETE_BUTTON: 'Excluir',
 };
 
+export const criticalAnalysisStepNameMapping: { [key: number]: string } = {
+  1: 'Tratamento Administrativo',
+  2: 'Tributos e contribuições federais',
+  3: 'Defesa Comercial',
+  4: 'Acordos Internacionais',
+  5: 'Análise Logística',
+  6: 'Atributos da NCM',
+  7: 'ICMS Importação',
+};
+
+export function ncmStepFailureMessage(stepNumber: number): string {
+  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}**. Por favor, tente novamente.`;
+}
+
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
   return `Atualização detectada no código NCM!\n\n
   * O código anterior era: **${oldNcm}**\n

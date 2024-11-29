@@ -60,6 +60,20 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   DELETE_BUTTON: 'Excluir',
 };
 
+export const criticalAnalysisStepNameMapping: { [key: number]: string } = {
+  1: 'Tratamento Administrativo',
+  2: 'Tributos e contribuições federais',
+  3: 'Defesa Comercial',
+  4: 'Acordos Internacionais',
+  5: 'Análise Logística',
+  6: 'Atributos da NCM',
+  7: 'ICMS Importação',
+};
+
+export function ncmStepFailureMessage(stepNumber: number): string {
+  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}**. Por favor, tente novamente.`;
+}
+
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
   return `Atualização detectada no código NCM!\n\n
   * O código anterior era: **${oldNcm}**\n
@@ -74,6 +88,10 @@ export function complianceErrorMessage(errorMessages: string, isPlural: boolean)
 
 export function criticalAnalysisNcmPhase(ncm: string): string {
   return `Análise Crítica para o NCM: **${ncm}**`;
+}
+
+export function criticalAnalysisFailureMessage(): string {
+  return 'Não foi possível realizar a Análise Crítica. Por favor, tente novamente.';
 }
 
 export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

@@ -1174,22 +1174,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const loadedMessages: MessageType[] =
         chatMessage?.chatHistory?.length > 0
           ? chatMessage.chatHistory?.map((message: MessageType) => {
-              const chatHistory: MessageType = {
-                messageId: message?.messageId,
-                message: message.message,
-                type: message.type,
-                rating: message.rating,
-                dateTime: message.dateTime,
-              };
-              if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
-              if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
-              if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
-              if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
-              if (message.action) chatHistory.action = message.action;
-              if (message.artifacts) chatHistory.artifacts = message.artifacts;
-              if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
-              return chatHistory;
-            })
+            const chatHistory: MessageType = {
+              messageId: message?.messageId,
+              message: message.message,
+              type: message.type,
+              rating: message.rating,
+              dateTime: message.dateTime,
+            };
+            if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
+            if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
+            if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
+            if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
+            if (message.action) chatHistory.action = message.action;
+            if (message.artifacts) chatHistory.artifacts = message.artifacts;
+            if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
+            return chatHistory;
+          })
           : [{ message: props.welcomeMessage ?? defaultWelcomeMessage, type: 'apiMessage' }];
 
       const filteredMessages = loadedMessages.filter((message) => message.message !== '' && message.type !== 'leadCaptureMessage');
@@ -1725,24 +1725,28 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const orderedFiles = sortUploadFiles(filesMap);
 
     setFilesMapping(orderedFiles);
+    try {
+      switch (props.flow) {
+        case Flow.CriticalAnalysis.toString():
+          disableLastSelectionMessage();
+          await processFileCriticalAnalysis();
+          break;
+        default:
+          setMessages((prevMessages) => {
+            const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
+            const updated = [...prevMessages, newMessage];
+            addChatMessage(updated);
+            return [...updated];
+          });
+          setDocumentsUploaded(true);
+          setHiddenInput(true);
+          await processNextChecklist();
+      }
 
-    switch (props.flow) {
-      case Flow.CriticalAnalysis.toString():
-        disableLastSelectionMessage();
-        await processFileCriticalAnalysis();
-        break;
-      default:
-        setMessages((prevMessages) => {
-          const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
-          const updated = [...prevMessages, newMessage];
-          addChatMessage(updated);
-          return [...updated];
-        });
-        setDocumentsUploaded(true);
-        setHiddenInput(true);
-        await processNextChecklist();
+    } finally {
+      setIsUploadButtonDisabled(false)
     }
-  };
+  }
 
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];
@@ -1985,6 +1989,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    setCurrentChecklistNumber(0);
+    setDocumentsUploaded(false);
+
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
       const isPlural = documentsChecklistError().length > 1;
@@ -2023,7 +2030,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (lastMessage) {
       updateLastMessage('');
     }
-    setIsUploadButtonDisabled(false);
   };
 
   const processFileCriticalAnalysis = async () => {

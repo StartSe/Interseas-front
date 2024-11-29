@@ -422,6 +422,7 @@ export const checklistAnaliseDeVinhos = `
 • Parâmetros obrigatórios de acordo com o tipo de vinho - (COLUNA "Laudo estrangeiro (Certificado de Origem)") (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Parâmetros não obrigatórios de acordo com o tipo de vinho - (Aqui, além de verificar se o parâmetro consta, a solução deve verificar se o valor do parâmetro está dentro do permitido para o tipo de vinho, de acordo com a tabela)
 • Aditivos Alimentares - (Aqui, além de verificar se consta o aditivo, a solução deve verificar se o valor está dentro do permitido para o tipo de vinho, de acordo com a tabela)`;
+
 export const checklistRotulosEContrarrotulosVinhos = `
 • Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
 • Produzido e engarrafado por - (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
@@ -441,6 +442,94 @@ export const checklistRotulosEContrarrotulosVinhos = `
 • Marca - (Incluir a marca do produto)
 • Símbolo de Grávida com o “r” de proibido
 • Símbolo de retorno/reciclável`;
+
+export const checklistOrdemDeCompra = `
+• Nome do documento
+• Data do documento
+• Número da ordem da compra
+• Dados do emissor do documento(Adquirente/Notify/Destinatário) - (Razão social, endereço e CNPJ)
+• Dados do Importador - (Razão social, endereço e CNPJ)
+• Dados do Exportador/Fornecedor - (Razão social, endereço e CNPJ) - Buscar também por "importação por conta e ordem" ou "importação por encomenda".
+• Descrição das mercadorias
+• Quantidade
+• Unidade Comercializada
+• Valor Unitário de cada espécie de mercadoria
+• Valor Total de cada espécie de mercadoria
+• Valor total das mercadorias
+• Moeda de pagamento
+• Condições de pagamento
+• INCOTERM
+• Local do INCOTERM`;
+
+export const checklistInstrucaoDeEmbarque = `
+• Dados do Exportador/Shipper - (Razão social, endereço e CNPJ)
+• Dados do Consignatário - (Razão social, endereço e CNPJ)
+• Dados do Notify/Destinatário - (Razão social, endereço e CNPJ)
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
+• Local de Embarque
+• Local de Desembarque
+• Quantidade e tipo de containers
+• Quantidade e tipo de volumes
+• Peso Bruto - (G.W)
+• Cubagem - (m³)
+• NCMs
+• Descrição das mercadorias`;
+
+export const checklistCertificadoDeAnalise = `
+• Dados do Shipper/Exportador - (Razão social, endereço e CNPJ)
+• Dados do Importador/Consignatário - (Razão social, endereço e CNPJ)
+• Dados do Adquirente/Encomendante/Destinatário - (Razão social, endereço e CNPJ)
+• Código/Referência da mercadoria
+• Descrição das mercadorias
+• Números de lote
+• Quantidade
+• Peso líquido - (N.W)
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
+• Fatura comercial`;
+
+export const checklistCertificadoFitossanitario = `
+• Número
+• Dados do Exportador - (Razão social, endereço e CNPJ)
+• Dados do Consignatário/Importador - (Razão social, endereço e CNPJ)
+• "To Plant Protection Organization of"
+• Local de origem
+• Descrição das mercadorias
+• Quantidade
+• Tratamento
+• Duração e temperatura
+• Data
+• Assinatura`;
+
+export const checklistAnexoVII = `
+• Expedidor/notificante (Exportador/Shipper)
+• Consignatário
+• Número do B/L
+• Porto de Carga
+• Porto de Descarga
+• Número dos containers
+• Descrição da mercadoria
+• Peso Bruto - (G.W)
+• Peso Líquido - (N.W)
+• Quantidade e tipo de volumes
+• Carga perigosa - Código Indicador (UN)
+• Carga perigosa - Classe
+• Carga perigosa - Package group
+• Data
+• Assinatura`;
+
+export const checklistFichaDeEmergencia = `
+• Emissor do documento (Adquirente/Notify)
+• Descrição das mercadorias
+• Carga perigosa - Código Indicador (UN)
+• Carga perigosa - Classe
+• Carga perigosa - Package group`;
+
+export const checklistMSDS = `
+• Emissor do documento (Adquirente/Notify)
+• Descrição das mercadorias
+• Carga perigosa - Código Indicador (UN)
+• Carga perigosa - Classe
+• Carga perigosa - Package group`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',
@@ -558,6 +647,13 @@ export const checklistTypeMapping = {
   [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
   [DocumentTypes.LABELS]: checklistLabels,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS]: checklistAnaliseDeVinhos,
+  [DocumentTypes.SALES_ORDER_DOCUMENT]: checklistOrdemDeCompra,
+  [DocumentTypes.INSTRUCAO_DE_EMBARQUE]: checklistInstrucaoDeEmbarque,
+  [DocumentTypes.TEST_REPORT]: checklistCertificadoDeAnalise,
+  [DocumentTypes.CERTIFICADO_FITOSSANITARIO]: checklistCertificadoFitossanitario,
+  [DocumentTypes.ANEXO_VII]: checklistAnexoVII,
+  [DocumentTypes.FICHA_DE_EMERGENCIA]: checklistFichaDeEmergencia,
+  [DocumentTypes.MSDS]: checklistMSDS,
 };
 
 export const documentPriorityMapping = {

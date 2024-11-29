@@ -1985,6 +1985,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
+    setCurrentChecklistNumber(0);
+    setDocumentsUploaded(false);
+
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
       const isPlural = documentsChecklistError().length > 1;

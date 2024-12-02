@@ -61,6 +61,7 @@ import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import { SelectionBubble } from './bubbles/SelectionBubble';
 import DocumentsDBService from '@/service/documentsDBService';
+import historyChatFlowiseAPI from '@/service/historyChatFlowiseAPI';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -195,6 +196,7 @@ const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
 const defaultTextColor = '#303235';
 const documentService = new DocumentsDBService();
+// const historyChatFlowiseApi = new historyChatFlowiseAPI();
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -2097,6 +2099,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }
 
+  // const fetchAndProcessChatHistory = async () => {
+  //   try {
+  //     if (props.apiHost && props.chatflowid && chatId()) {
+  //       const chatHistory = await historyChatFlowiseApi.getChatHistoryByChatId(props.apiHost, props.chatflowid, chatId());
+  //       if (chatHistory) {
+  //         await structureAndSaveMessages(chatHistory, {});
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // createEffect(() => {
+  //   fetchAndProcessChatHistory();
+  // });
   return (
     <>
       <div

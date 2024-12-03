@@ -9,6 +9,9 @@ export const CCTCOMPLIANCE = `COMPLIANCE NOTES - CCT AÉREO X CONHECIMENTO HAWB
 - Data/hora de emissão: [VALOR DO CCT AÉREO]  
     - HAWB - Data de emissão do HAWB: [VALOR DO HAWB]
 
+- Identificação para vinculação ADI/DSI eletrônica/DTA/e-DMOV: [VALOR DO CCT AÉREO]
+    - HAWB - Número do MAWB/AWB associado (seguidos): [VALOR DO HAWB]
+
 - Aeroporto de origem: [VALOR DO CCT AÉREO]  
     - HAWB - Airport of Departure: [VALOR DO HAWB]
 
@@ -24,26 +27,23 @@ export const CCTCOMPLIANCE = `COMPLIANCE NOTES - CCT AÉREO X CONHECIMENTO HAWB
 - Peso Bruto: [VALOR DO CCT AÉREO]  
     - HAWB - Gross Weight: [VALOR DO HAWB]
 
+- Informação "Wooden Packing": [VALOR DO CCT AÉREO]
+    - HAWB - Informação "Wooden Packing": [VALOR DO HAWB]
+
 - Indicador de presença de partes e peças de madeira maciça: [VALOR DO CCT AÉREO]  
     - HAWB - Wooden Packing: [VALOR DO HAWB]
 
-- Descrição resumida das mercadorias: [VALOR DO CCT AÉREO]  
-    - HAWB - Description of Goods (resumida): [VALOR DO HAWB]
-
-- Descrição completa das mercadorias: [VALOR DO CCT AÉREO]  
-    - HAWB - Description of Goods (completa): [VALOR DO HAWB]
+- Descrição das mercadorias: [VALOR DO CCT AÉREO]  
+    - HAWB - Descrição das mercadorias: [VALOR DO HAWB]
 
 - Moeda de origem: [VALOR DO CCT AÉREO]  
     - HAWB - Moeda do frete: [VALOR DO HAWB]
 
 - Frete por item de carga: [VALOR DO CCT AÉREO]  
-    - HAWB - Valor total do frete: [VALOR DO HAWB]
+    - HAWB - Frete por peso: [VALOR DO HAWB]
 
 - Forma de pagamento // Por peso/valor: [VALOR DO CCT AÉREO]  
-    - HAWB - Collect/Prepaid (peso/valor): [VALOR DO HAWB]
-
-- Forma de pagamento // Outros encargos: [VALOR DO CCT AÉREO]  
-    - HAWB - Collect/Prepaid (outros encargos): [VALOR DO HAWB]
+    - HAWB - Frete por peso: [VALOR DO HAWB]
 
 - Totais na moeda de origem: [VALOR DO CCT AÉREO]  
     - HAWB - Valor total do frete: [VALOR DO HAWB]
@@ -51,11 +51,11 @@ export const CCTCOMPLIANCE = `COMPLIANCE NOTES - CCT AÉREO X CONHECIMENTO HAWB
 - Embarcador estrangeiro: [VALOR DO CCT AÉREO]  
     - HAWB - Shipper: [VALOR DO HAWB]
 
-- País: [VALOR DO CCT AÉREO]  
+- País do embarcador estrangeiro: [VALOR DO CCT AÉREO]  
     - HAWB - País do Shipper: [VALOR DO HAWB]
 
 - Consignatário / Identificação: [VALOR DO CCT AÉREO]  
-    - HAWB - CNPJ do Consignee: [VALOR DO HAWB]
+    - HAWB - Consignee: [VALOR DO HAWB]
 
 - MAWB/AWB associados: [VALOR DO CCT AÉREO]  
     - HAWB - Conforme consta no HAWB: [VALOR DO HAWB]

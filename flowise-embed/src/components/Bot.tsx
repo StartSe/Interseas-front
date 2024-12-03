@@ -1711,7 +1711,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
         if (checklist) {
-          fileMap.checklist = checklist.concat(conferencesDefault);
+          if (
+            ![
+              DocumentTypes.PACKING_LIST.toString(),
+              DocumentTypes.CERTIFICADO_DE_ORIGEM.toString(),
+              DocumentTypes.CCT.toString(),
+              DocumentTypes.PROFORMA_INVOICE.toString(),
+            ].includes(docType)
+          ) {
+            fileMap.checklist = checklist.concat(conferencesDefault);
+          }
         } else {
           fileMap.checklist = defaultChecklist;
         }
@@ -1863,7 +1872,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const signatureKey = 'Assinatura';
         const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
         const isSignatureKey = key === signatureKey;
-        const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+        let message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+
+        if (/DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i.test(key)) {
+          message = value ? 'Identificada descrição de Ex-Tarifário no documento' : 'Não identificada descrição de Ex-Tarifário no documento';
+        }
 
         return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
       };

@@ -97,35 +97,39 @@ export const checklistCertificadoOrigem = `
 • Dados do Exportador - (nome, endereço, NIF)
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Consignatário
+• Dados do Adquirente
 • Acordo
 • Fatura Comercial
-• Valor unitário de cada espécie de mercadoria
+• Valor das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
 • NCM
+• NALADI/NALADISA - (pode ter de 8 a 12 dígitos)
 Se operação por Conta e Ordem:
 • Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP) `;
 
 export const checklistCommercialInvoice = `
 • Número do documento
 • Nome do documento
-• Data
-• Assinatura
+• Data do documento
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
 • Dados do Fabricante - (nome, endereço, NIF)
+• Assinatura
 • Marca
 • Numeração
-• Número de referência dos volumes
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
-• Referência
+• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Código/Referência das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
 • Unidade Comercializada
 • Valor unitário de cada espécie de mercadoria
 • Valor total de cada espécie de mercadoria
-• Moeda
-• Forma/Condições de Pagamento - (true/false)
-• Dados Bancários Exportador
+• Valor Total das Mercadorias
+• Moeda de pagamento
+• Condições de Pagamento
+• Dados Bancários do Exportador
+• Números do lote
+• NCM/HS Code
 • Porto de Embarque
 • Porto de Desembarque
 • País de Origem
@@ -134,6 +138,10 @@ export const checklistCommercialInvoice = `
 • INCOTERM
 • Local do INCOTERM
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Seguro (tipo, moeda e valor)
+• Referência
+• Forma/Condições de Pagamento - (true/false)
+• Dados Bancários Exportador
 • Valor do Seguro - (se prepaid)
 • Peso Líquido - (N.W)
 • Peso Bruto - (G.W)
@@ -145,8 +153,10 @@ Se mercadoria é máquina ou equipamento
 • Marca
 • Modelo
 Conferências:
-• Multiplicação de valor unitário = quantidade comercializada de cada item
-• Somatório dos itens = valor total informado`;
+• Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador)
+• Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador)
+• Multiplicação de valor unitário dos itens comercializados - (valor unitário x quantidade comercializada)
+• Somatório dos itens - valor total informado`;
 
 export const checklistConhecimentoBL = `
 • Número do documento
@@ -194,29 +204,37 @@ Dados de compliance:
 • Número do Conhecimento de Embarque`;
 
 export const checklistConhecimentoHawb = `
-• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
-• Dados do Consignee - também chamado de Importador, Importer, Ship To (razão social, endereço e CNPJ, CEP)
-• Notify - (razão social, endereço, CNPJ e CEP)
-• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Aeroporto de Partida
-• Aeroporto de Destino
-• Peso Bruto - (G.W)
-• Peso Taxado
-• Quantidade de volumes - (crate/box/pallets)
-• Informação Wooden Packing - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
-Se mercadoria é máquina ou equipamento
-• Nº de Série
-• Se INCOTERM de responsabilidade do exportador:
-Dados de Compliance:
 • Número do HAWB
 • Data da emissão
+• Número do MAWB/AWB associados
+• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
+• País do Shipper
+• Dados do Consignee - também chamado de Importador, Importer, Ship To (razão social, endereço e CNPJ, CEP)
+• CNPJ do Consignee - (Consignatário/Identificação)
+• "To order of"
+• Notify - (razão social, endereço, CNPJ e CEP)
+• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Forma de pagamento do frete
+• Valor total do frete
+• Aeroporto de Partida
+• Aeroporto de Destino
+• Moeda
+• Quantidade de volumes - (crate/box/pallets)
+• Peso Bruto - (G.W)
+• Peso Taxado
+• Cubagem (m³)
+• Informação "Wooden Packing" - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
 • Final Destination - (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
+• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• NCM/HS Code
+• Descrição Ex-tarifário
+• Frete por peso - também chamado de "Weight Charge"
+
+Se mercadoria é máquina ou equipamento
+• Nº de Série
+Dados de Compliance:
 • Description of Goods - (Descrição resumida e completa das mercadorias)
 • Forma de pagamento - (Collect/Prepaid, por peso/valor ou outros encargos)
-• País do Shipper
-• CNPJ do Consignee - (Consignatário/Identificação)
-• MAWB/AWB associados
 • Valor total do frete que consta no HAWB - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
 `;
 
@@ -289,17 +307,21 @@ Conferências:
 • Documentos anexos - D.E. Estrangeira - consta "destinácion" ou "permiso de exportacion"`;
 
 export const checklistPackingList = `
-• Referência à Ordem de Compra (OC) ou Fatura Comercial
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
+• Fatura Comercial
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Código/Referência das mercadorias
 • Quantidade de Volumes - (crate/box/pallets)
 • Tipo de Volumes - (crate/box/pallets)
 • Peso Líquido por volume - (N.W per volume)
-• Peso Líquido - (N.W)
-• Peso Bruto - (G.W) 
-• Cubagem (m³)`;
+• Peso Líquido total - (N.W)
+• Peso Bruto total - (G.W) 
+• Cubagem total (m³)
+• Peso líquido por volume = Peso líquido total - (Se forem iguais retorne true, se não false)
+`;
 
 export const ChecklistProformaInvoice = `
 • Número do documento
@@ -309,29 +331,33 @@ export const ChecklistProformaInvoice = `
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP) - Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
 • Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • País de origem
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Código/Referência das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
 • Unidade comercializada
 • Valor unitário de cada espécie de mercadoria
 • Valor total de cada espécie de mercadoria
+• Valor Total das Mercadorias
+• NCM/HS Code
 • Moeda de pagamento
-• Forma/Condições de Pagamento - (true/false)
-• Dados bancários do exportador
+• Forma/Condições de Pagamento
+• Dados bancários do exportador - (true/false)
 • INCOTERM
 • Local do INCOTERM
-• Peso Bruto - (G.W)
+• Peso estimado
 • Quantidade de volumes estimada - (crate/box/pallets)
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
-• Multiplicação do valor unitário = quantidade comercializada de cada item
-• Somatório dos itens = valor total informado`;
+• Multiplicação de valor unitário dos itens comercializados -  (valor unitário x quantidade comercializada)
+• Somatório dos itens - valor total informado
+• Máquina/Equipamento`;
 
 const checklistCCTAereo = `
-• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Embarcador estrangeiro - também chamado de exportador (nome, endereço, CNPJ, CEP)
 • Identificação do conhecimento de carga - (número do HAWB)
-• Data da emissão
+• Data/hora da emissão
+• Identificação para vinculação a DI/DSI eletrônica/DTA/e-DMOV
 • Aeroporto de partida
 • Aeroporto de destino
 • Recinto aduaneiro de destino
@@ -339,16 +365,17 @@ const checklistCCTAereo = `
 • Peso bruto - (G.W)
 • Presença de peças de madeira maciça - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
-• Descrição da mercadoria - (Trazer todos os nomes de produtos diferentes na descrição)
 • Moeda de origem
 • Frete por item de carga - (somatório)
 • Forma de pagamento - (por peso/valor)
 • Forma de pagamento - (outros encargos)
-• Totais na moeda de origem
-• Embarcador estrangeiro
-• País
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• MAWB/AWB associados`;
+• Valor total do frete
+• Dados do Embarcador estrangeiro - também chamado de exportador (nome, endereço, CNPJ, CEP)
+• País do embarcador estrangeiro
+• Consignatário/Identificação - (CNPJ)
+• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• MAWB/AWB associados
+`;
 
 const checklistMicDta = `
 • Número do documento
@@ -530,6 +557,18 @@ export const checklistMSDS = `
 • Carga perigosa - Código Indicador (UN)
 • Carga perigosa - Classe
 • Carga perigosa - Package group`;
+export const checklistCotacaoDeFrete = `
+• Mercadorias/Commodity
+• INCOTERM
+• Quantidade e tipo de containers
+• Quantidade e tipo de volumes
+• Cubagem
+• Peso Bruto
+• Peso Taxado
+• Custos totais na origem (Moeda e valor) - também encontrado como "Total custos na origem" ou "Custos totais origem"
+• Custos totais de frete (Moeda e valor) - também encontrado como "Total do frete marítimo", "Total do frete aéreo", "Total do frete rodoviário", "Total custos no frete", "Custos totais frete" ou "Frete Total"
+• Capatazia (Moeda e valor) - também consta como "Capatazia (DTHC)", "Destination Terminal Handling Charges" ou "THC no Destino (Capatazia)"
+`;
 
 export enum DocumentTypes {
   PROFORMA_INVOICE = 'PROFORMA INVOICE',
@@ -542,7 +581,7 @@ export enum DocumentTypes {
   CONHECIMENTO_CRT = 'CONHECIMENTO - CRT',
   CONHECIMENTO_MIC_DTA = 'CONHECIMENTO - MIC/DTA',
   CE_MERCANTE = 'CE MERCANTE',
-  CCT = 'CCT',
+  CCT = 'CCT AÉREO',
   INSTRUCAO_DE_EMBARQUE = 'INSTRUÇÃO DE EMBARQUE',
   DUIMP = 'DUIMP',
   DUE = 'DU-E',
@@ -577,6 +616,7 @@ export enum DocumentTypes {
   FICHA_DE_LOTE = 'FICHA DE LOTE',
   CERTIFICADO_FITOSSANITARIO = 'CERTIFICADO FITOSSANITÁRIO',
   CERTIFICADO_DE_ANALISE_DE_VINHOS = 'CERTIFICADO DE ANÁLISE DE VINHOS',
+  COTACAO_DE_FRETE = 'COTAÇÃO DE FRETE',
 }
 
 const documentNameAndTypeMapping = {
@@ -630,6 +670,7 @@ const documentNameAndTypeMapping = {
   'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
   'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
   'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
+  'COTACAO[_-\\s]DE[_-\\s]FRETE': DocumentTypes.COTACAO_DE_FRETE,
 };
 
 export const checklistTypeMapping = {
@@ -654,6 +695,7 @@ export const checklistTypeMapping = {
   [DocumentTypes.ANEXO_VII]: checklistAnexoVII,
   [DocumentTypes.FICHA_DE_EMERGENCIA]: checklistFichaDeEmergencia,
   [DocumentTypes.MSDS]: checklistMSDS,
+  [DocumentTypes.COTACAO_DE_FRETE]: checklistCotacaoDeFrete,
 };
 
 export const documentPriorityMapping = {
@@ -702,6 +744,7 @@ export const documentPriorityMapping = {
   [DocumentTypes.FICHA_DE_LOTE.toString()]: 0,
   [DocumentTypes.CERTIFICADO_FITOSSANITARIO.toString()]: 0,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS.toString()]: 9,
+  [DocumentTypes.COTACAO_DE_FRETE.toString()]: 0,
 };
 
 export const sortUploadFiles = (uploadFiles: FileMapping[]): FileMapping[] => {

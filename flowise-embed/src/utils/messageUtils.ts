@@ -15,7 +15,7 @@ export const messageUtils = {
   UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: 'Não foi possível verificar o checklist deste arquivo.',
   UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE: 'Não foi possível verificar os campos deste arquivo.',
   NO_LI_LPCO_COMPLIANCE_FEATURE: 'Ainda não faço o compliance de LI/LPCO, por favor realizá-lo manualmente.',
-  MANUAL_COMPLIANCE_ALERT: 'Atenção: Se há LPCO já emitido para a operação, realizar compliance manual.',
+  MANUAL_COMPLIANCE_ALERT: 'Atenção: Se há LPCO já emitido para a operação, realizar compliance do LPCO com a Fatura comercial manualmente.',
 
   CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: 'Checklist not found in response',
 
@@ -59,6 +59,20 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   CANCEL_BUTTON: 'Cancelar',
   DELETE_BUTTON: 'Excluir',
 };
+
+export const criticalAnalysisStepNameMapping: { [key: number]: string } = {
+  1: 'Tratamento Administrativo',
+  2: 'Tributos e contribuições federais',
+  3: 'Defesa Comercial',
+  4: 'Acordos Internacionais',
+  5: 'Análise Logística',
+  6: 'Atributos da NCM',
+  7: 'ICMS Importação',
+};
+
+export function ncmStepFailureMessage(stepNumber: number): string {
+  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}**. Por favor, tente novamente.`;
+}
 
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
   return `Atualização detectada no código NCM!\n\n

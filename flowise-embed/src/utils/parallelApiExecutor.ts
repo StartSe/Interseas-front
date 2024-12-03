@@ -1,5 +1,6 @@
 import { MessageType } from '@/components/Bot';
 import { constants } from '@/constants';
+import { messageUtils, ncmStepFailureMessage } from './messageUtils';
 export default class ParallelApiExecutor {
   n8nUrls = [
     constants.n8nDomain + '/webhook/' + constants.n8nFirstStep,
@@ -19,6 +20,7 @@ export default class ParallelApiExecutor {
   ) {}
 
   public async execute(): Promise<void> {
+    let stepCount = 1;
     const requests = this.n8nUrls.map(async (url) => {
       try {
         const response = await fetch(url, {
@@ -39,6 +41,10 @@ export default class ParallelApiExecutor {
         this.sendMessageToChat(message);
       } catch (error) {
         console.error('Error:', error);
+        const errorMessage = { message: ncmStepFailureMessage(stepCount), type: 'apiMessage' } as MessageType;
+        this.sendMessageToChat(errorMessage);
+      } finally {
+        stepCount++;
       }
     });
 

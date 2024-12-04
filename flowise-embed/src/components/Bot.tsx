@@ -1711,6 +1711,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
         if (checklist) {
+          fileMap.checklist = checklist;
           if (
             ![
               DocumentTypes.PACKING_LIST.toString(),
@@ -1719,7 +1720,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.PROFORMA_INVOICE.toString(),
             ].includes(docType)
           ) {
-            fileMap.checklist = checklist.concat(conferencesDefault);
+            fileMap.checklist = fileMap.checklist.concat(conferencesDefault);
           }
         } else {
           fileMap.checklist = defaultChecklist;
@@ -1874,7 +1875,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const isSignatureKey = key === signatureKey;
         let message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
 
-        if (/DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i.test(key)) {
+        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (/DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i.test(normalizedKey)) {
           message = value ? 'Identificada descrição de Ex-Tarifário no documento' : 'Não identificada descrição de Ex-Tarifário no documento';
         }
 

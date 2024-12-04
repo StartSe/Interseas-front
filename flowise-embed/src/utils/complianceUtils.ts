@@ -10,7 +10,7 @@ export const CCTCOMPLIANCE = `COMPLIANCE NOTES - CCT AÉREO X CONHECIMENTO HAWB
     - HAWB - Data de emissão do HAWB: [VALOR DO HAWB]
 
 - Identificação para vinculação ADI/DSI eletrônica/DTA/e-DMOV: [VALOR DO CCT AÉREO]
-    - HAWB - Número do MAWB/AWB associado (seguidos): [VALOR DO HAWB]
+    - HAWB - Número do MAWB/AWB associados: [VALOR DO HAWB]
 
 - Aeroporto de origem: [VALOR DO CCT AÉREO]  
     - HAWB - Airport of Departure: [VALOR DO HAWB]

@@ -155,7 +155,7 @@ Se mercadoria é máquina ou equipamento
 Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador)
 • Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador)
-• Multiplicação de valor unitário dos itens comercializados - (valor unitário x quantidade comercializada)
+• Multiplicação de valor unitário dos itens comercializados - - (trazer no formato valor unitário x quantidade comercializada)
 • Somatório dos itens - valor total informado`;
 
 export const checklistConhecimentoBL = `
@@ -316,11 +316,10 @@ export const checklistPackingList = `
 • Código/Referência das mercadorias
 • Quantidade de Volumes - (crate/box/pallets)
 • Tipo de Volumes - (crate/box/pallets)
-• Peso Líquido por volume - (N.W per volume)
+• Peso Líquido por volume ou unidade
 • Peso Líquido total - (N.W)
-• Peso Bruto total - (G.W) 
+• Peso Bruto total - (G.W)
 • Cubagem total (m³)
-• Peso líquido por volume = Peso líquido total - (Se forem iguais retorne true, se não false)
 `;
 
 export const ChecklistProformaInvoice = `
@@ -350,8 +349,8 @@ export const ChecklistProformaInvoice = `
 • Quantidade de volumes estimada - (crate/box/pallets)
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
-• Multiplicação de valor unitário dos itens comercializados -  (valor unitário x quantidade comercializada)
-• Somatório dos itens - valor total informado
+• Multiplicação de valor unitário dos itens comercializados -  (Trazer as mercadorias no formato valor unitário x quantidade comercializada)
+• Somatório dos itens - (valor total informado por espécie de mercadoria)
 • Máquina/Equipamento`;
 
 const checklistCCTAereo = `
@@ -374,7 +373,7 @@ const checklistCCTAereo = `
 • País do embarcador estrangeiro
 • Consignatário/Identificação - (CNPJ)
 • Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• MAWB/AWB associados
+• Número do MAWB/AWB associados
 `;
 
 const checklistMicDta = `
@@ -761,6 +760,7 @@ export const sortUploadFiles = (uploadFiles: FileMapping[]): FileMapping[] => {
 
 export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTypes) => {
   if (documentType in checklistTypeMapping) {
+    console.log(checklistTypeMapping[documentType as keyof typeof checklistTypeMapping]);
     return checklistTypeMapping[documentType as keyof typeof checklistTypeMapping];
   }
   return null;

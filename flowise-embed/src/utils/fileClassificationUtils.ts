@@ -669,7 +669,7 @@ const documentNameAndTypeMapping = {
   'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
   'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
   'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
-  'COTACAO[_-\\s]DE[_-\\s]FRETE': DocumentTypes.COTACAO_DE_FRETE,
+  'COTACAO[_-\\s]DE[_-\\s]FRETE/i': DocumentTypes.COTACAO_DE_FRETE,
 };
 
 export const checklistTypeMapping = {

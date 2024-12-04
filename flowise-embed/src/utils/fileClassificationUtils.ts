@@ -760,7 +760,6 @@ export const sortUploadFiles = (uploadFiles: FileMapping[]): FileMapping[] => {
 
 export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTypes) => {
   if (documentType in checklistTypeMapping) {
-    console.log(checklistTypeMapping[documentType as keyof typeof checklistTypeMapping]);
     return checklistTypeMapping[documentType as keyof typeof checklistTypeMapping];
   }
   return null;

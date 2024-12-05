@@ -1003,30 +1003,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           addChatMessage(updated);
           return [...updated];
         });
-        for (const ncm of jsonDataCriticalAnalysis['NCM']) {
-          const newJsonDataCriticalAnalysis = { ...jsonDataCriticalAnalysis, NCM: ncm };
 
-          setMessages((prevMessages) => {
-            const newMessage = { message: criticalAnalysisNcmPhase(ncm), type: 'apiMessage' } as MessageType;
-            const updated = [...prevMessages, newMessage];
-            addChatMessage(updated);
-            return [...updated];
-          });
+        const newJsonDataCriticalAnalysis = { ...jsonDataCriticalAnalysis };
 
-          setLoading(true);
-          setStartUploadingDocument(true);
+        setStartUploadingDocument(true);
 
-          newJsonDataCriticalAnalysis.text = JSON.stringify(newJsonDataCriticalAnalysis);
+        newJsonDataCriticalAnalysis.text = JSON.stringify(newJsonDataCriticalAnalysis);
 
-          const parallelApiExecutor = new ParallelApiExecutor({
-            jsonCriticalAnalysisUpdate: newJsonDataCriticalAnalysis,
-            setMessages,
-          });
+        const parallelApiExecutor = new ParallelApiExecutor({
+          jsonCriticalAnalysisUpdate: newJsonDataCriticalAnalysis,
+          setMessages,
+          setLoading,
+        });
 
-          await parallelApiExecutor.execute();
+        await parallelApiExecutor.execute();
 
-          setLoading(false);
-        }
         setJsonResponseCriticalAnalysis({});
         setIsAnalyzing(false);
       }
@@ -1174,22 +1165,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const loadedMessages: MessageType[] =
         chatMessage?.chatHistory?.length > 0
           ? chatMessage.chatHistory?.map((message: MessageType) => {
-            const chatHistory: MessageType = {
-              messageId: message?.messageId,
-              message: message.message,
-              type: message.type,
-              rating: message.rating,
-              dateTime: message.dateTime,
-            };
-            if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
-            if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
-            if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
-            if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
-            if (message.action) chatHistory.action = message.action;
-            if (message.artifacts) chatHistory.artifacts = message.artifacts;
-            if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
-            return chatHistory;
-          })
+              const chatHistory: MessageType = {
+                messageId: message?.messageId,
+                message: message.message,
+                type: message.type,
+                rating: message.rating,
+                dateTime: message.dateTime,
+              };
+              if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
+              if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
+              if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
+              if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
+              if (message.action) chatHistory.action = message.action;
+              if (message.artifacts) chatHistory.artifacts = message.artifacts;
+              if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
+              return chatHistory;
+            })
           : [{ message: props.welcomeMessage ?? defaultWelcomeMessage, type: 'apiMessage' }];
 
       const filteredMessages = loadedMessages.filter((message) => message.message !== '' && message.type !== 'leadCaptureMessage');
@@ -1742,11 +1733,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           setHiddenInput(true);
           await processNextChecklist();
       }
-
     } finally {
-      setIsUploadButtonDisabled(false)
+      setIsUploadButtonDisabled(false);
     }
-  }
+  };
 
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];

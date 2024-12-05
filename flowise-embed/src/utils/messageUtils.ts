@@ -70,8 +70,8 @@ export const criticalAnalysisStepNameMapping: { [key: number]: string } = {
   7: 'ICMS Importação',
 };
 
-export function ncmStepFailureMessage(stepNumber: number): string {
-  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}**. Por favor, tente novamente.`;
+export function ncmStepFailureMessage(stepNumber: number, ncm: any): string {
+  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {

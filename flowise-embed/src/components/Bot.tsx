@@ -62,6 +62,7 @@ import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/l
 import { SelectionBubble } from './bubbles/SelectionBubble';
 import DocumentsDBService from '@/service/documentsDBService';
 import historyChatFlowiseAPI from '@/service/historyChatFlowiseAPI';
+import { ChatMessage } from '@/types';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -196,7 +197,7 @@ const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
 const defaultTextColor = '#303235';
 const documentService = new DocumentsDBService();
-// const historyChatFlowiseApi = new historyChatFlowiseAPI();
+const historyChatFlowiseApi = new historyChatFlowiseAPI();
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -330,6 +331,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
    * Add each chat message into localStorage
    */
   const addChatMessage = (allMessage: MessageType[]) => {
+    const chatMessage = getLocalStorageChatflow(props.chatflowid);
+
+    //Verify if message already into localstorage
+    if (chatMessage && Object.entries(chatMessage).length > 0) {
+      return;
+    }
     const messages = allMessage.map((item) => {
       if (item.fileUploads) {
         const fileUploads = item?.fileUploads.map((file) => ({
@@ -341,17 +348,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       return item;
     });
-    const chatMessage = getLocalStorageChatflow(props.chatflowid);
 
-    if (!chatMessage || Object.entries(chatMessage).length === 0) {
-      const chatData = {
-        id: chatId(),
-        agent_flow: props.flow,
-      };
+    const chatData = {
+      id: chatId(),
+      agent_flow: props.flow,
+    };
 
-      documentService.saveChatData(chatData);
-    }
-
+    documentService.saveChatData(chatData);
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
@@ -1866,7 +1869,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setLoading(false);
   };
 
-  const structureAndSaveMessages = async (jsonData: any, fileMap: any, resultFromBackgroundMessage?: any) => {
+  const structureChecklistMessage = (jsonData: any, fileMap?: any) => {
     const generateChecklistItemToPrint = (key: string, value: any) => {
       if (value && typeof value === 'object') {
         const formatted_value = Object.entries(value)
@@ -1907,20 +1910,24 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       return checklistItem;
     };
-
-    let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+    let checklistMessage = '';
+    if (fileMap) {
+      checklistMessage = `<b>${fileMap.type}:</b><br>`;
+    }
 
     for (const [key, value] of Object.entries(jsonData.checklist)) {
       checklistMessage += generateChecklistItemToPrint(key, value);
     }
-
     if (Object.keys(jsonData).includes('conferências') && jsonData['conferências'] !== null && Object.keys(jsonData['conferências']).length > 0) {
       checklistMessage += `<br><b>Conferências:</b><br>`;
       for (const [key, value] of Object.entries(jsonData['conferências'])) {
         checklistMessage += generateChecklistItemToPrint(key, value);
       }
     }
+    return checklistMessage;
+  };
 
+  const showChecklistMessage = (jsonData: any, checklistMessage: string) => {
     setMessages((prevMessages) => {
       const newMessage = { message: checklistMessage, type: 'apiMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
@@ -1948,6 +1955,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } else {
       updateLastMessage('');
     }
+  };
+
+  const structureAndSaveMessages = async (jsonData: any, fileMap?: any, resultFromBackgroundMessage?: any) => {
+    const structureChecklistMessageHTML = structureChecklistMessage(jsonData, fileMap);
+    showChecklistMessage(jsonData, structureChecklistMessageHTML);
   };
 
   const processNextChecklist = async () => {
@@ -2099,22 +2111,85 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }
 
-  // const fetchAndProcessChatHistory = async () => {
-  //   try {
-  //     if (props.apiHost && props.chatflowid && chatId()) {
-  //       const chatHistory = await historyChatFlowiseApi.getChatHistoryByChatId(props.apiHost, props.chatflowid, chatId());
-  //       if (chatHistory) {
-  //         await structureAndSaveMessages(chatHistory, {});
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const fetchAndProcessChatHistory = async () => {
+    if (props.apiHost && props.chatflowid) {
+      const chatHistory = await historyChatFlowiseApi.getChatHistory(props.apiHost, props.chatflowid, chatId());
+      processMessages(chatHistory);
+    }
+  };
 
-  // createEffect(() => {
-  //   fetchAndProcessChatHistory();
-  // });
+  const processMessages = (messages: ChatMessage[]) => {
+    const visibleMessages: ChatMessage[] = [];
+    let currentFileMap: FileMapping | null = null;
+
+    for (const message of messages) {
+      const isUserMessage = message.role === 'userMessage';
+      const isApiMessage = message.role === 'apiMessage';
+      const contentJson = (() => {
+        try {
+          return JSON.parse(message.content);
+        } catch {
+          return null;
+        }
+      })();
+
+      if (message.fileUploads !== null) {
+        const firstPageImageFileName = message.fileUploads[0].name;
+        const documentName = firstPageImageFileName.replace(/(?:[^\w]\d+)*\.\w+$/, '').trim();
+        const mime = '';
+        const hash = '';
+
+        const file = { name: documentName, mime, hash };
+        const type = identifyDocumentType(documentName) || '';
+
+        currentFileMap = { file, type };
+      }
+
+      if (isUserMessage) {
+        const keywordsToIgnore = ['CROSS_VALIDATION', 'LIST_DIFFERENT_KEYS', 'DESCOBRE_NCM', 'CORRIGE_JSON', 'Specific compliance'];
+        const keywordsToReformat = ['CHECKLIST', 'EXTRACTION'];
+        const shouldIgnoreMessage = keywordsToIgnore.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldReformatMessage = keywordsToReformat.some((keyword: string) => message.content.startsWith(keyword));
+        if (shouldIgnoreMessage) {
+          continue;
+        } else if (shouldReformatMessage) {
+          const chatMessageToShow = {
+            ...message,
+            content: currentFileMap?.file.name || '',
+          };
+          visibleMessages.push(chatMessageToShow);
+        } else {
+          visibleMessages.push(message);
+        }
+      } else if (isApiMessage) {
+        if (contentJson !== null && Object.keys(contentJson).includes('checklist')) {
+          const checklistHTML = structureChecklistMessage(contentJson, currentFileMap);
+          const chatMessageToShow = {
+            ...message,
+            content: checklistHTML,
+          };
+          visibleMessages.push(chatMessageToShow);
+        } else if (contentJson !== null) {
+          continue;
+        } else {
+          visibleMessages.push(message);
+        }
+      }
+    }
+    visibleMessages.map((item) => {
+      setMessages((prevMessages) => {
+        const newMessage = { message: `${item.content}`, type: item.role, fileUploads: item.fileUploads ?? [] } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
+    });
+  };
+
+  onMount(() => {
+    fetchAndProcessChatHistory();
+  });
+
   return (
     <>
       <div

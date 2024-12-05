@@ -1,3 +1,5 @@
+import { constants } from '@/constants';
+
 export const messageUtils = {
   FILE_TYPE_NOT_SUPPORTED: 'Este documento não é suportado. Por gentileza, exclua e carregue outro arquivo.',
   MODAL_TITLE: 'Faça o upload dos seus documentos.',
@@ -60,18 +62,29 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   DELETE_BUTTON: 'Excluir',
 };
 
-export const criticalAnalysisStepNameMapping: { [key: number]: string } = {
-  1: 'Tratamento Administrativo',
-  2: 'Tributos e contribuições federais',
-  3: 'Defesa Comercial',
-  4: 'Acordos Internacionais',
-  5: 'Análise Logística',
-  6: 'Atributos da NCM',
-  7: 'ICMS Importação',
+export const criticalAnalysisStepNameMapping: { [key: string]: string } = {
+  [constants.n8nFirstStep]: 'Tratamento Administrativo',
+  [constants.n8nSecondStep]: 'Tributos e contribuições federais',
+  [constants.n8nThirdStep]: 'Defesa Comercial',
+  [constants.n8nFourthStep]: 'Acordos Internacionais',
+  [constants.n8nFifthStep]: 'Análise Logística',
+  [constants.n8nSixthStep]: 'Atributos da NCM',
+  [constants.n8nSeventhStep]: 'ICMS Importação',
 };
 
-export function ncmStepFailureMessage(stepNumber: number, ncm: any): string {
-  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
+export const identifyConstant = (inputString: string): string => {
+  for (const [key, value] of Object.entries(constants)) {
+    if (inputString.endsWith(value)) {
+      return value;
+    }
+  }
+  return '';
+};
+
+export function ncmStepFailureMessage(url: string, ncm: any): string {
+  return `Desculpe! Não foi possível completar a etapa de **${
+    criticalAnalysisStepNameMapping[identifyConstant(url)]
+  }** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {

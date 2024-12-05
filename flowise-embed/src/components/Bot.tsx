@@ -333,10 +333,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const addChatMessage = (allMessage: MessageType[]) => {
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
 
-    //Verify if message already into localstorage
-    if (chatMessage && Object.entries(chatMessage).length > 0) {
+    const chatHistory = chatMessage.chatHistory || {};
+
+    const newMessages = allMessage.map((item) => item.message);
+    const existingMessages = Object.values(chatHistory).map((item: any) => item.message);
+
+    const messageExists = newMessages.some((message) => existingMessages.includes(message));
+
+    if (messageExists) {
       return;
     }
+
     const messages = allMessage.map((item) => {
       if (item.fileUploads) {
         const fileUploads = item?.fileUploads.map((file) => ({

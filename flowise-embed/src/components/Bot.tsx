@@ -1013,7 +1013,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const parallelApiExecutor = new ParallelApiExecutor({
           jsonCriticalAnalysisUpdate: newJsonDataCriticalAnalysis,
           setMessages,
-          setLoading,
         });
 
         await parallelApiExecutor.execute();

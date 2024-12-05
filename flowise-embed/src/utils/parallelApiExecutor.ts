@@ -16,62 +16,24 @@ export default class ParallelApiExecutor {
     private dependencies: {
       jsonCriticalAnalysisUpdate: { text: string };
       setMessages: (value: any) => void;
-      setLoading: (value: boolean) => void;
     },
   ) {}
 
   public async execute(): Promise<void> {
     const payload = JSON.parse(this.dependencies.jsonCriticalAnalysisUpdate.text);
-    const ncms = payload['NCM'];
-    const requests = this.n8nUrls.map(async (url) => {
-      ncms.forEach(async (ncm: any) => {
-        try {
-          const newPayload = { ...payload, NCM: ncm };
-          newPayload.text = JSON.stringify(newPayload);
-          console.log(newPayload);
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newPayload.text),
-          });
+    const ncmArray = payload['NCM'] as string[];
 
-          if (!response.ok) {
-            throw new Error('response was not ok');
-          }
-
-          const data = await response.json();
-          const message = { message: data.output, type: 'apiMessage' } as MessageType;
-
-          this.sendMessageToChat(message);
-        } catch (error) {
-          console.error('Error:', error);
-          const errorMessage = { message: ncmStepFailureMessage(url, ncm), type: 'apiMessage' } as MessageType;
-          this.sendMessageToChat(errorMessage);
-        }
-      });
-    });
-
-    await Promise.allSettled(requests);
-  }
-
-  private sendMessageToChat(message: any): void {
-    this.dependencies.setMessages((prevMessages: any) => [...prevMessages, message]);
-  }
-
-  private async makeStepRequest(url: string, payload: any, ncms: any[]): Promise<any> {
-    const message = criticalAnalysisStepNameMapping[identifyConstant(url)].concat('\n');
-    for (const ncm of ncms) {
+    const processNcm = async (url: string, ncm: string): Promise<string> => {
       try {
-        const newPayload = { ...payload, NCM: ncm };
-        newPayload.text = JSON.stringify(newPayload);
+        const jsonCriticalAnalysisSingleNcm = { ...payload, NCM: ncm };
+        jsonCriticalAnalysisSingleNcm.text = JSON.stringify(jsonCriticalAnalysisSingleNcm);
+
         const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(payload.text),
+          body: JSON.stringify(jsonCriticalAnalysisSingleNcm.text),
         });
 
         if (!response.ok) {
@@ -79,16 +41,29 @@ export default class ParallelApiExecutor {
         }
 
         const data = await response.json();
-        message.concat(data.output, '\n');
-
-        this.sendMessageToChat(message);
+        return data.output;
       } catch (error) {
         console.error('Error:', error);
-        const errorMessage = { message: ncmStepFailureMessage(url, ncm), type: 'apiMessage' } as MessageType;
-        this.sendMessageToChat(errorMessage);
+        return ncmStepFailureMessage(url, ncm);
       }
+    };
+
+    for (const url of this.n8nUrls) {
+      const stepName = criticalAnalysisStepNameMapping[identifyConstant(url)];
+      let message = `**${stepName}**\n`;
+
+      for (const ncm of ncmArray) {
+        message += `\n**NCM: ${ncm}**\n`;
+        const result = await processNcm(url, ncm);
+        message += `\n${result}\n`;
+      }
+
+      const finalMessage = { message, type: 'apiMessage' } as MessageType;
+      this.sendMessageToChat(finalMessage);
     }
-    const finalMessage = { message: message, type: 'apiMessage' } as MessageType;
-    this.sendMessageToChat(finalMessage);
+  }
+
+  private sendMessageToChat(message: any): void {
+    this.dependencies.setMessages((prevMessages: any) => [...prevMessages, message]);
   }
 }

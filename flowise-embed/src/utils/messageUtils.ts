@@ -68,8 +68,8 @@ export const criticalAnalysisStepNameMapping: { [key: string]: string } = {
   [constants.n8nThirdStep]: 'Defesa Comercial',
   [constants.n8nFourthStep]: 'Acordos Internacionais',
   [constants.n8nFifthStep]: 'Análise Logística',
-  [constants.n8nSixthStep]: 'Atributos da NCM',
-  [constants.n8nSeventhStep]: 'ICMS Importação',
+  [constants.n8nSixthStep]: 'ICMS Importação',
+  [constants.n8nSeventhStep]: 'Atributos da NCM',
 };
 
 export const identifyConstant = (inputString: string): string => {

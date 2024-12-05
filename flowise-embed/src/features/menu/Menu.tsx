@@ -7,13 +7,14 @@ import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icon
 import DocumentsDBService from '@/service/documentsDBService';
 import DeleteModal from './components/DeleteModal';
 import { DEFAULT_CHAT_NAME } from '@/utils/messageUtils';
+import { setLocalStorageChatflow, removeLocalStorageChatHistory } from '@/utils';
 
 const documentService = new DocumentsDBService();
 export interface MenuProps {
   currentFlow: string;
-  chatflowid?: string;
   items: MenuItemProps[];
   fillColor?: string;
+  chatflowid: string;
 }
 interface ChatItem {
   agentFlow: string;
@@ -181,9 +182,6 @@ export const Menu = (props: MenuProps) => {
       const offsetDifference = brazilTimezoneOffset - localTimezoneOffset;
       return new Date(date.getTime() + offsetDifference * millisecondsInAMinute);
     }
-
-    // Sort chatItems by created_at in descending order
-    chatItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     let currentGroupIndex = 0;
 

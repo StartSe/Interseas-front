@@ -38,6 +38,7 @@ export const defaultMenuProps: MenuProps = {
   chatflowid: undefined,
   items: [],
   fillColor: '#F4F6FF',
+  chatflowid: '',
 };
 
 export const defaultHomeProps: HomeProps = {

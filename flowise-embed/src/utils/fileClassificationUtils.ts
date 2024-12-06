@@ -31,7 +31,7 @@ export const defaultChecklist = `
 • Peso Líquido por volume - (N.W per volume)
 • Peso Bruto - (G.W)
 • Peso Taxado
-• Cubagem (m³)
+• Cubagem - (m³/m3)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Dimensão estimada dos volumes - (volume x altura x largura)
@@ -62,8 +62,8 @@ Conferências:
 • Possui Ex-tarifário - (Sim/Não, sempre justificando)
 • Multiplicação de valor unitário = quantidade comercializada de cada item
 • Somatório dos itens = valor total informado
-• Se importação direta: Notify = Importador
-• Se importação por Conta e Ordem: Notify = Adquirente ou Importador
+Importação direta - (Deve retornar true apenas se o Adquirente for igual ao Importador, se não, false)
+• Importação por Conta e Ordem - (Deve retornar true apenas se o Adquirente for igual ao importador, se não, false)
 • Se INCOTERM de responsabilidade do exportador: Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador: Tipo de frete = "Collect"
 `;
@@ -77,7 +77,7 @@ export const checklistCeMercante = `
 • Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
 • Número do conhecimento de embarque
 • Data de emissão
-• Cubagem (m³)
+• Cubagem - (m³/m3)
 • Peso Bruto - (G.W)
 • Porto de origem
 • Porto de destino
@@ -153,9 +153,9 @@ Se mercadoria é máquina ou equipamento
 • Marca
 • Modelo
 Conferências:
-• Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador)
-• Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador)
-• Multiplicação de valor unitário dos itens comercializados - - (trazer no formato valor unitário x quantidade comercializada)
+• Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
+• Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false)
+• Multiplicação de valor unitário dos itens comercializados - (trazer no formato valor unitário x quantidade comercializada)
 • Somatório dos itens - valor total informado`;
 
 export const checklistConhecimentoBL = `
@@ -173,7 +173,7 @@ export const checklistConhecimentoBL = `
 • Peso Bruto por container
 • Cubagem por container
 • Peso Bruto 
-• Cubagem (m³)
+• Cubagem - (m³/m3)
 • Quantidade e tipo de volumes - (crate/box/pallets)
 • Peso bruto por tipo de volume
 • Cubagem por tipo de volume
@@ -192,10 +192,8 @@ export const checklistConhecimentoBL = `
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 Conferências:
-• Se importação direta:
-Notify = Importador
-• Se importação por Conta e Ordem:
-Notify = Adquirente ou Importador
+• Importação direta - (Deve retornar true apenas se o Notify for igual ao Consignee, se não, false)
+• Importação por Conta e Ordem - (Deve retornar true apenas se Notify for diferente ao Consignee, se não, false)
 • Se INCOTERM de responsabilidade do exportador:
 Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
@@ -222,7 +220,7 @@ export const checklistConhecimentoHawb = `
 • Quantidade de volumes - (crate/box/pallets)
 • Peso Bruto - (G.W)
 • Peso Taxado
-• Cubagem (m³)
+• Cubagem - (m³/m3)
 • Informação "Wooden Packing" - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
 • Final Destination - (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
@@ -276,7 +274,7 @@ export const checklistCRT = `
 • Fatura Comercial - normalmente consta como "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml"
 • Peso Bruto - (G.W)
 • Peso Líquido - (N.W)
-• Cubagem (m³)
+• Cubagem - (m³/m3)
 • INCOTERM
 • Valor da mercadoria
 • Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
@@ -294,10 +292,8 @@ Se mercadoria é máquina ou equipamento
 • Nº de Série
 
 Conferências:
-• Se importação direta:
-    Destinatário = Importador
-• Se importação por Conta e Ordem:
-    Destinatário = Adquirente ou Importador
+• Importação direta - (Deve retornar true apenas se Destinatário for igual ao Consignatário, se não, false)
+• Importação por Conta e Ordem - (Deve retornar true apenas se Destinatário for diferente ao Consignatário, se não, false)
 
 • Se INCOTERM de responsabilidade do exportador:
     Tipo de frete = "Prepaid"
@@ -319,7 +315,7 @@ export const checklistPackingList = `
 • Peso Líquido por volume ou unidade
 • Peso Líquido total - (N.W)
 • Peso Bruto total - (G.W)
-• Cubagem total (m³)
+• Cubagem total - (m³/m3)
 `;
 
 export const ChecklistProformaInvoice = `
@@ -414,10 +410,8 @@ Se mercadoria é máquina ou equipamento
 • Nº de Série
 
 Conferências:
-• Se importação direta:
-    Destinatário = Importador
-• Se importação por Conta e Ordem:
-    Destinatário = Adquirente ou Importador`;
+• Importação direta - (Deve retornar true apenas se Destinatário for igual ao Consignatário, se não, false)
+• Importação por Conta e Ordem - (Deve retornar true apenas se Destinatário ou Consignatário, se não, false)`;
 
 export const checklistLabels = `
 • Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
@@ -497,7 +491,7 @@ export const checklistInstrucaoDeEmbarque = `
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
 • Peso Bruto - (G.W)
-• Cubagem - (m³)
+• Cubagem - (m³/m3)
 • NCMs
 • Descrição das mercadorias`;
 
@@ -556,12 +550,13 @@ export const checklistMSDS = `
 • Carga perigosa - Código Indicador (UN)
 • Carga perigosa - Classe
 • Carga perigosa - Package group`;
+
 export const checklistCotacaoDeFrete = `
 • Mercadorias/Commodity
 • INCOTERM
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
-• Cubagem
+• Cubagem - (m³/m3)
 • Peso Bruto
 • Peso Taxado
 • Custos totais na origem (Moeda e valor) - também encontrado como "Total custos na origem" ou "Custos totais origem"

@@ -1864,20 +1864,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-      const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
+      const getMessage = (key: string, keyValue: any, validValue: boolean, justificationNotFound: boolean) => {
         const isSuccessfulMessage = validValue && !justificationNotFound;
         if (isSuccessfulMessage) {
           return spacedText(value);
         }
-        const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
+        const defaultNotFoundMessage = justificationNotFound ? keyValue : 'Não identificado';
         const signatureKey = 'Assinatura';
         const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
         const isSignatureKey = key === signatureKey;
+        const exTariffRegex = /DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i;
+        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         let message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
 
-        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (/DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i.test(normalizedKey)) {
-          message = value ? 'Identificada descrição de Ex-Tarifário no documento' : 'Não identificada descrição de Ex-Tarifário no documento';
+        if (exTariffRegex.test(normalizedKey)) {
+          message = keyValue ? messageUtils.EX_TARIFF_IDENTIFIED : messageUtils.EX_TARIFF_NOT_IDENTIFIED;
         }
 
         return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);

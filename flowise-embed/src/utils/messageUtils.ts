@@ -8,7 +8,6 @@ export const messageUtils = {
   NEW_CHAT_BUTTON_LABEL: 'Novo chat',
   UPLOAD_LIMIT: 'Limite de arquivos:',
   SUPPORTED_FILE_TYPES: 'Formatos suportados:',
-
   ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE:
     'Um ou mais arquivos não puderam ter seu checklist identificado, mas os demais serão processados normalmente.',
   ALL_DOCUMENTS_VALIDATED_MESSAGE: 'Todos os seus documentos estão validados corretamente! Verifique cada um dos checklists abaixo detalhadamente',
@@ -19,6 +18,8 @@ export const messageUtils = {
 
   CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: 'Checklist not found in response',
 
+  EX_TARIFF_IDENTIFIED: 'Identificada descrição de Ex-Tarifário no documento',
+  EX_TARIFF_NOT_IDENTIFIED: 'Descrição de Ex-Tarifário não identificada no documento',
   EX_TARIFF_CHECK_ALERT_MESSAGE: 'Atenção, compare se a descrição referente está conforme a plataforma do EX-tarifário',
   IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: 'Dados de LI/Licença de importação não encontrados, revise os documentos enviados',
   CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL: `Dados Necessários para Análise Crítica:`,

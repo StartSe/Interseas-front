@@ -276,18 +276,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   onMount(() => {
     if (props.flow === Flow.CriticalAnalysis.toString()) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
+      const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
+      if (!chatHistoryReference) {
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
+      }
       setDisableInput(false);
       setDocumentsUploaded(true);
     }

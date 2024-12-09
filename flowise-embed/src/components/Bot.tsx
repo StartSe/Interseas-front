@@ -905,10 +905,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
 
     if ([messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_RETRY].includes(lastSelectionMessage ?? '')) {
-      const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
-      if (!chatHistoryReference) {
-        setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
-      }
+      setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
     }
   });
 

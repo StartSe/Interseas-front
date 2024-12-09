@@ -39,7 +39,7 @@ import { cloneDeep } from 'lodash';
 import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
 import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { complianceErrorMessage, criticalAnalysisNcmPhase, messageUtils } from '@/utils/messageUtils';
+import { complianceErrorMessage, messageUtils } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
@@ -57,7 +57,7 @@ import {
 import { compareAndMergeArrays, customBooleanValues, isNonEmptyArrayOrObject, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
-import ParallelApiExecutor from '@/utils/parallelApiExecutor';
+import { getCriticalAnalysisStepResults, n8nCriticalAnalysisUrlSteps } from '@/utils/criticalAnalysisUtils';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import { SelectionBubble } from './bubbles/SelectionBubble';
@@ -1001,32 +1001,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
           addChatMessage(updated);
-          return [...updated];
+          return [...updated, { message: '', type: 'apiMessage' }];
         });
-        for (const ncm of jsonDataCriticalAnalysis['NCM']) {
-          const newJsonDataCriticalAnalysis = { ...jsonDataCriticalAnalysis, NCM: ncm };
 
-          setMessages((prevMessages) => {
-            const newMessage = { message: criticalAnalysisNcmPhase(ncm), type: 'apiMessage' } as MessageType;
-            const updated = [...prevMessages, newMessage];
-            addChatMessage(updated);
-            return [...updated];
-          });
+        const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
 
+        for (const url of n8nCriticalAnalysisUrlSteps) {
           setLoading(true);
           setStartUploadingDocument(true);
-
-          newJsonDataCriticalAnalysis.text = JSON.stringify(newJsonDataCriticalAnalysis);
-
-          const parallelApiExecutor = new ParallelApiExecutor({
-            jsonCriticalAnalysisUpdate: newJsonDataCriticalAnalysis,
-            setMessages,
-          });
-
-          await parallelApiExecutor.execute();
-
+          const finalMessage = await getCriticalAnalysisStepResults(url, ncmArray, jsonDataCriticalAnalysis);
           setLoading(false);
+          setMessages((prevMessages) => {
+            const updated = [...prevMessages, finalMessage];
+            addChatMessage(updated);
+            return [...updated, { message: '', type: 'apiMessage' }];
+          });
         }
+
         setJsonResponseCriticalAnalysis({});
         setIsAnalyzing(false);
       }
@@ -1174,22 +1165,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const loadedMessages: MessageType[] =
         chatMessage?.chatHistory?.length > 0
           ? chatMessage.chatHistory?.map((message: MessageType) => {
-            const chatHistory: MessageType = {
-              messageId: message?.messageId,
-              message: message.message,
-              type: message.type,
-              rating: message.rating,
-              dateTime: message.dateTime,
-            };
-            if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
-            if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
-            if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
-            if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
-            if (message.action) chatHistory.action = message.action;
-            if (message.artifacts) chatHistory.artifacts = message.artifacts;
-            if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
-            return chatHistory;
-          })
+              const chatHistory: MessageType = {
+                messageId: message?.messageId,
+                message: message.message,
+                type: message.type,
+                rating: message.rating,
+                dateTime: message.dateTime,
+              };
+              if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
+              if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
+              if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
+              if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
+              if (message.action) chatHistory.action = message.action;
+              if (message.artifacts) chatHistory.artifacts = message.artifacts;
+              if (message.followUpPrompts) chatHistory.followUpPrompts = message.followUpPrompts;
+              return chatHistory;
+            })
           : [{ message: props.welcomeMessage ?? defaultWelcomeMessage, type: 'apiMessage' }];
 
       const filteredMessages = loadedMessages.filter((message) => message.message !== '' && message.type !== 'leadCaptureMessage');
@@ -1742,11 +1733,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           setHiddenInput(true);
           await processNextChecklist();
       }
-
     } finally {
-      setIsUploadButtonDisabled(false)
+      setIsUploadButtonDisabled(false);
     }
-  }
+  };
 
   const processFileToSend = async (file: File) => {
     let imagesList: File[] = [];

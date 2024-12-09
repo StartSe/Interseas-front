@@ -1,3 +1,5 @@
+import { constants } from '@/constants';
+
 export const messageUtils = {
   FILE_TYPE_NOT_SUPPORTED: 'Este documento não é suportado. Por gentileza, exclua e carregue outro arquivo.',
   MODAL_TITLE: 'Faça o upload dos seus documentos.',
@@ -30,6 +32,7 @@ export const messageUtils = {
   NCM_CONTINUE_QUESTION: 'Deseja continuar com o especialista em Classificação Fiscal?',
   NCM_RETRY: 'Deseja classificar novamente?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
+  NCM_STEP_FAILURE: 'Error processing critical analysis step',
   NCM_INPUT_INSTRUCTIONS:
     'Informe o(s) NCM(s) desejado(s) no campo de texto - Exemplo: "NCM: 1234.56.78, 1234.56.78". Se preferir, realize uma nova classificação.',
   NCM_DISCOVER_TEMPLATE: `
@@ -60,18 +63,26 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   DELETE_BUTTON: 'Excluir',
 };
 
-export const criticalAnalysisStepNameMapping: { [key: number]: string } = {
-  1: 'Tratamento Administrativo',
-  2: 'Tributos e contribuições federais',
-  3: 'Defesa Comercial',
-  4: 'Acordos Internacionais',
-  5: 'Análise Logística',
-  6: 'Atributos da NCM',
-  7: 'ICMS Importação',
+export const criticalAnalysisStepNameMapping: { [key: string]: string } = {
+  [constants.n8nFirstStep]: 'Tratamento Administrativo',
+  [constants.n8nSecondStep]: 'Tributos e contribuições federais',
+  [constants.n8nThirdStep]: 'Defesa Comercial',
+  [constants.n8nFourthStep]: 'Acordos Internacionais',
+  [constants.n8nFifthStep]: 'Análise Logística',
+  [constants.n8nSixthStep]: 'ICMS Importação',
+  [constants.n8nSeventhStep]: 'Atributos da NCM',
 };
 
-export function ncmStepFailureMessage(stepNumber: number): string {
-  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[stepNumber]}**. Por favor, tente novamente.`;
+export const identifyConstant = (inputString: string): string => {
+  const constant = Object.values(constants).filter((constant) => inputString.endsWith(constant));
+
+  return constant ? constant[0] : '';
+};
+
+export function ncmStepFailureMessage(url: string, ncm: any): string {
+  return `Desculpe! Não foi possível completar a etapa de **${
+    criticalAnalysisStepNameMapping[identifyConstant(url)]
+  }** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {

@@ -114,7 +114,8 @@ class DocumentsDBService {
     }
   }
 
-  private async sendUpdateChatRequest(chatId: string, chatName: string): Promise<any> {
+  // Chore: sendUpdateChatRenameRequest
+  private async sendUpdateChatRenameRequest(chatId: string, chatName: string): Promise<any> {
     try {
       const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendUpdateChatRequest, {
         method: 'POST',
@@ -128,6 +129,22 @@ class DocumentsDBService {
       return data;
     } catch (error) {
       throw new Error(`Error updating ChatName:', ${error}`);
+    }
+  }
+
+  private async sendUpdateChatHistoryRequest(chatId: string, chatHistory: string): Promise<any> {
+    try {
+      const response = await fetch(constants.n8nDomain+ '/webhook/' + constants.n8nFlowSendUpdateChatHistoryRequest, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({chatId, chatHistory})
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`Error updating ChatHistory:', ${error}`)
     }
   }
 
@@ -159,8 +176,12 @@ class DocumentsDBService {
     await this.sendDeleteChatRequest(chatId);
   }
 
-  private async updateChat(chatId: string, chatName: string): Promise<string | null> {
-    return await this.sendUpdateChatRequest(chatId, chatName);
+  private async updateChatRename(chatId: string, chatName: string): Promise<string | null> {
+    return await this.sendUpdateChatRenameRequest(chatId, chatName);
+  }
+
+  private async updateChatLog(chatId: string, chatLog: string): Promise<string | null> {
+    return await this.sendUpdateChatHistoryRequest(chatId, chatLog);
   }
 
   private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
@@ -268,11 +289,21 @@ class DocumentsDBService {
 
   public async updateChatName(chatId: string, chatName: string): Promise<string | null> {
     try {
-      const result = await this.updateChat(chatId, chatName);
+      const result = await this.updateChatRename(chatId, chatName);
       return result;
     } catch (error) {
       console.error('Error updating chatName:', error);
       throw error;
+    }
+  }
+
+  public async updateChatHistory(chatId: string, chatHistory: string): Promise<string | null> {
+    try {
+      const result = await this.updateChatLog(chatId, chatHistory);
+      return result;
+    } catch (error) {
+      console.error('Error updating chatHistory:', error);
+      throw error
     }
   }
 }

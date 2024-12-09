@@ -38,8 +38,8 @@ export const defaultChecklist = `
 • Nº de Série - (se mercadoria é máquina ou equipamento)
 • Informação Wooden Packing - (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
 • NCM - (4 a 8 dígitos de cada NCM)
-• Valor unitário de cada espécie de mercadoria
-• Valor total de cada espécie de mercadoria
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias(quantidade X valor unitário, separando mercadorias diferentes por ';')
+• Valor Total de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
 • Quantidade - (formato quantidade x mercadoria)
 • Unidade Comercializada
 • Descrição resumida das mercadorias - (todos os nomes de produtos diferentes)
@@ -69,7 +69,10 @@ Conferências:
 export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento
-• Possui Ex-tarifário - (Sim/Não, sempre justificando)`;
+• Possui Ex-tarifário - (Sim/Não, sempre justificando)
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Somatório Peso Líquido total - Considerando todas as páginas somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)
+• Somatório Peso Bruto total - Considerando todas as páginas somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento.- (G.W)`;
 
 export const checklistCeMercante = `
 • Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
@@ -82,7 +85,7 @@ export const checklistCeMercante = `
 • Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
 • Dados do Embarcador (Campo "Identificação do Exportador" em "Consulta de conhecimento")
 • Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Descrição da mercadora - Campo "Descrição da mercadoria" em "Consulta de conhecimento"
+• Descrição da mercadoria - Campo "Descrição da mercadoria" em "Consulta de conhecimento"
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Taxas - valores, moedas e tipos
 • Transbordo - navio 1º transporte - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
@@ -98,8 +101,8 @@ export const checklistCertificadoOrigem = `
 • Dados do Adquirente
 • Acordo
 • Fatura Comercial
-• Valor das mercadorias
-• Quantidade - (trazer no formato quantidade x mercadoria)
+• Valor Total das mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias(quantidade X valor unitário, separando mercadorias diferentes por ';')
 • NCM
 • NALADI/NALADISA - (pode ter de 8 a 12 dígitos)
 Se operação por Conta e Ordem:
@@ -120,9 +123,9 @@ export const checklistCommercialInvoice = `
 • Código/Referência das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
 • Unidade Comercializada
-• Valor unitário de cada espécie de mercadoria
-• Valor total de cada espécie de mercadoria
-• Valor Total das Mercadorias
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias(quantidade X valor unitário, separando mercadorias diferentes por ';')
+• Valor Total de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • Moeda de pagamento
 • Condições de Pagamento
 • Dados Bancários do Exportador
@@ -154,7 +157,7 @@ Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
 • Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false)
 • Multiplicação de valor unitário dos itens comercializados - (trazer no formato valor unitário x quantidade comercializada)
-• Somatório dos itens - valor total informado`;
+• Valor das mercadorias - (Somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator)`;
 
 export const checklistConhecimentoBL = `
 • Número do documento
@@ -164,14 +167,12 @@ export const checklistConhecimentoBL = `
 • "To order of" - identificar se consta "To order of" junto ao consignee - (true/false)
 • Dados do Notify - também chamado de Adquirente, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Navio - Campo "Vessel", também popde constar como "Vessel/Voyage"
-• Tipo de carga -	Identificar se FCL, LCL, FCL/LCL, Breakbulk, Bulk (granel);
+• Tipo de carga - Identificar se FCL, LCL, FCL/LCL, Breakbulk, Bulk (granel);
 • Quantidade e tipos de containers
 • Números dos containers - (no formato <3 letras>U<7 números>)
 • Números dos lacres dos containers - (seal)
 • Peso Bruto por container
 • Cubagem por container
-• Peso Bruto 
-• Cubagem - (m³/m3)
 • Quantidade e tipo de volumes - (crate/box/pallets)
 • Peso bruto por tipo de volume
 • Cubagem por tipo de volume
@@ -211,7 +212,6 @@ export const checklistConhecimentoHawb = `
 • Notify - (razão social, endereço, CNPJ e CEP)
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Forma de pagamento do frete
-• Valor total do frete
 • Aeroporto de Partida
 • Aeroporto de Destino
 • Moeda
@@ -225,13 +225,13 @@ export const checklistConhecimentoHawb = `
 • NCM/HS Code
 • Descrição Ex-tarifário
 • Frete por peso - também chamado de "Weight Charge"
+• Somatório frete e taxas - Considerando todas as páginas fazer a somatória do 'Valor total do frete' e taxas encontrados no checklist usando a ferramenta calculator
 
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 Dados de Compliance:
 • Description of Goods - (Descrição resumida e completa das mercadorias)
 • Forma de pagamento - (Collect/Prepaid, por peso/valor ou outros encargos)
-• Valor total do frete que consta no HAWB - Valor pode ser também buscado pelas seguintes chaves: Total Prepaid; Total Collect; Total Freight)
 `;
 
 export const checklistConhecimentoMawb = `
@@ -246,6 +246,7 @@ export const checklistConhecimentoMawb = `
 • Informação Wooden Packing - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 • Se INCOTERM de responsabilidade do exportador:
@@ -274,7 +275,7 @@ export const checklistCRT = `
 • Peso Líquido - (N.W)
 • Cubagem - (m³/m3)
 • INCOTERM
-• Valor da mercadoria
+• Valor da Mercadoria
 • Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Seguro (tipo, moeda e valor)
 • Outros gastos a pagar (tipo, moeda e valor)
@@ -283,13 +284,14 @@ export const checklistCRT = `
 • Documentos anexos
 • Declarações e observações - detalhamento do frete internacional e nacional 
 • Carimbo e assinatura
-• Valor unitário de cada espécie de mercadoria
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias(quantidade X valor unitário, separando mercadorias diferentes por ';')
 • Descrição EX-tarifário - (true/false)
 
 Se mercadoria é máquina ou equipamento
 • Nº de Série
 
 Conferências:
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
 • Importação direta - (Deve retornar true apenas se Destinatário for igual ao Consignatário, se não, false)
 • Importação por Conta e Ordem - (Deve retornar true apenas se Destinatário for diferente ao Consignatário, se não, false)
 
@@ -311,9 +313,9 @@ export const checklistPackingList = `
 • Quantidade de Volumes - (crate/box/pallets)
 • Tipo de Volumes - (crate/box/pallets)
 • Peso Líquido por volume ou unidade
-• Peso Líquido total - (N.W)
-• Peso Bruto total - (G.W)
-• Cubagem total - (m³/m3)
+• Somatório Peso Líquido total - Considerando todas as páginas somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
+• Somatório Peso Bruto total - Considerando todas as páginas somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
+• Somatório Cubagem total -Considerando todas as páginas somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;
 
 export const ChecklistProformaInvoice = `
@@ -330,9 +332,9 @@ export const ChecklistProformaInvoice = `
 • Código/Referência das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
 • Unidade comercializada
-• Valor unitário de cada espécie de mercadoria
-• Valor total de cada espécie de mercadoria
-• Valor Total das Mercadorias
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias(quantidade X valor unitário, separando mercadorias diferentes por ';')
+• Valor Total de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
+• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento)
 • NCM/HS Code
 • Moeda de pagamento
 • Forma/Condições de Pagamento
@@ -343,8 +345,11 @@ export const ChecklistProformaInvoice = `
 • Quantidade de volumes estimada - (crate/box/pallets)
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Somatório Peso Líquido total - Considerando todas as páginas somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
+• Somatório Peso Bruto total - Considerando todas as páginas somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
 • Multiplicação de valor unitário dos itens comercializados -  (Trazer as mercadorias no formato valor unitário x quantidade comercializada)
-• Somatório dos itens - (valor total informado por espécie de mercadoria)
+• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento)
 • Máquina/Equipamento`;
 
 const checklistCCTAereo = `
@@ -362,12 +367,16 @@ const checklistCCTAereo = `
 • Frete por item de carga - (somatório)
 • Forma de pagamento - (por peso/valor)
 • Forma de pagamento - (outros encargos)
-• Valor total do frete
 • Dados do Embarcador estrangeiro - também chamado de exportador (nome, endereço, CNPJ, CEP)
 • País do embarcador estrangeiro
 • Consignatário/Identificação - (CNPJ)
 • Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Número do MAWB/AWB associados
+
+Conferências:
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Somatório Peso Líquido total - Considerando todas as páginas somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
+• Somatório Peso Bruto total - Considerando todas as páginas somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
 `;
 
 const checklistMicDta = `
@@ -471,9 +480,9 @@ export const checklistOrdemDeCompra = `
 • Descrição das mercadorias
 • Quantidade
 • Unidade Comercializada
-• Valor Unitário de cada espécie de mercadoria
-• Valor Total de cada espécie de mercadoria
-• Valor total das mercadorias
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias(quantidade X valor unitário, separando mercadorias diferentes por ';')
+• Valor Total de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • Moeda de pagamento
 • Condições de pagamento
 • INCOTERM
@@ -560,6 +569,7 @@ export const checklistCotacaoDeFrete = `
 • Custos totais na origem (Moeda e valor) - também encontrado como "Total custos na origem" ou "Custos totais origem"
 • Custos totais de frete (Moeda e valor) - também encontrado como "Total do frete marítimo", "Total do frete aéreo", "Total do frete rodoviário", "Total custos no frete", "Custos totais frete" ou "Frete Total"
 • Capatazia (Moeda e valor) - também consta como "Capatazia (DTHC)", "Destination Terminal Handling Charges" ou "THC no Destino (Capatazia)"
+• Frete - Somatória dos valores da capatazia, custos totais de frete e custos totais na origem
 `;
 
 export enum DocumentTypes {

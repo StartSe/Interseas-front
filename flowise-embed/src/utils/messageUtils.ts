@@ -32,6 +32,7 @@ export const messageUtils = {
   NCM_CONTINUE_QUESTION: 'Deseja continuar com o especialista em Classificação Fiscal?',
   NCM_RETRY: 'Deseja classificar novamente?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
+  NCM_STEP_FAILURE: 'Error processing critical analysis step',
   NCM_INPUT_INSTRUCTIONS:
     'Informe o(s) NCM(s) desejado(s) no campo de texto - Exemplo: "NCM: 1234.56.78, 1234.56.78". Se preferir, realize uma nova classificação.',
   NCM_DISCOVER_TEMPLATE: `
@@ -73,12 +74,9 @@ export const criticalAnalysisStepNameMapping: { [key: string]: string } = {
 };
 
 export const identifyConstant = (inputString: string): string => {
-  for (const [key, value] of Object.entries(constants)) {
-    if (inputString.endsWith(value)) {
-      return value;
-    }
-  }
-  return '';
+  const constant = Object.values(constants).filter((constant) => inputString.endsWith(constant));
+
+  return constant ? constant[0] : '';
 };
 
 export function ncmStepFailureMessage(url: string, ncm: any): string {

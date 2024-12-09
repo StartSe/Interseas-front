@@ -1,5 +1,5 @@
 import { MessageType } from '@/components/Bot';
-import { criticalAnalysisStepNameMapping, identifyConstant, ncmStepFailureMessage } from './messageUtils';
+import { criticalAnalysisStepNameMapping, identifyConstant, messageUtils, ncmStepFailureMessage } from './messageUtils';
 import { constants } from '@/constants';
 
 export const n8nCriticalAnalysisUrlSteps = [
@@ -38,7 +38,7 @@ export const criticalAnalysisRequest = async (url: string, ncm: string, payload:
     });
 
     if (!response.ok) {
-      throw new Error('response was not ok');
+      throw new Error(messageUtils.NCM_STEP_FAILURE);
     }
 
     const data = await response.json();

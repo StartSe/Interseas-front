@@ -62,8 +62,6 @@ Conferências:
 • Possui Ex-tarifário - (Sim/Não, sempre justificando)
 • Multiplicação de valor unitário = quantidade comercializada de cada item
 • Somatório dos itens = valor total informado
-Importação direta - (Deve retornar true apenas se o Adquirente for igual ao Importador, se não, false)
-• Importação por Conta e Ordem - (Deve retornar true apenas se o Adquirente for igual ao importador, se não, false)
 • Se INCOTERM de responsabilidade do exportador: Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador: Tipo de frete = "Collect"
 `;
@@ -411,7 +409,7 @@ Se mercadoria é máquina ou equipamento
 
 Conferências:
 • Importação direta - (Deve retornar true apenas se Destinatário for igual ao Consignatário, se não, false)
-• Importação por Conta e Ordem - (Deve retornar true apenas se Destinatário ou Consignatário, se não, false)`;
+• Importação por Conta e Ordem - (Deve retornar true apenas se Destinatário for diferente do Consignatário, se não, false)`;
 
 export const checklistLabels = `
 • Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)

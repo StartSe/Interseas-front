@@ -15,6 +15,8 @@ export declare const messageUtils: {
     NO_LI_LPCO_COMPLIANCE_FEATURE: string;
     MANUAL_COMPLIANCE_ALERT: string;
     CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR: string;
+    EX_TARIFF_IDENTIFIED: string;
+    EX_TARIFF_NOT_IDENTIFIED: string;
     EX_TARIFF_CHECK_ALERT_MESSAGE: string;
     IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: string;
     CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL: string;
@@ -26,6 +28,7 @@ export declare const messageUtils: {
     NCM_CONTINUE_QUESTION: string;
     NCM_RETRY: string;
     NCM_TEXT_INPUT_REQUIRED: string;
+    NCM_STEP_FAILURE: string;
     NCM_INPUT_INSTRUCTIONS: string;
     NCM_DISCOVER_TEMPLATE: string;
     CRITICAL_ANALYSIS_TEMPLATE: string;
@@ -36,9 +39,10 @@ export declare const messageUtils: {
     DELETE_BUTTON: string;
 };
 export declare const criticalAnalysisStepNameMapping: {
-    [key: number]: string;
+    [key: string]: string;
 };
-export declare function ncmStepFailureMessage(stepNumber: number): string;
+export declare const identifyConstant: (inputString: string) => string;
+export declare function ncmStepFailureMessage(url: string, ncm: any): string;
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
 export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
 export declare function criticalAnalysisNcmPhase(ncm: string): string;

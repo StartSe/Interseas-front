@@ -1702,7 +1702,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         fileMap.type = docType;
         const checklist = identifyDocumentChecklist(docType);
         if (checklist) {
-          fileMap.checklist = checklist.concat(conferencesDefault);
+          fileMap.checklist = checklist;
+          if (
+            ![
+              DocumentTypes.PACKING_LIST.toString(),
+              DocumentTypes.CERTIFICADO_DE_ORIGEM.toString(),
+              DocumentTypes.CCT.toString(),
+              DocumentTypes.PROFORMA_INVOICE.toString(),
+            ].includes(docType)
+          ) {
+            fileMap.checklist = fileMap.checklist.concat(conferencesDefault);
+          }
         } else {
           fileMap.checklist = defaultChecklist;
         }
@@ -1848,16 +1858,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
-      const getMessage = (key: string, value: any, validValue: boolean, justificationNotFound: boolean) => {
+      const getMessage = (key: string, keyValue: any, validValue: boolean, justificationNotFound: boolean) => {
         const isSuccessfulMessage = validValue && !justificationNotFound;
         if (isSuccessfulMessage) {
           return spacedText(value);
         }
-        const defaultNotFoundMessage = justificationNotFound ? value : 'Não identificado';
+        const defaultNotFoundMessage = justificationNotFound ? keyValue : 'Não identificado';
         const signatureKey = 'Assinatura';
         const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
         const isSignatureKey = key === signatureKey;
-        const message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+        const exTariffRegex = /DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i;
+        const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        let message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+
+        if (exTariffRegex.test(normalizedKey)) {
+          message = keyValue ? messageUtils.EX_TARIFF_IDENTIFIED : messageUtils.EX_TARIFF_NOT_IDENTIFIED;
+        }
 
         return spacedText(`<span style="color: ${colorTheme.errorColor};">${message}</span>`);
       };

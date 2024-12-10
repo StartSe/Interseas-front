@@ -32,6 +32,23 @@ export const Menu = (props: MenuProps) => {
   const [modalPosition, setModalPosition] = createSignal<'top' | 'bottom'>('bottom');
   const [selectedChatId, setSelectedChatId] = createSignal<string | null>(null);
   const [selectedChatName, setSelectedChatName] = createSignal<string | null>(null);
+  const [activeChatId, setActiveChatId] = createSignal<string | null>(null);
+
+  let menuItemsRef: HTMLDivElement | undefined;
+
+  createEffect(() => {
+    const currentActiveChatId = activeChatId();
+    if (currentActiveChatId && menuItemsRef) {
+      const menuItems = menuItemsRef.getElementsByClassName('menu-history-item');
+      [...menuItems].forEach((item) => {
+        if (currentActiveChatId === item.id) {
+          item.classList.add('menu-history-item-selected');
+        } else {
+          item.classList.remove('menu-history-item-selected');
+        }
+      });
+    }
+  });
 
   const handleClick = (flow: string) => {
     setCurrentFLow(flow);
@@ -201,7 +218,7 @@ export const Menu = (props: MenuProps) => {
                   {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
                 <div class="menu-history">Histórico de chats - {getChatHistoryTitle()} </div>
-                <div class="menu-history-item-wrapper">
+                <div class="menu-history-item-wrapper" ref={menuItemsRef}>
                   <For each={Object.values(groupedChatItems())}>
                     {(group) =>
                       group.items.length > 0 && (
@@ -211,7 +228,7 @@ export const Menu = (props: MenuProps) => {
                             {(item) => {
                               let buttonRef: HTMLButtonElement | null = null;
                               return (
-                                <div class="menu-history-item">
+                                <div class="menu-history-item" id={item.id} onClick={() => setActiveChatId(item.id)}>
                                   {!!editingChatId() && editingChatId() === item.id ? (
                                     <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
                                       <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />

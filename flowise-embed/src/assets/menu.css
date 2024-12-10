@@ -148,6 +148,10 @@
     align-items: center;
     border-bottom: .0313rem solid var(--orange-border-color);
 }
+
+.menu-history-item-selected{
+    background-color: #D7E5F8;
+}
 .menu-history-item-wrapper form {
     height: 2.5rem;
     width: 100%;

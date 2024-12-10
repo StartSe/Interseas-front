@@ -41,7 +41,7 @@ interface Action {
 
 export interface ChatMessage {
   id: string;
-  role: 'apiMessage' | 'userMessage';
+  type: 'apiMessage' | 'userMessage';
   chatflowId: string;
   content: string;
   sourceDocuments: Document[] | null;

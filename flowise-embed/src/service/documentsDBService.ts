@@ -132,19 +132,19 @@ class DocumentsDBService {
     }
   }
 
-  private async sendUpdateChatHistoryRequest(chatId: string, chatHistory: string): Promise<any> {
+  private async sendUpdateChatHistoryRequest(chatId: string, chatHistory: Record<string, any> = {}): Promise<any> {
     try {
-      const response = await fetch(constants.n8nDomain+ '/webhook/' + constants.n8nFlowSendUpdateChatHistoryRequest, {
+      const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendUpdateChatHistoryRequest, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({chatId, chatHistory})
+        body: JSON.stringify({ chatId, chatHistory }),
       });
       const data = await response.json();
       return data;
     } catch (error) {
-      throw new Error(`Error updating ChatHistory:', ${error}`)
+      throw new Error(`Error updating ChatHistory:', ${error}`);
     }
   }
 
@@ -180,7 +180,7 @@ class DocumentsDBService {
     return await this.sendUpdateChatRenameRequest(chatId, chatName);
   }
 
-  private async updateChatLog(chatId: string, chatLog: string): Promise<string | null> {
+  private async updateChatLog(chatId: string, chatLog: Record<string, any> = {}): Promise<string | null> {
     return await this.sendUpdateChatHistoryRequest(chatId, chatLog);
   }
 
@@ -297,13 +297,13 @@ class DocumentsDBService {
     }
   }
 
-  public async updateChatHistory(chatId: string, chatHistory: string): Promise<string | null> {
+  public async updateChatHistory(chatId: string, chatHistory: Record<string, any> = {}): Promise<string | null> {
     try {
       const result = await this.updateChatLog(chatId, chatHistory);
       return result;
     } catch (error) {
       console.error('Error updating chatHistory:', error);
-      throw error
+      throw error;
     }
   }
 }

@@ -61,7 +61,7 @@ import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import { SelectionBubble } from './bubbles/SelectionBubble';
 import DocumentsDBService from '@/service/documentsDBService';
-import historyChatFlowiseAPI from '@/service/historyChatFlowiseAPI';
+import historyChatFlowiseAPI, { ChatHistoryItem } from '@/service/historyChatFlowiseAPI';
 import { ChatMessage } from '@/types';
 
 export type FileEvent<T = EventTarget> = {
@@ -331,18 +331,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
    * Add each chat message into localStorage
    */
   const addChatMessage = (allMessage: MessageType[]) => {
-    const chatMessage = getLocalStorageChatflow(props.chatflowid);
-
-    const chatHistory = chatMessage.chatHistory || {};
-
-    const newMessages = allMessage.map((item) => item.message);
-    const existingMessages = Object.values(chatHistory).map((item: any) => item.message);
-
-    const messageExists = newMessages.some((message) => existingMessages.includes(message));
-
-    if (messageExists) {
-      return;
-    }
+    const chatMessage = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
 
     const messages = allMessage.map((item) => {
       if (item.fileUploads) {
@@ -361,7 +350,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       agent_flow: props.flow,
     };
 
-    documentService.saveChatData(chatData);
+    // documentService.saveChatData(chatData);
+    documentService.updateChatHistory(chatId(), { chatHistory: messages });
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
@@ -2120,29 +2110,33 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const fetchAndProcessChatHistory = async () => {
     if (props.apiHost && props.chatflowid) {
-      const chatHistory = await historyChatFlowiseApi.getChatHistory(props.apiHost, props.chatflowid, chatId());
+      const chatHistory = await historyChatFlowiseApi.getChatHistory(chatId());
+      console.log('Chat History: ', chatHistory);
       processMessages(chatHistory);
     }
   };
 
-  const processMessages = (messages: ChatMessage[]) => {
-    const visibleMessages: ChatMessage[] = [];
+  const processMessages = (messages: ChatHistoryItem[]) => {
+    const visibleMessages: ChatHistoryItem[] = [];
     let currentFileMap: FileMapping | null = null;
 
     for (const message of messages) {
-      const isUserMessage = message.role === 'userMessage';
-      const isApiMessage = message.role === 'apiMessage';
+      const isUserMessage = message.type === 'userMessage';
+      const isApiMessage = message.type === 'apiMessage';
       const contentJson = (() => {
         try {
-          return JSON.parse(message.content);
+          return JSON.parse(message.message);
         } catch {
           return null;
         }
       })();
 
       if (message.fileUploads !== null) {
-        const firstPageImageFileName = message.fileUploads[0].name;
-        const documentName = firstPageImageFileName.replace(/(?:[^\w]\d+)*\.\w+$/, '').trim();
+        let documentName = '';
+        if (message.fileUploads && message.fileUploads.length > 0) {
+          const firstPageImageFileName = message.fileUploads[0].name;
+          documentName = firstPageImageFileName.replace(/(?:[^\w]\d+)*\.\w+$/, '').trim();
+        }
         const mime = '';
         const hash = '';
 
@@ -2155,8 +2149,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (isUserMessage) {
         const keywordsToIgnore = ['CROSS_VALIDATION', 'LIST_DIFFERENT_KEYS', 'DESCOBRE_NCM', 'CORRIGE_JSON', 'Specific compliance'];
         const keywordsToReformat = ['CHECKLIST', 'EXTRACTION'];
-        const shouldIgnoreMessage = keywordsToIgnore.some((keyword: string) => message.content.startsWith(keyword));
-        const shouldReformatMessage = keywordsToReformat.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldIgnoreMessage = keywordsToIgnore.some((keyword: string) => message.message.startsWith(keyword));
+        const shouldReformatMessage = keywordsToReformat.some((keyword: string) => message.message.startsWith(keyword));
         if (shouldIgnoreMessage) {
           continue;
         } else if (shouldReformatMessage) {
@@ -2183,9 +2177,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
     }
+    console.log(visibleMessages);
     visibleMessages.map((item) => {
       setMessages((prevMessages) => {
-        const newMessage = { message: `${item.content}`, type: item.role, fileUploads: item.fileUploads ?? [] } as MessageType;
+        const newMessage = { message: `${item.message}`, type: item.type, fileUploads: item.fileUploads ?? [] } as MessageType;
         const updated = [...prevMessages, newMessage];
         addChatMessage(updated);
         return [...updated];

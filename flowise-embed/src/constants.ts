@@ -33,7 +33,7 @@ export const constants = {
   n8nFlowSendUpdateChatRequest: 'sendUpdateChatRequest',
   n8nFlowGetChatHistoryFromSupabase: 'getChatHistoryFromSupabase',
   n8nFlowSendUpdateChatHistoryRequest: 'sendUpdateChatHistoryRequest',
-  flowiseJwtToken: '_53va3oHqcKL0m8HaZJQbgKkgtwIgv_wquEI46lw-T4'
+  flowiseJwtToken: '_53va3oHqcKL0m8HaZJQbgKkgtwIgv_wquEI46lw-T4',
 };
 
 export const defaultMenuProps: MenuProps = {

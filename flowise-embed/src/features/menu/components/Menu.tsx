@@ -35,17 +35,12 @@ export const Menu = (props: MenuProps) => {
   const [activeChatId, setActiveChatId] = createSignal<string | null>(null);
 
   let menuItemsRef: HTMLDivElement | undefined;
-
   createEffect(() => {
     const currentActiveChatId = activeChatId();
     if (currentActiveChatId && menuItemsRef) {
       const menuItems = menuItemsRef.getElementsByClassName('menu-history-item');
-      [...menuItems].forEach((item) => {
-        if (currentActiveChatId === item.id) {
-          item.classList.add('menu-history-item-selected');
-        } else {
-          item.classList.remove('menu-history-item-selected');
-        }
+      Array.from(menuItems).forEach((item) => {
+        item.classList.toggle('menu-history-item-selected', currentActiveChatId === item.id);
       });
     }
   });

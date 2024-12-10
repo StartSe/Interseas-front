@@ -31,7 +31,9 @@ export const constants = {
   n8nFlowFetchChatIdsForFlow: 'fetchChatIdsForFlow',
   n8nFlowSendDeleteChatRequest: 'sendDeleteChatRequest',
   n8nFlowSendUpdateChatRequest: 'sendUpdateChatRequest',
-  flowiseJwtToken: 'tV-zG93Qky61gJh-m51RYZEGJ2DOMrM3P1LhhjvcHXA'
+  n8nFlowGetChatHistoryFromSupabase: 'getChatHistoryFromSupabase',
+  n8nFlowSendUpdateChatHistoryRequest: 'sendUpdateChatHistoryRequest',
+  flowiseJwtToken: '_53va3oHqcKL0m8HaZJQbgKkgtwIgv_wquEI46lw-T4'
 };
 
 export const defaultMenuProps: MenuProps = {

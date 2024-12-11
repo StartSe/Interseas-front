@@ -125,6 +125,21 @@ export const removeLocalStorageChatHistory = (chatflowid: string) => {
   }
 };
 
+export const removeLocalStorageChatHistoryItem = (chatflowid: string ) => {
+  const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
+  if (!chatDetails) return;
+  try {
+    const parsedChatDetails = JSON.parse(chatDetails);
+    console.log(parsedChatDetails)
+    const obj = { chatHistory: parsedChatDetails.message };
+    localStorage.removeItem(`${chatflowid}_EXTERNAL`);
+    localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
+  }
+  catch (e) {
+    return;
+  }
+}
+
 export const getBubbleButtonSize = (size: 'small' | 'medium' | 'large' | number | undefined) => {
   if (!size) return 48;
   if (typeof size === 'number') return size;

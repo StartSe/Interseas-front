@@ -33,7 +33,14 @@ import { CircleDotIcon, SparklesIcon, TrashIcon } from './icons';
 import { CancelButton } from './buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
-import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow, setCookie, getCookie } from '@/utils';
+import {
+  removeLocalStorageChatHistory,
+  getLocalStorageChatflow,
+  setLocalStorageChatflow,
+  setCookie,
+  getCookie,
+  removeLocalStorageChatHistoryItem,
+} from '@/utils';
 import { cloneDeep } from 'lodash';
 import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
 import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
@@ -229,6 +236,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [chatId, setChatId] = createSignal(
     (props.chatflowConfig?.vars as any)?.customerId ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}` : uuidv4(),
   );
+  console.log('ChatId Before Memo: ', chatId());
   const [isMessageStopping, setIsMessageStopping] = createSignal(false);
   const [starterPrompts, setStarterPrompts] = createSignal<string[]>([], { equals: false });
   const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
@@ -260,8 +268,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   createMemo(() => {
     const customerId = (props.chatflowConfig?.vars as any)?.customerId;
     setChatId(customerId ? `${customerId.toString()}+${uuidv4()}` : uuidv4());
+    console.log('ChatId Insine Memo: ', chatId());
   });
-
+  console.log('ChatId after Memo: ', chatId());
   // document uploading
   const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
   const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
@@ -327,12 +336,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   };
 
+  onMount(() => {
+    fetchAndProcessChatHistory();
+  });
   /**
    * Add each chat message into localStorage
    */
-  const addChatMessage = (allMessage: MessageType[]) => {
-    const chatMessage = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
-
+  const addChatMessage = async (allMessage: MessageType[]) => {
+    // removeLocalStorageChatHistory(props.chatflowid);
     const messages = allMessage.map((item) => {
       if (item.fileUploads) {
         const fileUploads = item?.fileUploads.map((file) => ({
@@ -344,15 +355,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       return item;
     });
+    const chatMessage = getLocalStorageChatflow(props.chatflowid);
 
-    const chatData = {
-      id: chatId(),
-      agent_flow: props.flow,
-    };
+    if (!chatMessage || Object.entries(chatMessage).length === 0) {
+      const chatData = {
+        id: chatId(),
+        agent_flow: props.flow,
+      };
 
-    // documentService.saveChatData(chatData);
-    documentService.updateChatHistory(chatId(), { chatHistory: messages });
-    setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
+      await documentService.saveChatData(chatData);
+      await documentService.updateChatHistory(chatId(), { chatHistory: messages });
+    }
+    // setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
+    // console.log('ChatId Inside AddChatMessage: ', chatId());
   };
 
   // Define the audioRef
@@ -530,6 +545,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const updateMetadata = (data: any, input: string) => {
     if (data.chatId) {
       setChatId(data.chatId);
+      console.log('ChatId Insine updateMetadata: ', chatId());
     }
 
     // set message id that is needed for feedback
@@ -831,6 +847,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             else text = JSON.stringify(data, null, 2);
 
             if (data?.chatId) setChatId(data.chatId);
+            console.log('ChatId line 846: ', chatId());
 
             playReceiveSound();
 
@@ -1095,6 +1112,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
+      console.log('ChatId Inside ClearChat: ', chatId());
       setUploadedFiles([]);
       window.location.reload();
 
@@ -1176,7 +1194,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
-      if (chatMessage.chatId) setChatId(chatMessage.chatId);
+      // if (chatMessage.chatId) setChatId(chatMessage.chatId);
+      console.log('ChatId Inside CreateEffect line 1177: ', chatId());
       const savedLead = chatMessage.lead;
       if (savedLead) {
         setIsLeadSaved(!!savedLead);
@@ -2109,9 +2128,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   }
 
   const fetchAndProcessChatHistory = async () => {
+    const chatDetails = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
+    const chatIdInlocalStorage = chatDetails ? JSON.parse(chatDetails) : null;
     if (props.apiHost && props.chatflowid) {
-      const chatHistory = await historyChatFlowiseApi.getChatHistory(chatId());
-      console.log('Chat History: ', chatHistory);
+      const chatHistory = await historyChatFlowiseApi.getChatHistory(chatIdInlocalStorage?.chatId || null);
       processMessages(chatHistory);
     }
   };
@@ -2177,7 +2197,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
     }
-    console.log(visibleMessages);
     visibleMessages.map((item) => {
       setMessages((prevMessages) => {
         const newMessage = { message: `${item.message}`, type: item.type, fileUploads: item.fileUploads ?? [] } as MessageType;
@@ -2187,10 +2206,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
     });
   };
-
-  onMount(() => {
-    fetchAndProcessChatHistory();
-  });
 
   return (
     <>

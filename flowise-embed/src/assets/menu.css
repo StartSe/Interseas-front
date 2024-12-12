@@ -9,6 +9,7 @@
     --chatbot-container-font-family-secondary: "IBM Plex Sans", sans-serif;
     --menu-content-background-color: #FAFAFA;
     --orange-border-color: #FBA115;
+    --blue-button-color: #D7E5F8;
 }
 .menu {
     font-family: var(--chatbot-container-font-family-secondary);
@@ -147,6 +148,9 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: .0313rem solid var(--orange-border-color);
+}
+.menu-history-item-selected{
+    background-color: var(--blue-button-color);
 }
 .menu-history-item-wrapper form {
     height: 2.5rem;

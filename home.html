@@ -6,27 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="./flowise-embed/src/pages/Home/home.css" />
   <title>Página Inicial - Interseas</title>
+  <script type="module">
+    import { checkAuth } from "./js/auth.js";
+
+    await checkAuth({ redirectNotAuthenticated: true });
+  </script>
+</head>
+
+<body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script type="module">
     import Chatbot from "./flowise-embed/dist/web.js";
     import { menuItems } from "./js/data.js";
+
     Chatbot.initMenu({
       currentFlow: "home",
       items: menuItems,
       fillColor: "#000000",
     });
+
     Chatbot.initHome({
       items: menuItems,
     });
   </script>
-</head>
-
-<body>
   <header>
-    <script type="module">
-      import { checkAuth } from "./auth.js";
-      checkAuth();
-    </script>
     <flowise-menu></flowise-menu>
     <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
   </header>

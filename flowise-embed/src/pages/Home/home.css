@@ -53,6 +53,7 @@ main {
   flex-direction: column;
   gap: var(--spacing-large);
   flex: 1;
+  position: relative;
 }
 
 /* Estilos de texto */
@@ -137,7 +138,9 @@ footer {
   display: flex;
   justify-content: space-between;
   color: var(--text-color-dark);
-  margin-top: auto;
+  bottom: 0;
+  position: absolute;
+  width: 100vw;
 }
 
 footer span {
@@ -166,7 +169,7 @@ footer span a:hover {
   .card-container {
     justify-content: center;
   }
-  
+
   .card {
     width: 100%;
     max-width: 21.875rem;

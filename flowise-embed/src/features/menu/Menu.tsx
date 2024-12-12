@@ -1,11 +1,11 @@
 import { For, createEffect, createSignal } from 'solid-js';
-import styles from '../../../assets/menu.css';
-import { MenuButton } from './MenuButton';
-import { MenuItem, MenuItemProps } from './MenuItem';
+import styles from './menu.css';
+import { MenuButton } from './components/MenuButton';
+import { MenuItem, MenuItemProps } from './components/MenuItem';
 import { LogoInterseas } from '@/components/icons/LogoInterseas';
 import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icons';
 import DocumentsDBService from '@/service/documentsDBService';
-import DeleteModal from './DeleteModal';
+import DeleteModal from './components/DeleteModal';
 import { DEFAULT_CHAT_NAME } from '@/utils/messageUtils';
 
 const documentService = new DocumentsDBService();
@@ -21,11 +21,21 @@ interface ChatItem {
   id: string;
   updatedAt: string | null;
 }
+interface ChatHistory {
+  title: string;
+  hasHistory: boolean;
+  items: ChatHistoryItem[];
+}
+interface ChatHistoryItem {
+  label: string;
+  items: ChatItem[];
+  minDaysDiff: number | null;
+  maxDaysDiff: number | null;
+}
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
-  const [currentFlow, setCurrentFLow] = createSignal(localStorage.getItem('currentFlow') || props.currentFlow);
-  const [groupedChatItems, setGroupedChatItems] = createSignal<object>({ groups: {} });
+  const [currentFlow, setCurrentFLow] = createSignal(props.currentFlow);
   const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
   const [inputValue, setInputValue] = createSignal<string>('');
@@ -33,9 +43,11 @@ export const Menu = (props: MenuProps) => {
   const [selectedChatId, setSelectedChatId] = createSignal<string | null>(null);
   const [selectedChatName, setSelectedChatName] = createSignal<string | null>(null);
   const [activeChatId, setActiveChatId] = createSignal<string | null>(null);
+  const [chatHistory, setChatHistory] = createSignal<ChatHistory>({} as ChatHistory);
 
   let menuItemsRef: HTMLDivElement | undefined;
-  createEffect(() => {
+
+  createEffect(async () => {
     const currentActiveChatId = activeChatId();
     if (currentActiveChatId && menuItemsRef) {
       const menuItems = menuItemsRef.getElementsByClassName('menu-history-item');
@@ -43,11 +55,42 @@ export const Menu = (props: MenuProps) => {
         item.classList.toggle('menu-history-item-selected', currentActiveChatId === item.id);
       });
     }
+
+    if (props.currentFlow !== currentFlow()) {
+      setCurrentFLow(props.currentFlow);
+      setChatHistory(await getChatHistory());
+    }
   });
 
+  const getChatHistory = async () => {
+    const chatHistoryTitle = getChatHistoryTitle();
+
+    if (chatHistoryTitle) {
+      const chatHistory = await fetchChatIds();
+
+      let hasHistory = false;
+      for (const group of chatHistory) {
+        if (group.items.length > 0) {
+          hasHistory = true;
+          break;
+        }
+      }
+
+      const history = {
+        title: chatHistoryTitle,
+        hasHistory: hasHistory,
+        items: chatHistory,
+      } as ChatHistory;
+
+      return history;
+    }
+
+    return {} as ChatHistory;
+  };
+
   const handleClick = (flow: string) => {
+    window.location.href = `./${flow}.html`;
     setCurrentFLow(flow);
-    localStorage.setItem('currentFlow', flow);
   };
 
   const handleInputChange = (e: Event) => {
@@ -90,7 +133,7 @@ export const Menu = (props: MenuProps) => {
     setIsOpenDeleteModal(false);
     if (selectedChatId()) {
       await documentService.deleteChat(selectedChatId() as string);
-      fetchChatIds();
+      getChatHistory();
     }
   };
 
@@ -99,10 +142,11 @@ export const Menu = (props: MenuProps) => {
       compliance: 'Análise de Compliance',
       critical_analysis: 'Análise Crítica',
     };
+
     try {
       return flowTitleMapping[currentFlow() as keyof typeof flowTitleMapping];
     } catch (error) {
-      return '';
+      return null;
     }
   };
 
@@ -175,22 +219,19 @@ export const Menu = (props: MenuProps) => {
         id: item.id,
         updatedAt: item.updated_at,
       }));
-      setGroupedChatItems(groupChatItemsByDate(formatCamelCaseData as ChatItem[]));
+      return groupChatItemsByDate(formatCamelCaseData as ChatItem[]);
     }
+    return [];
   };
 
   const handleEditSubmit = async (event: Event, chatId: string) => {
     event.preventDefault();
     if (chatId.length > 0) {
       await documentService.updateChatName(chatId, inputValue());
-      fetchChatIds();
+      getChatHistory();
     }
     setEditingChatId(null);
   };
-
-  createEffect(() => {
-    fetchChatIds();
-  });
 
   return (
     <>
@@ -212,69 +253,74 @@ export const Menu = (props: MenuProps) => {
                 <For each={props.items}>
                   {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
-                <div class="menu-history">Histórico de chats - {getChatHistoryTitle()} </div>
-                <div class="menu-history-item-wrapper" ref={menuItemsRef}>
-                  <For each={Object.values(groupedChatItems())}>
-                    {(group) =>
-                      group.items.length > 0 && (
-                        <div class={`menu-history-item-group ${group.items.length < 5 ? 'min-height' : ''}`}>
-                          <span class="menu-history-date-label">{group.label}</span>
-                          <For each={group.items}>
-                            {(item) => {
-                              let buttonRef: HTMLButtonElement | null = null;
-                              return (
-                                <div class="menu-history-item" id={item.id} onClick={() => setActiveChatId(item.id)}>
-                                  {!!editingChatId() && editingChatId() === item.id ? (
-                                    <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
-                                      <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
-                                    </form>
-                                  ) : (
-                                    <>
-                                      <span>{formatDateChat(item)}</span>
-                                      <button
-                                        class="menu-history-button"
-                                        ref={(element) => (buttonRef = element)}
-                                        onClick={() => buttonRef && toggleMenuOptions(item.id, buttonRef)}
-                                      >
-                                        <DotsHorizontal />
-                                      </button>
-                                    </>
-                                  )}
-                                  {openMenuOptions() === item.id && (
-                                    <div class={`menu-history-option ${modalPosition()}`}>
-                                      <div class="menu-history-option-wrapper">
-                                        <div class="menu-history-option-edit">
-                                          <button onClick={() => startEditing(item.id)}>
-                                            <PenEditIcon />
-                                            Renomear chat
+
+                {chatHistory() && Object.keys(chatHistory()).length > 0 && chatHistory().hasHistory && (
+                  <>
+                    <div class="menu-history-title">Histórico de chats - {chatHistory().title} </div>
+                    <div class="menu-history-items" ref={menuItemsRef}>
+                      <For each={chatHistory().items}>
+                        {(group) =>
+                          group.items.length > 0 && (
+                            <div class={`menu-history-item-group`}>
+                              <span class="menu-history-date-label">{group.label}</span>
+                              <For each={group.items}>
+                                {(item) => {
+                                  let buttonRef: HTMLButtonElement | null = null;
+                                  return (
+                                    <div class="menu-history-item" id={item.id} onClick={() => setActiveChatId(item.id)}>
+                                      {!!editingChatId() && editingChatId() === item.id ? (
+                                        <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
+                                          <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
+                                        </form>
+                                      ) : (
+                                        <>
+                                          <span>{formatDateChat(item)}</span>
+                                          <button
+                                            class="menu-history-button"
+                                            ref={(element) => (buttonRef = element)}
+                                            onClick={() => buttonRef && toggleMenuOptions(item.id, buttonRef)}
+                                          >
+                                            <DotsHorizontal />
                                           </button>
+                                        </>
+                                      )}
+                                      {openMenuOptions() === item.id && (
+                                        <div class={`menu-history-option ${modalPosition()}`}>
+                                          <div class="menu-history-option-wrapper">
+                                            <div class="menu-history-option-edit">
+                                              <button onClick={() => startEditing(item.id)}>
+                                                <PenEditIcon />
+                                                Renomear chat
+                                              </button>
+                                            </div>
+                                            <div class="menu-history-option-delete">
+                                              <button onClick={() => handleOpenDeleteModal(item.id, formatDateChat(item))}>
+                                                <TrashIcon color="#e41d1d" />
+                                                Excluir chat
+                                              </button>
+                                            </div>
+                                          </div>
                                         </div>
-                                        <div class="menu-history-option-delete">
-                                          <button onClick={() => handleOpenDeleteModal(item.id, formatDateChat(item))}>
-                                            <TrashIcon color="#e41d1d" />
-                                            Excluir chat
-                                          </button>
-                                        </div>
-                                      </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                              );
-                            }}
-                          </For>
-                        </div>
-                      )
-                    }
-                  </For>
-                </div>
+                                  );
+                                }}
+                              </For>
+                            </div>
+                          )
+                        }
+                      </For>
+                    </div>
+                  </>
+                )}
               </div>
               <div class="menu-footer">
                 <p>
                   Powered By <b>StartSe</b>
                 </p>
               </div>
-              <div class="menu-overlay" onClick={() => setOpen(false)} />
             </div>
+            <div class="menu-overlay" onClick={() => setOpen(false)} />
           </div>
         ) : (
           <MenuButton fillColor={props.fillColor} onClick={() => setOpen(true)} />

@@ -1,2 +1,2 @@
-export * from './components/Menu';
+export * from './Menu';
 //# sourceMappingURL=index.d.ts.map

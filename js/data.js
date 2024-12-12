@@ -4,11 +4,6 @@ export const menuItems = [
     title: "Análise de Compliance",
     bgImage: "bg-compliance.jpeg",
   },
-  // {
-  //   flow: "cost_estimate",
-  //   title: "Estimativa de Custos",
-  //   bgImage: "bg-cost-estimate.jpeg",
-  // },
   {
     flow: "critical_analysis",
     title: "Análise Crítica",

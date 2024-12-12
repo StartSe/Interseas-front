@@ -11,6 +11,7 @@ import { DEFAULT_CHAT_NAME } from '@/utils/messageUtils';
 const documentService = new DocumentsDBService();
 export interface MenuProps {
   currentFlow: string;
+  chatflowid?: string;
   items: MenuItemProps[];
   fillColor?: string;
 }
@@ -32,10 +33,13 @@ interface ChatHistoryItem {
   minDaysDiff: number | null;
   maxDaysDiff: number | null;
 }
+
 export const Menu = (props: MenuProps) => {
   const [open, setOpen] = createSignal(false);
   const [openDeleteModal, setIsOpenDeleteModal] = createSignal<boolean>(false);
   const [currentFlow, setCurrentFLow] = createSignal(props.currentFlow);
+  const [currentChatflowId, setCurrentChatflowId] = createSignal(props.chatflowid);
+  const [currentChatId, setCurrentChatId] = createSignal<string | null>(null);
   const [editingChatId, setEditingChatId] = createSignal<string | null>(null);
   const [openMenuOptions, setOpenMenuOptions] = createSignal<string | null>(null);
   const [inputValue, setInputValue] = createSignal<string>('');
@@ -48,17 +52,19 @@ export const Menu = (props: MenuProps) => {
   let menuItemsRef: HTMLDivElement | undefined;
 
   createEffect(async () => {
-    const currentActiveChatId = activeChatId();
-    if (currentActiveChatId && menuItemsRef) {
-      const menuItems = menuItemsRef.getElementsByClassName('menu-history-item');
-      Array.from(menuItems).forEach((item) => {
-        item.classList.toggle('menu-history-item-selected', currentActiveChatId === item.id);
-      });
-    }
-
     if (props.currentFlow !== currentFlow()) {
       setCurrentFLow(props.currentFlow);
       setChatHistory(await getChatHistory());
+    }
+
+    if (props.chatflowid !== currentChatflowId()) {
+      setCurrentChatflowId(props.chatflowid);
+
+      const chatDetails = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
+      if (chatDetails) {
+        const chatId = JSON.parse(chatDetails).chatId;
+        setCurrentChatId(chatId);
+      }
     }
   });
 
@@ -233,6 +239,12 @@ export const Menu = (props: MenuProps) => {
     setEditingChatId(null);
   };
 
+  const handleKeyUp = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setEditingChatId(null);
+    }
+  };
+
   return (
     <>
       <style>{styles}</style>
@@ -267,9 +279,13 @@ export const Menu = (props: MenuProps) => {
                                 {(item) => {
                                   let buttonRef: HTMLButtonElement | null = null;
                                   return (
-                                    <div class="menu-history-item" id={item.id} onClick={() => setActiveChatId(item.id)}>
+                                    <div
+                                      class={'menu-history-item ' + (item.id === currentChatId() ? 'selected' : 'pointer')}
+                                      id={item.id}
+                                      onClick={() => setActiveChatId(item.id)}
+                                    >
                                       {!!editingChatId() && editingChatId() === item.id ? (
-                                        <form onSubmit={(e) => handleEditSubmit(e, item.id)}>
+                                        <form onSubmit={(e) => handleEditSubmit(e, item.id)} onKeyUp={handleKeyUp}>
                                           <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
                                         </form>
                                       ) : (

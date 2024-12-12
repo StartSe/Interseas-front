@@ -1,6 +1,7 @@
 import { MenuItemProps } from './components/MenuItem';
 export interface MenuProps {
     currentFlow: string;
+    chatflowid?: string;
     items: MenuItemProps[];
     fillColor?: string;
 }

@@ -147,10 +147,13 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: .0313rem solid var(--orange-border-color);
-    cursor: pointer;
+    cursor: default;
 }
-.menu-history-item-selected{
+.menu-history-item.selected{
     background-color: var(--blue-button-color);
+}
+.menu-history-item.pointer{
+    cursor: pointer;
 }
 .menu-history-items form {
     height: 2.5rem;

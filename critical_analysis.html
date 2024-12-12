@@ -18,13 +18,16 @@
     import Chatbot from './flowise-embed/dist/web.js';
     import { menuItems } from './js/data.js'
 
+    const chatflowid = 'c59bb4ab-f777-496e-a500-697609e0ed8e';
+
     Chatbot.initMenu({
       currentFlow: 'critical_analysis',
+      chatflowid: chatflowid,
       items: menuItems,
     });
 
     Chatbot.initFull({
-      chatflowid: 'c59bb4ab-f777-496e-a500-697609e0ed8e',
+      chatflowid: chatflowid,
       apiHost: 'https://interseas-flowise.paas.startse.com',
       theme: {
         button: {

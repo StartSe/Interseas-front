@@ -38,7 +38,13 @@ import { cloneDeep } from 'lodash';
 import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
 import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { complianceErrorMessage, criticalAnalysisStepNameMapping, messageUtils, ncmStepFailureMessage } from '@/utils/messageUtils';
+import {
+  complianceErrorMessage,
+  criticalAnalysisStepNameMapping,
+  criticalAnalysisWarningMapping,
+  messageUtils,
+  ncmStepFailureMessage,
+} from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
@@ -1035,6 +1041,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const getCriticalAnalysisStepResults = async (ncmArray: string[], jsonDataCriticalAnalysis: any) => {
     for (const prefix of Object.values(CriticalAnalysisPrefixes)) {
       let message = '';
+      const warningMessage = criticalAnalysisWarningMapping[prefix];
       message = `**${criticalAnalysisStepNameMapping[prefix]}**\n`;
       for (const ncm of ncmArray) {
         message += `\n**NCM: ${ncm}**\n`;
@@ -1046,8 +1053,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           message += `\n${stepResultByNcm.text}\n`;
         } catch (error) {
           console.error(error);
-          message += ncmStepFailureMessage(prefix, ncm);
+          message += `\n${ncmStepFailureMessage(prefix, ncm)}\n`;
         }
+      }
+      if (warningMessage) {
+        message += `\n**${criticalAnalysisWarningMapping[prefix]}**\n`;
       }
       setMessages((prevMessages) => {
         const newMessage = { message: message, type: 'apiMessage' } as MessageType;

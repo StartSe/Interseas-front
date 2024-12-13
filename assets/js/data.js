@@ -9,4 +9,9 @@ export const menuItems = [
     title: "Compliance Documental",
     bgImage: "bg-compliance.jpeg",
   },
+  {
+    flow: "tax_classification",
+    title: "Classificação Fiscal",
+    bgImage: "bg-compliance.jpeg",
+  },
 ];

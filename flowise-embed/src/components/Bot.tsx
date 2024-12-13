@@ -1043,6 +1043,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       let message = '';
       const warningMessage = criticalAnalysisWarningMapping[prefix];
       message = `**${criticalAnalysisStepNameMapping[prefix]}**\n`;
+      if (warningMessage) {
+        message += `\n**${warningMessage}**\n`;
+      }
       for (const ncm of ncmArray) {
         message += `\n**NCM: ${ncm}**\n`;
         const jsonCriticalAnalysisSingleNcm = JSON.stringify({ ...jsonDataCriticalAnalysis, NCM: ncm });
@@ -1055,9 +1058,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           console.error(error);
           message += `\n${ncmStepFailureMessage(prefix, ncm)}\n`;
         }
-      }
-      if (warningMessage) {
-        message += `\n**${criticalAnalysisWarningMapping[prefix]}**\n`;
       }
       setMessages((prevMessages) => {
         const newMessage = { message: message, type: 'apiMessage' } as MessageType;

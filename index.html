@@ -1,31 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./flowise-embed/src/pages/Home/home.css" />
-    <title>Página Inicial - Interseas</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script type="module">
-      import Chatbot from "./flowise-embed/dist/web.js";
-      import { menuItems } from "./js/data.js";
-      Chatbot.initMenu({
-        currentFlow: "home",
-        items: menuItems,
-        fillColor: "#000000",
-      });
-      Chatbot.initHome({
-        items: menuItems,
-      });
-    </script>
-  </head>
-  <body>
-    <header>
-      <flowise-menu></flowise-menu>
-      <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
-    </header>
-    <flowise-home
-      style="width: 100%; display: grid; justify-self: end"
-    ></flowise-home>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Interseas</title>
+  <link rel="stylesheet" href="./assets/styles/header.css" />
+  <link rel="stylesheet" href="./assets/styles/login.css" />
+  <script type="module">
+    import { checkAuth } from "./assets/js/auth.js";
+
+    const HOME_PAGE = 'home.html';
+
+    await checkAuth({ redirectAuthenticated: true, authenticatedDestinationPage: HOME_PAGE });
+  </script>
+</head>
+
+<body>
+  <header>
+    <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
+  </header>
+
+  <div class="page">
+    <div class="modal" id="loginModal">
+      <div class="card">
+        <img src="./assets/images/login-icon.png"  alt="loginimage">
+        <h2 class="text-login">Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button type="submit" class="btn-login">CONFIRMAR</button>
+          <div id="errorMessage" class="error-message">
+            Credenciais inválidas. Tente novamente.
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="background">
+      <img src="./assets/images/login-background.jpeg" alt="agenteslogo">
+    </div>
+  </div>
+
+
+  <!-- <div class="login-container">
+    <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo"
+      style="max-width: 200px; margin-bottom: 20px;" />
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Usuário</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit" class="btn-login">CONFIRMAR</button>
+      <div id="errorMessage" class="error-message">
+        Credenciais inválidas. Tente novamente.
+      </div>
+    </form>
+  </div> -->
+
+  <script type="module">
+    import { authenticate } from "./assets/js/auth.js";
+
+    const handleFormData = (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const authenticated = authenticate(username, password);
+
+      if (!authenticated) {
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    };
+
+    document.getElementById('loginForm').addEventListener('submit', handleFormData);
+  </script>
+</body>
+
 </html>

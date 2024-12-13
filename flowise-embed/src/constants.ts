@@ -35,6 +35,7 @@ export const constants = {
 
 export const defaultMenuProps: MenuProps = {
   currentFlow: '',
+  chatflowid: undefined,
   items: [],
   fillColor: '#F4F6FF',
 };

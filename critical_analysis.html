@@ -1,83 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Análise Crítica - Interseas</title>
-  <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script type="module">
-        import Chatbot from './flowise-embed/dist/web.js';
-    import {menuItems} from './js/data.js'
-        Chatbot.initMenu({
-          currentFlow: 'analise_critica',
-            items: menuItems,
-          });
-        Chatbot.initFull({
-          chatflowid: 'c59bb4ab-f777-496e-a500-697609e0ed8e',
-          apiHost: 'https://interseas-flowise.paas.startse.com',
-          theme: {
-            button: {
-              backgroundColor: '#136FEE',
-              right: 20,
-              bottom: 20,
-              size: 48,
-              dragAndDrop: true,
-              iconColor: 'white',
-              autoWindowOpen: {
-                autoOpen: false,
-                openDelay: 2,
-                autoOpenOnMobile: false,
-              },
-            },
-            chatWindow: {
-              showTitle: true,
-              renderHTML: true,
-              flow: 'critical_analysis',
-              showAgentMessages: true,
-              title: 'Análise Crítica',
-              welcomeMessage: 'Olá! Sou o assistente de IA da Interseas, especializado em Análise Crítica.',
-              errorMessage: 'This is a custom error message',
-              backgroundColor: '#ffffff',
-              backgroundImage: 'enter image path or link',
-              fontSize: 16,
-              starterPromptFontSize: 15,
-              botMessage: {
-                backgroundColor: '#ECECEC',
-                textColor: '#303235',
-                showAvatar: true,
-              },
-              userMessage: {
-                backgroundColor: '#136FEE',
-                textColor: '#ffffff',
-              },
-              textInput: {
-                placeholder: 'Qual sua dúvida?',
-                backgroundColor: '#ffffff',
-                textColor: '#303235',
-                sendButtonColor: '#136FEE',
-                maxChars: 1000,
-                maxCharsWarningMessage: 'You exceeded the characters limit. Please input less than 1000 characters.',
-                autoFocus: true,
-                sendMessageSound: true,
-                receiveMessageSound: true,
-              },
-              feedback: {
-                color: '#303235',
-              },
-              footer: {
-                textColor: '#002F6C',
-                text: 'Powered by',
-                company: 'StartSe',
-                companyLink: 'https://startse.com',
-              }
-            },
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Análise Crítica - Interseas</title>
+  <script type="module">
+    import { checkAuth } from "./assets/js/auth.js";
+
+    await checkAuth({ redirectNotAuthenticated: true });
+  </script>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script type="module">
+    import Chatbot from './flowise-embed/dist/web.js';
+    import { menuItems } from './assets/js/data.js'
+
+    const chatflowid = 'c59bb4ab-f777-496e-a500-697609e0ed8e';
+
+    Chatbot.initMenu({
+      currentFlow: 'critical_analysis',
+      chatflowid: chatflowid,
+      items: menuItems,
+    });
+
+    Chatbot.initFull({
+      chatflowid: chatflowid,
+      apiHost: 'https://interseas-flowise.paas.startse.com',
+      theme: {
+        button: {
+          backgroundColor: '#136FEE',
+          right: 20,
+          bottom: 20,
+          size: 48,
+          dragAndDrop: true,
+          iconColor: 'white',
+          autoWindowOpen: {
+            autoOpen: false,
+            openDelay: 2,
+            autoOpenOnMobile: false,
           },
-        });
-      </script>
-      <flowise-menu></flowise-menu>
-      <flowise-fullchatbot></flowise-fullchatbot>
-  </body>
+        },
+        chatWindow: {
+          showTitle: true,
+          renderHTML: true,
+          flow: 'critical_analysis',
+          showAgentMessages: true,
+          title: 'Análise Crítica',
+          welcomeMessage: 'Olá! Sou o assistente de IA da Interseas, especializado em Análise Crítica.',
+          errorMessage: 'This is a custom error message',
+          backgroundColor: '#ffffff',
+          backgroundImage: 'enter image path or link',
+          fontSize: 16,
+          starterPromptFontSize: 15,
+          botMessage: {
+            backgroundColor: '#ECECEC',
+            textColor: '#303235',
+            showAvatar: true,
+          },
+          userMessage: {
+            backgroundColor: '#136FEE',
+            textColor: '#ffffff',
+          },
+          textInput: {
+            placeholder: 'Qual sua dúvida?',
+            backgroundColor: '#ffffff',
+            textColor: '#303235',
+            sendButtonColor: '#136FEE',
+            maxChars: 1000,
+            maxCharsWarningMessage: 'Você excedeu o número máximo de caracteres. Por favor, entre uma mensagem de até 1000 caracteres.',
+            autoFocus: true,
+            sendMessageSound: true,
+            receiveMessageSound: true,
+          },
+          feedback: {
+            color: '#303235',
+          },
+          footer: {
+            textColor: '#002F6C',
+            text: 'Powered by',
+            company: 'StartSe',
+            companyLink: 'https://startse.com',
+          }
+        },
+      },
+    });
+  </script>
+  <flowise-menu></flowise-menu>
+  <flowise-fullchatbot></flowise-fullchatbot>
+</body>
+
 </html>
-
-

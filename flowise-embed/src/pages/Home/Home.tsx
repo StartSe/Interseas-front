@@ -13,7 +13,6 @@ export const Home = (props: HomeProps) => {
 
   const handleCardClick = (flow: string) => {
     setCurrentFlow(flow);
-    localStorage.setItem('currentFlow', flow);
   };
 
   return (

@@ -29,22 +29,6 @@ body {
   display: grid;
 }
 
-/* Header */
-header {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  height: var(--header-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg-color-light);
-  box-shadow: var(--shadow-md);
-}
-
 /* Layout principal */
 main {
   padding: var(--spacing-medium);
@@ -53,6 +37,7 @@ main {
   flex-direction: column;
   gap: var(--spacing-large);
   flex: 1;
+  position: relative;
 }
 
 /* Estilos de texto */
@@ -125,6 +110,9 @@ main {
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card button:hover {
@@ -137,7 +125,9 @@ footer {
   display: flex;
   justify-content: space-between;
   color: var(--text-color-dark);
-  margin-top: auto;
+  bottom: 0;
+  position: absolute;
+  width: 100vw;
 }
 
 footer span {
@@ -166,7 +156,7 @@ footer span a:hover {
   .card-container {
     justify-content: center;
   }
-  
+
   .card {
     width: 100%;
     max-width: 21.875rem;

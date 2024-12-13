@@ -14,7 +14,6 @@ import { GuestBubble } from './bubbles/GuestBubble';
 import { BotBubble } from './bubbles/BotBubble';
 import { LoadingBubble } from './bubbles/LoadingBubble';
 import { SourceBubble } from './bubbles/SourceBubble';
-import { StarterPromptBubble } from './bubbles/StarterPromptBubble';
 import {
   BotMessageTheme,
   FooterTheme,
@@ -39,7 +38,7 @@ import { cloneDeep } from 'lodash';
 import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
 import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
 import { UploadButton } from '@/components/buttons/UploadButton';
-import { complianceErrorMessage, messageUtils } from '@/utils/messageUtils';
+import { complianceErrorMessage, criticalAnalysisStepNameMapping, messageUtils, ncmStepFailureMessage } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
 import { NextChecklistButton } from '@/components/buttons/NextChecklistButton';
@@ -57,7 +56,7 @@ import {
 import { compareAndMergeArrays, customBooleanValues, isNonEmptyArrayOrObject, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
-import { getCriticalAnalysisStepResults, n8nCriticalAnalysisUrlSteps } from '@/utils/criticalAnalysisUtils';
+import { CriticalAnalysisPrefixes } from '@/utils/criticalAnalysisUtils';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import { SelectionBubble } from './bubbles/SelectionBubble';
@@ -1009,17 +1008,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
         const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
 
-        for (const url of n8nCriticalAnalysisUrlSteps) {
-          setLoading(true);
-          setStartUploadingDocument(true);
-          const finalMessage = await getCriticalAnalysisStepResults(url, ncmArray, jsonDataCriticalAnalysis);
-          setLoading(false);
-          setMessages((prevMessages) => {
-            const updated = [...prevMessages, finalMessage];
-            addChatMessage(updated);
-            return [...updated, { message: '', type: 'apiMessage' }];
-          });
-        }
+        await getCriticalAnalysisStepResults(ncmArray, jsonDataCriticalAnalysis);
 
         setJsonResponseCriticalAnalysis({});
         setIsAnalyzing(false);
@@ -1040,6 +1029,32 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } catch (error) {
       console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
       throw error;
+    }
+  };
+
+  const getCriticalAnalysisStepResults = async (ncmArray: string[], jsonDataCriticalAnalysis: any) => {
+    for (const prefix of Object.values(CriticalAnalysisPrefixes)) {
+      let message = '';
+      message = `**${criticalAnalysisStepNameMapping[prefix]}**\n`;
+      for (const ncm of ncmArray) {
+        message += `\n**NCM: ${ncm}**\n`;
+        const jsonCriticalAnalysisSingleNcm = JSON.stringify({ ...jsonDataCriticalAnalysis, NCM: ncm });
+        const finalPayload = prefix + jsonCriticalAnalysisSingleNcm;
+        let stepResultByNcm;
+        try {
+          stepResultByNcm = await sendBackgroundMessage(finalPayload, []);
+          message += `\n${stepResultByNcm.text}\n`;
+        } catch (error) {
+          console.error(error);
+          message += ncmStepFailureMessage(prefix, ncm);
+        }
+      }
+      setMessages((prevMessages) => {
+        const newMessage = { message: message, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated, { message: '', type: 'apiMessage' }];
+      });
     }
   };
 

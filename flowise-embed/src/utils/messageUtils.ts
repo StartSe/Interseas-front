@@ -1,4 +1,4 @@
-import { constants } from '@/constants';
+import { CriticalAnalysisPrefixes } from './criticalAnalysisUtils';
 
 export const messageUtils = {
   FILE_TYPE_NOT_SUPPORTED: 'Este documento não é suportado. Por gentileza, exclua e carregue outro arquivo.',
@@ -65,25 +65,17 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
 };
 
 export const criticalAnalysisStepNameMapping: { [key: string]: string } = {
-  [constants.n8nFirstStep]: 'Tratamento Administrativo',
-  [constants.n8nSecondStep]: 'Tributos e contribuições federais',
-  [constants.n8nThirdStep]: 'Defesa Comercial',
-  [constants.n8nFourthStep]: 'Acordos Internacionais',
-  [constants.n8nFifthStep]: 'Análise Logística',
-  [constants.n8nSixthStep]: 'ICMS Importação',
-  [constants.n8nSeventhStep]: 'Atributos da NCM',
+  [CriticalAnalysisPrefixes.criticalAnalysisFirstStep.toString()]: 'Tratamento Administrativo',
+  [CriticalAnalysisPrefixes.criticalAnalysisSecondStep.toString()]: 'Tributos e contribuições federais',
+  [CriticalAnalysisPrefixes.criticalAnalysisThirdStep.toString()]: 'Defesa Comercial',
+  [CriticalAnalysisPrefixes.criticalAnalysisFourthStep.toString()]: 'Acordos Internacionais',
+  [CriticalAnalysisPrefixes.criticalAnalysisFifthStep.toString()]: 'Análise Logística',
+  [CriticalAnalysisPrefixes.criticalAnalysisSixthStep.toString()]: 'ICMS Importação',
+  [CriticalAnalysisPrefixes.criticalAnalysisSeventhStep.toString()]: 'Atributos da NCM',
 };
 
-export const identifyConstant = (inputString: string): string => {
-  const constant = Object.values(constants).filter((constant) => inputString.endsWith(constant));
-
-  return constant ? constant[0] : '';
-};
-
-export function ncmStepFailureMessage(url: string, ncm: any): string {
-  return `Desculpe! Não foi possível completar a etapa de **${
-    criticalAnalysisStepNameMapping[identifyConstant(url)]
-  }** para o NCM **${ncm}**. Por favor, tente novamente.`;
+export function ncmStepFailureMessage(prefix: string, ncm: string): string {
+  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[prefix]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
 export function ncmChangeMessage(oldNcm: string, newNcm: string): string {

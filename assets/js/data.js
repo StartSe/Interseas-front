@@ -6,7 +6,7 @@ export const menuItems = [
   },
   {
     flow: "compliance",
-    title: "Compliance documental",
+    title: "Compliance Documental",
     bgImage: "bg-compliance.jpeg",
   },
 ];

@@ -41,8 +41,7 @@ export declare const messageUtils: {
 export declare const criticalAnalysisStepNameMapping: {
     [key: string]: string;
 };
-export declare const identifyConstant: (inputString: string) => string;
-export declare function ncmStepFailureMessage(url: string, ncm: any): string;
+export declare function ncmStepFailureMessage(prefix: string, ncm: string): string;
 export declare function ncmChangeMessage(oldNcm: string, newNcm: string): string;
 export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
 export declare function criticalAnalysisNcmPhase(ncm: string): string;

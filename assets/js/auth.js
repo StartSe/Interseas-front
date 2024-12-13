@@ -1,6 +1,6 @@
 const N8N_AUTH_BASE_URL = "https://interseas-n8n.paas.startse.com/webhook";
 const AUTH_TOKEN_KEY = "auth_token";
-const AUTH_TOKEN_DUURATION_MINUTES = 1;
+const AUTH_TOKEN_DUURATION_MINUTES = 60;
 
 const HOME_PAGE = "home.html";
 const LOGIN_PAGE = "/";

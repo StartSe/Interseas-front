@@ -133,7 +133,10 @@
     gap: .3125rem;
     width: 100%;
 }
-.menu-history-items {
+.menu-history-item-group.min-height {
+    min-height: 25rem;
+}
+.menu-history-item-wrapper {
     position: relative;
     width: 100%;
     overflow-y: x;

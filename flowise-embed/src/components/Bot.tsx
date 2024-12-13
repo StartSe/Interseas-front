@@ -343,7 +343,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
    * Add each chat message into localStorage
    */
   const addChatMessage = async (allMessage: MessageType[]) => {
-    // removeLocalStorageChatHistory(props.chatflowid);
     const messages = allMessage.map((item) => {
       if (item.fileUploads) {
         const fileUploads = item?.fileUploads.map((file) => ({
@@ -366,8 +365,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       await documentService.saveChatData(chatData);
       await documentService.updateChatHistory(chatId(), { chatHistory: messages });
     }
-    // setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
-    // console.log('ChatId Inside AddChatMessage: ', chatId());
+    setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
   // Define the audioRef
@@ -2136,11 +2134,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const processMessages = (messages: ChatHistoryItem[]) => {
+  const processMessages = (historyMessages: ChatHistoryItem[]) => {
+    console.log('Processing messages ', historyMessages);
     const visibleMessages: ChatHistoryItem[] = [];
     let currentFileMap: FileMapping | null = null;
 
-    for (const message of messages) {
+    for (const message of historyMessages) {
       const isUserMessage = message.type === 'userMessage';
       const isApiMessage = message.type === 'apiMessage';
       const contentJson = (() => {
@@ -2197,14 +2196,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       }
     }
+
+    // removeLocalStorageChatHistory(props.chatflowid);
+    // setMessages([]);
+
     visibleMessages.map((item) => {
       setMessages((prevMessages) => {
         const newMessage = { message: `${item.message}`, type: item.type, fileUploads: item.fileUploads ?? [] } as MessageType;
         const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
+        // addChatMessage(updated);
         return [...updated];
       });
     });
+    console.log('Visible messages ', visibleMessages);
+    console.log('Updated messages ', messages());
   };
 
   return (

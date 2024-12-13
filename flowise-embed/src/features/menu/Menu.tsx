@@ -146,7 +146,7 @@ export const Menu = (props: MenuProps) => {
   const getChatHistoryTitle = () => {
     const flowTitleMapping = {
       compliance: 'Compliance Documental',
-      critical_analysis: 'Análise  Pré-Embarque',
+      critical_analysis: 'Análise Pré-Embarque',
     };
 
     try {

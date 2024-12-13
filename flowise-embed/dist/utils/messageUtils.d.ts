@@ -31,6 +31,8 @@ export declare const messageUtils: {
     NCM_STEP_FAILURE: string;
     NCM_INPUT_INSTRUCTIONS: string;
     NCM_DISCOVER_TEMPLATE: string;
+    criticalAnalysisFirstStepWarning: string;
+    criticalAnalysisSecondStepWarning: string;
     CRITICAL_ANALYSIS_TEMPLATE: string;
     YES: string;
     NO: string;
@@ -39,6 +41,9 @@ export declare const messageUtils: {
     DELETE_BUTTON: string;
 };
 export declare const criticalAnalysisStepNameMapping: {
+    [key: string]: string;
+};
+export declare const criticalAnalysisWarningMapping: {
     [key: string]: string;
 };
 export declare function ncmStepFailureMessage(prefix: string, ncm: string): string;

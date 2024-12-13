@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Análise Crítica - Interseas</title>
   <script type="module">
-    import { checkAuth } from "./js/auth.js";
+    import { checkAuth } from "./assets/js/auth.js";
 
     await checkAuth({ redirectNotAuthenticated: true });
   </script>
@@ -16,7 +16,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script type="module">
     import Chatbot from './flowise-embed/dist/web.js';
-    import { menuItems } from './js/data.js'
+    import { menuItems } from './assets/js/data.js'
 
     const chatflowid = 'c59bb4ab-f777-496e-a500-697609e0ed8e';
 

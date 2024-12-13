@@ -29,22 +29,6 @@ body {
   display: grid;
 }
 
-/* Header */
-header {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  height: var(--header-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg-color-light);
-  box-shadow: var(--shadow-md);
-}
-
 /* Layout principal */
 main {
   padding: var(--spacing-medium);

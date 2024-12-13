@@ -5,62 +5,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Interseas</title>
+  <link rel="stylesheet" href="./assets/styles/header.css" />
+  <link rel="stylesheet" href="./assets/styles/login.css" />
   <script type="module">
-    import { checkAuth } from "./js/auth.js";
+    import { checkAuth } from "./assets/js/auth.js";
 
     const HOME_PAGE = 'home.html';
 
     await checkAuth({ redirectAuthenticated: true, authenticatedDestinationPage: HOME_PAGE });
   </script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    .login-container {
-      max-width: 400px;
-      margin: 50px auto;
-      padding: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-
-    .btn-login {
-      width: 100%;
-      padding: 10px;
-      background-color: #0066FF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .error-message {
-      color: red;
-      margin-top: 10px;
-      display: none;
-    }
-  </style>
 </head>
 
 <body>
-  <div class="login-container">
+  <header>
+    <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
+  </header>
+
+  <div class="page">
+    <div class="modal" id="loginModal">
+      <div class="card">
+        <img src="./assets/images/login-icon.png"  alt="loginimage">
+        <h2 class="text-login">Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button type="submit" class="btn-login">CONFIRMAR</button>
+          <div id="errorMessage" class="error-message">
+            Credenciais inválidas. Tente novamente.
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="background">
+      <img src="./assets/images/login-background.jpeg" alt="agenteslogo">
+    </div>
+  </div>
+
+
+  <!-- <div class="login-container">
     <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo"
       style="max-width: 200px; margin-bottom: 20px;" />
     <form id="loginForm">
@@ -77,10 +65,10 @@
         Credenciais inválidas. Tente novamente.
       </div>
     </form>
-  </div>
+  </div> -->
 
   <script type="module">
-    import { authenticate } from "./js/auth.js";
+    import { authenticate } from "./assets/js/auth.js";
 
     const handleFormData = (e) => {
       e.preventDefault();

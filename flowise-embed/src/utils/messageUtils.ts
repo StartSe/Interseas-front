@@ -46,6 +46,8 @@ Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas 
 5. Material Constitutivo (com percentuais, se aplicável):
 6. Informações Complementares:
 7. Sinônimo:`,
+  criticalAnalysisFirstStepWarning: 'ATENÇÃO: Esta consulta não substitui o tratamento administrativo aplicável no momento do registro da DUIMP.',
+  criticalAnalysisSecondStepWarning: 'ATENÇÃO: Esta consulta não substitui o tratamento tributário aplicável no momento do registro da DUIMP.',
   CRITICAL_ANALYSIS_TEMPLATE: `
 Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou faça o **upload** (ícone no canto inferior esquerdo da caixa de texto) de um documento contendo as informações e nosso time de especialistas irá analisá-los:
 
@@ -72,6 +74,11 @@ export const criticalAnalysisStepNameMapping: { [key: string]: string } = {
   [CriticalAnalysisPrefixes.criticalAnalysisFifthStep.toString()]: 'Análise Logística',
   [CriticalAnalysisPrefixes.criticalAnalysisSixthStep.toString()]: 'ICMS Importação',
   [CriticalAnalysisPrefixes.criticalAnalysisSeventhStep.toString()]: 'Atributos da NCM',
+};
+
+export const criticalAnalysisWarningMapping: { [key: string]: string } = {
+  [CriticalAnalysisPrefixes.criticalAnalysisFirstStep.toString()]: messageUtils.criticalAnalysisFirstStepWarning,
+  [CriticalAnalysisPrefixes.criticalAnalysisSecondStep.toString()]: messageUtils.criticalAnalysisSecondStepWarning,
 };
 
 export function ncmStepFailureMessage(prefix: string, ncm: string): string {

@@ -8,6 +8,7 @@
     --chatbot-container-font-family: "Inter", sans-serif;
     --chatbot-container-font-family-secondary: "IBM Plex Sans", sans-serif;
     --menu-content-background-color: #FAFAFA;
+    --menu-history-option-background-color: #ECECEC;
     --orange-border-color: #FBA115;
     --blue-button-color: #D7E5F8;
 
@@ -179,16 +180,15 @@
     width: 10.375rem;
     height: 6.375rem;
     z-index: 1002;
-    background-color: var(--menu-content-background-color);
+    background-color: var(--menu-history-option-background-color);
     box-shadow: 0 .25rem .25rem 0 rgba(0, 0, 0, 0.25);
+    right: .3rem;
 }
 .menu-history-option.bottom {
     top: 100%;
-    right: 0;
 }
 .menu-history-option.top {
     bottom: 100%;
-    right: 0;
 }
 .menu-history-option-wrapper{
     display: flex;

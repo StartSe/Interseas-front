@@ -34,8 +34,17 @@ export const messageUtils = {
   NCM_RETRY: 'Deseja classificar novamente?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
   NCM_STEP_FAILURE: 'Error processing critical analysis step',
-  NCM_INPUT_INSTRUCTIONS:
-    'Informe o(s) NCM(s) desejado(s) no campo de texto - Exemplo: "NCM: 1234.56.78, 1234.56.78". Se preferir, realize uma nova classificação.',
+  NCM_INPUT_INSTRUCTIONS: `
+Caso queira repetir a classificação envie novamente o template preenchido:
+
+1. **Nome Comercial:**
+2. **Finalidade de Uso:**
+3. HS Code:
+4. Nome Técnico:
+5. Material Constitutivo (com percentuais, se aplicável):
+6. Informações Complementares:
+7. Sinônimo:
+  `,
   NCM_DISCOVER_TEMPLATE: `
 Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas informações. Por favor, envie uma **mensagem de texto** preenchendo os campos abaixo e nosso time de especialistas irá classificar fiscalmente:
 

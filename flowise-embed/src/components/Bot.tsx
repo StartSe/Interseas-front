@@ -208,7 +208,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [loading, setLoading] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
-  const [isNcmDiscoveringStep, setIsNcmDiscoveringStep] = createSignal(false);
 
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
   const [messages, setMessages] = createSignal<MessageType[]>(
@@ -283,13 +282,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           addChatMessage(updated);
           return [...updated];
         });
-        setMessages((prevMessages) => {
-          const newMessage = { message: messageUtils.NCM_INITIAL_QUESTION, type: 'selectionMessage' } as MessageType;
-          const updated = [...prevMessages, newMessage];
-          addChatMessage(updated);
-          return [...updated];
-        });
       }
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
+    if (props.flow === Flow.taxClassification.toString()) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
       setDisableInput(false);
       setDocumentsUploaded(true);
     }
@@ -781,12 +784,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     switch (props.flow) {
       case Flow.CriticalAnalysis.toString(): {
-        if (isNcmDiscoveringStep()) {
-          await discoverNcm(value, uploads);
-        } else {
-          disableLastSelectionMessage();
-          await processCriticalAnalysisMissingData(value, uploads);
-        }
+        disableLastSelectionMessage();
+        await processCriticalAnalysisMissingData(value, uploads);
+        break;
+      }
+      case Flow.taxClassification.toString(): {
+        await discoverNcm(value);
         break;
       }
       default: {
@@ -899,19 +902,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  createEffect(() => {
-    const lastSelectionMessage = messages().findLast((message) => message.type === 'selectionMessage')?.message;
-    const lastUserMessage = messages().findLast((message) => message.type === 'userMessage')?.message;
-
-    if ([messageUtils.NCM_INITIAL_QUESTION, messageUtils.NCM_CONTINUE_QUESTION, messageUtils.NCM_RETRY].includes(lastSelectionMessage ?? '')) {
-      setIsNcmDiscoveringStep(lastUserMessage === messageUtils.YES);
-    }
-  });
-
-  const discoverNcm = async (inputValue: string, fileUploads: FileUpload[]) => {
-    updateMessages(inputValue, fileUploads);
-    const ncmDiscoverPrompt = `DESCOBRE_NCM\ntext:${inputValue}`;
-    const ncmAnalysis = await sendBackgroundMessage(ncmDiscoverPrompt, fileUploads);
+  const discoverNcm = async (inputValue: string) => {
+    updateMessages(inputValue, []);
+    const ncmAnalysis = await sendBackgroundMessage(inputValue, []);
     setMessages((prevMessages) => {
       const newMessage = { message: ncmAnalysis.text, type: 'apiMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
@@ -924,14 +917,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    setMessages((prevMessages) => {
-      const newMessage = { message: messageUtils.NCM_RETRY, type: 'selectionMessage' } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
-    });
     setLoading(false);
-    setIsNcmDiscoveringStep(false);
   };
 
   const processCriticalAnalysisMissingData = async (inputValue: string, fileUploads: FileUpload[]) => {
@@ -1695,7 +1681,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const startProcessingFiles = async (files: UploadFile[]) => {
-    if (isNcmDiscoveringStep()) {
+    if (props.flow === Flow.taxClassification.toString()) {
       setMessages((prevMessages) => {
         const newMessage = { message: messageUtils.NCM_TEXT_INPUT_REQUIRED, type: 'apiMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];

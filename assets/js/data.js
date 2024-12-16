@@ -2,7 +2,7 @@ export const menuItems = [
   {
     flow: "tax_classification",
     title: "Classificação Fiscal",
-    bgImage: "bg-compliance.jpeg",
+    bgImage: "bg-tax-classification.jpg",
   },
   {
     flow: "critical_analysis",

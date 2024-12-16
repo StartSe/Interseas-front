@@ -278,6 +278,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [documentsChecklistError, setDocumentsChecklistError] = createSignal<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = createSignal(false);
   const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
+  const hsCodeRegex = /hs code/i;
 
   onMount(() => {
     if (props.flow === Flow.CriticalAnalysis.toString()) {
@@ -972,15 +973,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (/pais/i.test(normalizedKey)) {
           jsonDataCriticalAnalysis[key] = normalizeLocationNames(jsonDataCriticalAnalysis[key], locationValues.COUNTRY);
         }
-        if (/ncm/i.test(normalizedKey)) {
-          const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
-          jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
-          jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
-          if (!isNonEmptyArrayOrObject(jsonDataCriticalAnalysis[key])) {
-            jsonDataCriticalAnalysis[key] = null;
-          }
-        }
-        if (/hs code/i.test(normalizedKey)) {
+        if (/ncm/i.test(normalizedKey) || hsCodeRegex.test(normalizedKey)) {
           const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
           jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
           jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
@@ -1078,11 +1071,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const generateItemToPrint = (key: string, value: string, isChecklistItem = false) => {
+    const isHsCode = hsCodeRegex.test(key);
     const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;
     const hasValue = value !== 'null' && value !== null;
     const checkboxStyle = hasValue && !isChecklistItem ? 'color: white; background-color: #136FEE; ' : '';
     const readonlyAttribute = isChecklistItem ? '' : 'readonly onclick="return false;"';
-    const noValueText = isChecklistItem || /hs code/i.test(key) ? 'N/A' : 'Valor não encontrado ou não preenchido.';
+    const noValueText = isChecklistItem || isHsCode ? 'N/A' : 'Valor não encontrado ou não preenchido.';
 
     let item = `<input type="checkbox" ${hasValue ? 'checked' : ''} ${readonlyAttribute} style="${checkboxStyle}"> <b>${key}</b>:<br>`;
     item += hasValue ? spacedText(value) : spacedText(noValueText);

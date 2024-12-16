@@ -114,7 +114,7 @@ class DocumentsDBService {
     }
   }
 
-  private async sendUpdateChatRequest(chatId: string, chatName: string): Promise<any> {
+  private async sendUpdateChatRenameRequest(chatId: string, chatName: string): Promise<any> {
     try {
       const response = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nFlowSendUpdateChatRequest, {
         method: 'POST',
@@ -159,8 +159,8 @@ class DocumentsDBService {
     await this.sendDeleteChatRequest(chatId);
   }
 
-  private async updateChat(chatId: string, chatName: string): Promise<string | null> {
-    return await this.sendUpdateChatRequest(chatId, chatName);
+  private async updateChatRename(chatId: string, chatName: string): Promise<string | null> {
+    return await this.sendUpdateChatRenameRequest(chatId, chatName);
   }
 
   private async extractDocumentData(fileMap: any, textContent: any, agentFlow: Flow, agentResult?: any): Promise<DocumentData> {
@@ -268,7 +268,7 @@ class DocumentsDBService {
 
   public async updateChatName(chatId: string, chatName: string): Promise<string | null> {
     try {
-      const result = await this.updateChat(chatId, chatName);
+      const result = await this.updateChatRename(chatId, chatName);
       return result;
     } catch (error) {
       console.error('Error updating chatName:', error);

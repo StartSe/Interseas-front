@@ -149,7 +149,7 @@ export default class CompareDocuments {
         }
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 

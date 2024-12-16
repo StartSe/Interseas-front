@@ -67,6 +67,7 @@ import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import { SelectionBubble } from './bubbles/SelectionBubble';
 import DocumentsDBService from '@/service/documentsDBService';
+import historyChatFlowiseAPI, { ChatMessage } from '@/service/historyChatFlowiseAPI';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -201,6 +202,7 @@ const defaultWelcomeMessage = 'Hi there! How can I help?';
 const defaultBackgroundColor = '#ffffff';
 const defaultTextColor = '#303235';
 const documentService = new DocumentsDBService();
+const historyChatFlowiseApi = new historyChatFlowiseAPI();
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
@@ -279,7 +281,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
   const hsCodeRegex = /hs code/i;
 
-  onMount(() => {
+  onMount(async () => {
+    await fetchAndProcessChatHistory();
     if (props.flow === Flow.CriticalAnalysis.toString()) {
       const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
       if (!chatHistoryReference) {
@@ -337,7 +340,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   /**
    * Add each chat message into localStorage
    */
-  const addChatMessage = (allMessage: MessageType[]) => {
+  const addChatMessage = async (allMessage: MessageType[]) => {
     const messages = allMessage.map((item) => {
       if (item.fileUploads) {
         const fileUploads = item?.fileUploads.map((file) => ({
@@ -349,17 +352,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       return item;
     });
+    const userMessageType = 'userMessage';
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
+    const hasUserMessage = chatMessage?.chatHistory?.some((message: MessageType) => message.type === userMessageType);
 
-    if (!chatMessage || Object.entries(chatMessage).length === 0) {
+    if ((!chatMessage || Object.entries(chatMessage).length === 0 || !hasUserMessage) && messages[messages.length - 1].type === userMessageType) {
       const chatData = {
         id: chatId(),
         agent_flow: props.flow,
       };
 
-      documentService.saveChatData(chatData);
+      await documentService.saveChatData(chatData);
     }
-
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
 
@@ -1173,7 +1177,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
-      if (chatMessage.chatId) setChatId(chatMessage.chatId);
       const savedLead = chatMessage.lead;
       if (savedLead) {
         setIsLeadSaved(!!savedLead);
@@ -1863,7 +1866,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setLoading(false);
   };
 
-  const structureAndSaveMessages = async (jsonData: any, fileMap: any, resultFromBackgroundMessage?: any) => {
+  const structureChecklistMessage = (jsonData: any, fileMap?: any) => {
     const generateChecklistItemToPrint = (key: string, value: any) => {
       if (value && typeof value === 'object') {
         const formatted_value = Object.entries(value)
@@ -1905,7 +1908,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return checklistItem;
     };
 
-    let checklistMessage = `<b>${fileMap.type}:</b><br>`;
+    let checklistMessage = '';
+
+    if (fileMap) {
+      checklistMessage = `<b>${fileMap.type}:</b><br>`;
+    }
 
     for (const [key, value] of Object.entries(jsonData.checklist)) {
       checklistMessage += generateChecklistItemToPrint(key, value);
@@ -1917,7 +1924,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         checklistMessage += generateChecklistItemToPrint(key, value);
       }
     }
+    return checklistMessage;
+  };
 
+  const showChecklistMessage = (jsonData: any, checklistMessage: string) => {
     setMessages((prevMessages) => {
       const newMessage = { message: checklistMessage, type: 'apiMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
@@ -1945,6 +1955,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } else {
       updateLastMessage('');
     }
+  };
+
+  const structureAndSaveMessages = async (jsonData: any, fileMap?: any, resultFromBackgroundMessage?: any) => {
+    const structureChecklistMessageHTML = structureChecklistMessage(jsonData, fileMap);
+    showChecklistMessage(jsonData, structureChecklistMessageHTML);
   };
 
   const processNextChecklist = async () => {
@@ -2095,6 +2110,129 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
     await processCriticalAnalysisUpdate(dataFoundCriticalAnalysis);
   }
+
+  const fetchAndProcessChatHistory = async () => {
+    const chatDetails = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
+    const localStorageData = chatDetails ? JSON.parse(chatDetails) : null;
+
+    if (props.apiHost && props.chatflowid && (localStorageData?.chatId !== chatId() || localStorageData?.chatHistory?.length === 0)) {
+      const chatHistory = await historyChatFlowiseApi.getFlowiseChatHistory(props.apiHost, props.chatflowid, localStorageData?.chatId || null);
+      setChatId(localStorageData);
+      const updatedMessages = processMessages(chatHistory);
+      setLocalStorageChatflow(props.chatflowid, localStorageData?.chatId, { chatHistory: updatedMessages });
+    }
+  };
+
+  const processMessages = (historyMessages: ChatMessage[]) => {
+    const visibleMessages: ChatMessage[] = [];
+    let currentFileMap: FileMapping | null = null;
+
+    for (const message of historyMessages) {
+      const isUserMessage = message.role === 'userMessage';
+      const isApiMessage = message.role === 'apiMessage';
+      const contentJson = (() => {
+        try {
+          return JSON.parse(message.content);
+        } catch {
+          return null;
+        }
+      })();
+
+      if (message.fileUploads !== null) {
+        let documentName = '';
+        if (message.fileUploads && message.fileUploads.length > 0) {
+          const firstPageImageFileName = message.fileUploads[0].name;
+          documentName = firstPageImageFileName.replace(/(?:[^\w]\d+)*\.\w+$/, '').trim();
+        }
+        const mime = '';
+        const hash = '';
+
+        const file = { name: documentName, mime, hash };
+        const type = identifyDocumentType(documentName) || '';
+
+        currentFileMap = { file, type };
+      }
+
+      if (isUserMessage) {
+        const keywordsToIgnore = ['CROSS_VALIDATION', 'LIST_DIFFERENT_KEYS', 'Specific compliance', 'ANALISE_\\d##'];
+        const discoverNCMKeyword = 'DESCOBRE_NCM';
+        const userKeywordsTextToReformat = ['CORRIGE_JSON', discoverNCMKeyword];
+        const userKeywordsFileToReformat = ['CHECKLIST', 'EXTRACTION'];
+        const userKeywordsToReformat = [...userKeywordsFileToReformat, ...userKeywordsTextToReformat];
+        const ignoreRegex = new RegExp(`^(${keywordsToIgnore.join('|')})`);
+        const shouldIgnoreMessage = ignoreRegex.test(message.content);
+        const shouldReformatMessage = userKeywordsToReformat.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldReformatTextMessage = userKeywordsTextToReformat.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldReformatFileMessage = userKeywordsFileToReformat.some((keyword: string) => message.content.startsWith(keyword));
+
+        if (shouldIgnoreMessage) {
+          continue;
+        } else if (shouldReformatMessage) {
+          let chatMessageToShow;
+          if (shouldReformatFileMessage) {
+            chatMessageToShow = {
+              ...message,
+              content: currentFileMap?.file.name || '',
+            };
+          } else if (shouldReformatTextMessage) {
+            if (message.content.startsWith(discoverNCMKeyword)) {
+              const discoverAskingMessage = { content: messageUtils.NCM_INITIAL_QUESTION, role: 'selectionMessage', disabled: true } as ChatMessage;
+              const discoverConfirmMessage = { content: messageUtils.YES, role: 'userMessage' } as ChatMessage;
+              const discoverInstructionMessage = { content: messageUtils.NCM_DISCOVER_TEMPLATE, role: 'apiMessage' } as ChatMessage;
+              visibleMessages.push(discoverAskingMessage);
+              visibleMessages.push(discoverConfirmMessage);
+              visibleMessages.push(discoverInstructionMessage);
+            }
+            const chatSplit = message.content.split('text:');
+            chatMessageToShow = {
+              ...message,
+              content: chatSplit[chatSplit.length - 1],
+            };
+          }
+          if (chatMessageToShow) {
+            visibleMessages.push(chatMessageToShow);
+          }
+        } else {
+          visibleMessages.push(message);
+        }
+      } else if (isApiMessage) {
+        if (contentJson !== null && Object.keys(contentJson).includes('checklist')) {
+          const checklistHTML = structureChecklistMessage(contentJson, currentFileMap);
+          const chatMessageToShow = {
+            ...message,
+            content: checklistHTML,
+          };
+          visibleMessages.push(chatMessageToShow);
+        } else if (contentJson !== null) {
+          continue;
+        } else {
+          visibleMessages.push(message);
+        }
+      }
+    }
+
+    const visibleHistoryMessages: MessageType[] = [];
+
+    visibleMessages.map((item) => {
+      const newMessage = {
+        message: `${item.content}`,
+        type: item.role,
+        fileUploads: item.fileUploads ?? [],
+        disabled: item.disabled,
+      } as MessageType;
+
+      visibleHistoryMessages.push(newMessage);
+    });
+
+    if (messages()?.length === 1) {
+      setMessages((prevMessages) => {
+        const updated = [...prevMessages, ...visibleHistoryMessages];
+        return [...updated];
+      });
+    }
+
+    return visibleHistoryMessages;
+  };
 
   return (
     <>

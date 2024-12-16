@@ -31,13 +31,16 @@ export const constants = {
   n8nFlowFetchChatIdsForFlow: 'fetchChatIdsForFlow',
   n8nFlowSendDeleteChatRequest: 'sendDeleteChatRequest',
   n8nFlowSendUpdateChatRequest: 'sendUpdateChatRequest',
+  n8nFlowGetChatHistoryFromSupabase: 'getChatHistoryFromSupabase',
+  n8nFlowSendUpdateChatHistoryRequest: 'sendUpdateChatHistoryRequest',
+  flowiseJwtToken: 'k1mJtB095mxC2zTpC4dULMKlIfVCwWpCavfaBKpj3ew',
 };
 
 export const defaultMenuProps: MenuProps = {
   currentFlow: '',
-  chatflowid: undefined,
   items: [],
   fillColor: '#F4F6FF',
+  chatflowid: '',
 };
 
 export const defaultHomeProps: HomeProps = {

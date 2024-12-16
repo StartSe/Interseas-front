@@ -7,13 +7,14 @@ import { XIcon, DotsHorizontal, TrashIcon, PenEditIcon } from '@/components/icon
 import DocumentsDBService from '@/service/documentsDBService';
 import DeleteModal from './components/DeleteModal';
 import { DEFAULT_CHAT_NAME } from '@/utils/messageUtils';
+import { setLocalStorageChatflow } from '@/utils';
 
 const documentService = new DocumentsDBService();
 export interface MenuProps {
   currentFlow: string;
-  chatflowid?: string;
   items: MenuItemProps[];
   fillColor?: string;
+  chatflowid: string;
 }
 interface ChatItem {
   agentFlow: string;
@@ -46,15 +47,17 @@ export const Menu = (props: MenuProps) => {
   const [modalPosition, setModalPosition] = createSignal<'top' | 'bottom'>('bottom');
   const [selectedChatId, setSelectedChatId] = createSignal<string | null>(null);
   const [selectedChatName, setSelectedChatName] = createSignal<string | null>(null);
-  const [activeChatId, setActiveChatId] = createSignal<string | null>(null);
   const [chatHistory, setChatHistory] = createSignal<ChatHistory>({} as ChatHistory);
 
   let menuItemsRef: HTMLDivElement | undefined;
 
   createEffect(async () => {
+    if (open()) {
+      fetchChatIds();
+    }
     if (props.currentFlow !== currentFlow()) {
       setCurrentFLow(props.currentFlow);
-      setChatHistory(await getChatHistory());
+      await getChatHistory();
     }
 
     if (props.chatflowid !== currentChatflowId()) {
@@ -70,6 +73,7 @@ export const Menu = (props: MenuProps) => {
 
   const getChatHistory = async () => {
     const chatHistoryTitle = getChatHistoryTitle();
+    let history = {} as ChatHistory;
 
     if (chatHistoryTitle) {
       const chatHistory = await fetchChatIds();
@@ -82,21 +86,25 @@ export const Menu = (props: MenuProps) => {
         }
       }
 
-      const history = {
+      history = {
         title: chatHistoryTitle,
         hasHistory: hasHistory,
         items: chatHistory,
       } as ChatHistory;
-
-      return history;
     }
 
-    return {} as ChatHistory;
+    setChatHistory(history);
+    return history;
   };
 
   const handleClick = (flow: string) => {
     window.location.href = `./${flow}.html`;
     setCurrentFLow(flow);
+  };
+
+  const handleItemClick = (itemId: string) => {
+    setLocalStorageChatflow(props.chatflowid, itemId);
+    window.location.reload();
   };
 
   const handleInputChange = (e: Event) => {
@@ -182,9 +190,6 @@ export const Menu = (props: MenuProps) => {
       return new Date(date.getTime() + offsetDifference * millisecondsInAMinute);
     }
 
-    // Sort chatItems by created_at in descending order
-    chatItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
     let currentGroupIndex = 0;
 
     chatItems.forEach((item) => {
@@ -265,66 +270,69 @@ export const Menu = (props: MenuProps) => {
                 <For each={props.items}>
                   {(item) => <MenuItem {...item} selected={item.flow === currentFlow()} onClick={() => handleClick(item.flow)} />}
                 </For>
-
                 {chatHistory() && Object.keys(chatHistory()).length > 0 && chatHistory().hasHistory && (
                   <>
                     <div class="menu-history-title">Histórico de chats - {chatHistory().title} </div>
                     <div class="menu-history-items" ref={menuItemsRef}>
                       <For each={chatHistory().items}>
-                        {(group) =>
-                          group.items.length > 0 && (
-                            <div class={`menu-history-item-group`}>
-                              <span class="menu-history-date-label">{group.label}</span>
-                              <For each={group.items}>
-                                {(item) => {
-                                  let buttonRef: HTMLButtonElement | null = null;
-                                  return (
-                                    <div
-                                      class={'menu-history-item ' + (item.id === currentChatId() ? 'selected' : 'pointer')}
-                                      id={item.id}
-                                      onClick={() => setActiveChatId(item.id)}
-                                    >
-                                      {!!editingChatId() && editingChatId() === item.id ? (
-                                        <form onSubmit={(e) => handleEditSubmit(e, item.id)} onKeyUp={handleKeyUp}>
-                                          <input type="text" name="chat-name" id={item.id} value={formatDateChat(item)} onInput={handleInputChange} />
-                                        </form>
-                                      ) : (
-                                        <>
-                                          <span>{formatDateChat(item)}</span>
-                                          <button
-                                            class="menu-history-button"
-                                            ref={(element) => (buttonRef = element)}
-                                            onClick={() => buttonRef && toggleMenuOptions(item.id, buttonRef)}
-                                          >
-                                            <DotsHorizontal />
-                                          </button>
-                                        </>
-                                      )}
-                                      {openMenuOptions() === item.id && (
-                                        <div class={`menu-history-option ${modalPosition()}`}>
-                                          <div class="menu-history-option-wrapper">
-                                            <div class="menu-history-option-edit">
-                                              <button onClick={() => startEditing(item.id)}>
-                                                <PenEditIcon />
-                                                Renomear chat
-                                              </button>
-                                            </div>
-                                            <div class="menu-history-option-delete">
-                                              <button onClick={() => handleOpenDeleteModal(item.id, formatDateChat(item))}>
-                                                <TrashIcon color="#e41d1d" />
-                                                Excluir chat
-                                              </button>
+                        {(group) => {
+                          return (
+                            group.items.length > 0 && (
+                              <div class={`menu-history-item-group`}>
+                                <span class="menu-history-date-label">{group.label}</span>
+                                <For each={group.items}>
+                                  {(item) => {
+                                    let buttonRef: HTMLButtonElement | null = null;
+                                    return (
+                                      <div class={'menu-history-item ' + (item.id === currentChatId() ? 'selected' : 'pointer')} id={item.id}>
+                                        {!!editingChatId() && editingChatId() === item.id ? (
+                                          <form onSubmit={(e) => handleEditSubmit(e, item.id)} onKeyUp={handleKeyUp}>
+                                            <input
+                                              type="text"
+                                              name="chat-name"
+                                              id={item.id}
+                                              value={formatDateChat(item)}
+                                              onInput={handleInputChange}
+                                            />
+                                          </form>
+                                        ) : (
+                                          <>
+                                            <span onClick={() => handleItemClick(item.id)}>{formatDateChat(item)}</span>
+                                            <button
+                                              class="menu-history-button"
+                                              ref={(element) => (buttonRef = element)}
+                                              onClick={() => buttonRef && toggleMenuOptions(item.id, buttonRef)}
+                                            >
+                                              <DotsHorizontal />
+                                            </button>
+                                          </>
+                                        )}
+                                        {openMenuOptions() === item.id && (
+                                          <div class={`menu-history-option ${modalPosition()}`}>
+                                            <div class="menu-history-option-wrapper">
+                                              <div class="menu-history-option-edit">
+                                                <button onClick={() => startEditing(item.id)}>
+                                                  <PenEditIcon />
+                                                  Renomear chat
+                                                </button>
+                                              </div>
+                                              <div class="menu-history-option-delete">
+                                                <button onClick={() => handleOpenDeleteModal(item.id, formatDateChat(item))}>
+                                                  <TrashIcon color="#e41d1d" />
+                                                  Excluir chat
+                                                </button>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                }}
-                              </For>
-                            </div>
-                          )
-                        }
+                                        )}
+                                      </div>
+                                    );
+                                  }}
+                                </For>
+                              </div>
+                            )
+                          );
+                        }}
                       </For>
                     </div>
                   </>

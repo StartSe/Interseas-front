@@ -79,7 +79,6 @@ export const sendRequest = async <ResponseData>(
 };
 
 export const setLocalStorageChatflow = (chatflowid: string, chatId: string, saveObj: Record<string, any> = {}) => {
-  console.log('Setting localStorage for chatId ', chatId)
   const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
   const obj = { ...saveObj };
   if (chatId) obj.chatId = chatId;
@@ -126,20 +125,17 @@ export const removeLocalStorageChatHistory = (chatflowid: string) => {
   }
 };
 
-export const removeLocalStorageChatHistoryItem = (chatflowid: string ) => {
+export const removeLocalStorageChatHistoryItem = (chatflowid: string, chatId: string) => {
   const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
   if (!chatDetails) return;
   try {
-    const parsedChatDetails = JSON.parse(chatDetails);
-    console.log(parsedChatDetails)
-    const obj = { chatHistory: parsedChatDetails.message };
+    const obj = { chatHistory: null, chatId: chatId };
     localStorage.removeItem(`${chatflowid}_EXTERNAL`);
     localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
-  }
-  catch (e) {
+  } catch (e) {
     return;
   }
-}
+};
 
 export const getBubbleButtonSize = (size: 'small' | 'medium' | 'large' | number | undefined) => {
   if (!size) return 48;

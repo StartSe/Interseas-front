@@ -1,29 +1,64 @@
-import { ChatMessage } from '@/types';
 import { constants } from '@/constants';
 
-interface FileUploadsItem {
-  mime: string;
-  name: string;
+interface Document {
+  id: string;
   type: string;
-}
-export interface ChatHistoryItem {
-  // Defina as propriedades específicas que estão dentro de cada objeto do chatHistory, ex.:
-  message: string;
-  timestamp: string;
-  fileUploads: FileUploadsItem[];
-  type: 'userMessage' | 'apiMessage';
-  // Adicione mais campos conforme necessário
+  name: string;
+  contents: any;
 }
 
-interface ChatHistoryResponse {
-  chat_history: {
-    chatHistory: ChatHistoryItem[];
-  };
-  agent_flow: string;
-  chat_name: string | null;
-  created_at: string;
+interface UsedTool {
   id: string;
-  updated_at: string;
+  name: string;
+  type: string;
+  version: string;
+}
+
+interface FileAnnotation {
+  id: string;
+  type: string;
+  name: string;
+  contents: any;
+}
+
+interface AgentReasoning {
+  id: string;
+  type: string;
+  content: string;
+}
+
+interface FileUpload {
+  id: string;
+  type: string;
+  name: string;
+  mime: string;
+  contents: any;
+}
+
+interface Action {
+  id: string;
+  type: string;
+  contents: any;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'apiMessage' | 'userMessage' | 'selectionMessage';
+  chatflowId: string;
+  content: string;
+  sourceDocuments: Document[] | null;
+  usedTools: UsedTool[] | null;
+  fileAnnotations: FileAnnotation[] | null;
+  agentReasoning: AgentReasoning[] | null;
+  fileUploads: FileUpload[] | null;
+  action: Action[] | null;
+  chatType: 'INTERNAL' | 'EXTERNAL';
+  chatId: string;
+  memoryType: string | null;
+  sessionId: string | null;
+  createdDate: string;
+  leadEmail: string | null;
+  disabled?: boolean;
 }
 
 export class historyChatFlowiseAPI {
@@ -36,17 +71,6 @@ export class historyChatFlowiseAPI {
     });
     const chatData: ChatMessage[] = await response.json();
     return chatData;
-  }
-  async getChatHistory(chatId: string): Promise<any> {
-    const response = await fetch(`${constants.n8nDomain}/webhook/${constants.n8nFlowGetChatHistoryFromSupabase}?chatId=${chatId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data: ChatHistoryResponse[] = await response.json();
-    const formattedData = data[0].chat_history ? data[0].chat_history.chatHistory : [];
-    return formattedData;
   }
 }
 export default historyChatFlowiseAPI;

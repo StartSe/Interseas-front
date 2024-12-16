@@ -33,14 +33,7 @@ import { CircleDotIcon, SparklesIcon, TrashIcon } from './icons';
 import { CancelButton } from './buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { LeadCaptureBubble } from '@/components/bubbles/LeadCaptureBubble';
-import {
-  removeLocalStorageChatHistory,
-  getLocalStorageChatflow,
-  setLocalStorageChatflow,
-  setCookie,
-  getCookie,
-  removeLocalStorageChatHistoryItem,
-} from '@/utils';
+import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorageChatflow, setCookie, getCookie } from '@/utils';
 import { cloneDeep } from 'lodash';
 import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
 import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
@@ -68,8 +61,7 @@ import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import { SelectionBubble } from './bubbles/SelectionBubble';
 import DocumentsDBService from '@/service/documentsDBService';
-import historyChatFlowiseAPI, { ChatHistoryItem } from '@/service/historyChatFlowiseAPI';
-import { ChatMessage } from '@/types';
+import historyChatFlowiseAPI, { ChatMessage } from '@/service/historyChatFlowiseAPI';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -236,7 +228,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [chatId, setChatId] = createSignal(
     (props.chatflowConfig?.vars as any)?.customerId ? `${(props.chatflowConfig?.vars as any).customerId.toString()}+${uuidv4()}` : uuidv4(),
   );
-  console.log('ChatId Before Memo: ', chatId());
   const [isMessageStopping, setIsMessageStopping] = createSignal(false);
   const [starterPrompts, setStarterPrompts] = createSignal<string[]>([], { equals: false });
   const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
@@ -268,9 +259,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   createMemo(() => {
     const customerId = (props.chatflowConfig?.vars as any)?.customerId;
     setChatId(customerId ? `${customerId.toString()}+${uuidv4()}` : uuidv4());
-    console.log('ChatId Insine Memo: ', chatId());
   });
-  console.log('ChatId after Memo: ', chatId());
   // document uploading
   const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
   const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
@@ -285,7 +274,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [isAnalyzing, setIsAnalyzing] = createSignal(false);
   const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
 
-  onMount(() => {
+  onMount(async () => {
+    await fetchAndProcessChatHistory();
     if (props.flow === Flow.CriticalAnalysis.toString()) {
       const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
       if (!chatHistoryReference) {
@@ -336,9 +326,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   };
 
-  onMount(() => {
-    fetchAndProcessChatHistory();
-  });
   /**
    * Add each chat message into localStorage
    */
@@ -355,15 +342,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return item;
     });
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
+    const hasUserMessage = chatMessage?.chatHistory?.some((message: MessageType) => message.type === 'userMessage');
 
-    if (!chatMessage || Object.entries(chatMessage).length === 0) {
+    if ((!chatMessage || Object.entries(chatMessage).length === 0 || !hasUserMessage) && messages[messages.length - 1].type === 'userMessage') {
       const chatData = {
         id: chatId(),
         agent_flow: props.flow,
       };
 
       await documentService.saveChatData(chatData);
-      await documentService.updateChatHistory(chatId(), { chatHistory: messages });
     }
     setLocalStorageChatflow(props.chatflowid, chatId(), { chatHistory: messages });
   };
@@ -543,7 +530,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const updateMetadata = (data: any, input: string) => {
     if (data.chatId) {
       setChatId(data.chatId);
-      console.log('ChatId Insine updateMetadata: ', chatId());
     }
 
     // set message id that is needed for feedback
@@ -845,7 +831,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             else text = JSON.stringify(data, null, 2);
 
             if (data?.chatId) setChatId(data.chatId);
-            console.log('ChatId line 846: ', chatId());
 
             playReceiveSound();
 
@@ -1110,7 +1095,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
-      console.log('ChatId Inside ClearChat: ', chatId());
       setUploadedFiles([]);
       window.location.reload();
 
@@ -1193,7 +1177,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
       // if (chatMessage.chatId) setChatId(chatMessage.chatId);
-      console.log('ChatId Inside CreateEffect line 1177: ', chatId());
       const savedLead = chatMessage.lead;
       if (savedLead) {
         setIsLeadSaved(!!savedLead);
@@ -2127,24 +2110,26 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const fetchAndProcessChatHistory = async () => {
     const chatDetails = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
-    const chatIdInlocalStorage = chatDetails ? JSON.parse(chatDetails) : null;
-    if (props.apiHost && props.chatflowid) {
-      const chatHistory = await historyChatFlowiseApi.getChatHistory(chatIdInlocalStorage?.chatId || null);
-      processMessages(chatHistory);
+    const localStorageData = chatDetails ? JSON.parse(chatDetails) : null;
+
+    if (props.apiHost && props.chatflowid && (localStorageData?.chatId !== chatId() || localStorageData?.chatHistory?.length === 0)) {
+      const chatHistory = await historyChatFlowiseApi.getFlowiseChatHistory(props.apiHost, props.chatflowid, localStorageData?.chatId || null);
+      setChatId(localStorageData);
+      const updatedMessages = processMessages(chatHistory);
+      setLocalStorageChatflow(props.chatflowid, localStorageData?.chatId, { chatHistory: updatedMessages });
     }
   };
 
-  const processMessages = (historyMessages: ChatHistoryItem[]) => {
-    console.log('Processing messages ', historyMessages);
-    const visibleMessages: ChatHistoryItem[] = [];
+  const processMessages = (historyMessages: ChatMessage[]) => {
+    const visibleMessages: ChatMessage[] = [];
     let currentFileMap: FileMapping | null = null;
 
     for (const message of historyMessages) {
-      const isUserMessage = message.type === 'userMessage';
-      const isApiMessage = message.type === 'apiMessage';
+      const isUserMessage = message.role === 'userMessage';
+      const isApiMessage = message.role === 'apiMessage';
       const contentJson = (() => {
         try {
-          return JSON.parse(message.message);
+          return JSON.parse(message.content);
         } catch {
           return null;
         }
@@ -2166,18 +2151,54 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       if (isUserMessage) {
-        const keywordsToIgnore = ['CROSS_VALIDATION', 'LIST_DIFFERENT_KEYS', 'DESCOBRE_NCM', 'CORRIGE_JSON', 'Specific compliance'];
-        const keywordsToReformat = ['CHECKLIST', 'EXTRACTION'];
-        const shouldIgnoreMessage = keywordsToIgnore.some((keyword: string) => message.message.startsWith(keyword));
-        const shouldReformatMessage = keywordsToReformat.some((keyword: string) => message.message.startsWith(keyword));
+        const keywordsToIgnore = [
+          'CROSS_VALIDATION',
+          'LIST_DIFFERENT_KEYS',
+          'Specific compliance',
+          'ANALISE_1##',
+          'ANALISE_2##',
+          'ANALISE_3##',
+          'ANALISE_4##',
+          'ANALISE_5##',
+          'ANALISE_6##',
+          'ANALISE_7##',
+        ];
+        const discoverNCMKeyword = 'DESCOBRE_NCM';
+        const userKeywordsTextToReformat = ['CORRIGE_JSON', discoverNCMKeyword];
+        const userKeywordsFileToReformat = ['CHECKLIST', 'EXTRACTION'];
+        const userKeywordsToReformat = [...userKeywordsFileToReformat, ...userKeywordsTextToReformat];
+        const shouldIgnoreMessage = keywordsToIgnore.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldReformatMessage = userKeywordsToReformat.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldReformatTextMessage = userKeywordsTextToReformat.some((keyword: string) => message.content.startsWith(keyword));
+        const shouldReformatFileMessage = userKeywordsFileToReformat.some((keyword: string) => message.content.startsWith(keyword));
+
         if (shouldIgnoreMessage) {
           continue;
         } else if (shouldReformatMessage) {
-          const chatMessageToShow = {
-            ...message,
-            content: currentFileMap?.file.name || '',
-          };
-          visibleMessages.push(chatMessageToShow);
+          let chatMessageToShow;
+          if (shouldReformatFileMessage) {
+            chatMessageToShow = {
+              ...message,
+              content: currentFileMap?.file.name || '',
+            };
+          } else if (shouldReformatTextMessage) {
+            if (message.content.startsWith(discoverNCMKeyword)) {
+              const discoverAskingMessage = { content: messageUtils.NCM_INITIAL_QUESTION, role: 'selectionMessage', disabled: true } as ChatMessage;
+              const discoverConfirmMessage = { content: messageUtils.YES, role: 'userMessage' } as ChatMessage;
+              const discoverInstructionMessage = { content: messageUtils.NCM_DISCOVER_TEMPLATE, role: 'apiMessage' } as ChatMessage;
+              visibleMessages.push(discoverAskingMessage);
+              visibleMessages.push(discoverConfirmMessage);
+              visibleMessages.push(discoverInstructionMessage);
+            }
+            const chatSplit = message.content.split('text:');
+            chatMessageToShow = {
+              ...message,
+              content: chatSplit[chatSplit.length - 1],
+            };
+          }
+          if (chatMessageToShow) {
+            visibleMessages.push(chatMessageToShow);
+          }
         } else {
           visibleMessages.push(message);
         }
@@ -2197,19 +2218,27 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
     }
 
-    // removeLocalStorageChatHistory(props.chatflowid);
-    // setMessages([]);
+    const visibleHistoryMessages: MessageType[] = [];
 
     visibleMessages.map((item) => {
+      const newMessage = {
+        message: `${item.content}`,
+        type: item.role,
+        fileUploads: item.fileUploads ?? [],
+        disabled: item.disabled,
+      } as MessageType;
+
+      visibleHistoryMessages.push(newMessage);
+    });
+
+    if (messages()?.length === 1) {
       setMessages((prevMessages) => {
-        const newMessage = { message: `${item.message}`, type: item.type, fileUploads: item.fileUploads ?? [] } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        // addChatMessage(updated);
+        const updated = [...prevMessages, ...visibleHistoryMessages];
         return [...updated];
       });
-    });
-    console.log('Visible messages ', visibleMessages);
-    console.log('Updated messages ', messages());
+    }
+
+    return visibleHistoryMessages;
   };
 
   return (

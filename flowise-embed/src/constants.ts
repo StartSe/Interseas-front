@@ -33,12 +33,11 @@ export const constants = {
   n8nFlowSendUpdateChatRequest: 'sendUpdateChatRequest',
   n8nFlowGetChatHistoryFromSupabase: 'getChatHistoryFromSupabase',
   n8nFlowSendUpdateChatHistoryRequest: 'sendUpdateChatHistoryRequest',
-  flowiseJwtToken: '_53va3oHqcKL0m8HaZJQbgKkgtwIgv_wquEI46lw-T4',
+  flowiseJwtToken: 'k1mJtB095mxC2zTpC4dULMKlIfVCwWpCavfaBKpj3ew',
 };
 
 export const defaultMenuProps: MenuProps = {
   currentFlow: '',
-  chatflowid: undefined,
   items: [],
   fillColor: '#F4F6FF',
   chatflowid: '',

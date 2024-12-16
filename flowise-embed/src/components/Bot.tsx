@@ -1178,7 +1178,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
     if (chatMessage && Object.keys(chatMessage).length) {
-      // if (chatMessage.chatId) setChatId(chatMessage.chatId);
       const savedLead = chatMessage.lead;
       if (savedLead) {
         setIsLeadSaved(!!savedLead);

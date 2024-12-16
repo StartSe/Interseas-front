@@ -77,7 +77,7 @@
     overflow-y: scroll;
     scrollbar-width: none;
     padding-top: var(--menu-items-top-padding);
-    max-height: calc(100vh - var(--menu-header-height) - var(--menu-footer-height));
+    height: calc(100vh - var(--menu-header-height) - var(--menu-footer-height));
 }
 .menu-text{
     font-family: var(--chatbot-container-font-family-secondary);
@@ -132,9 +132,6 @@
     flex-direction: column;
     gap: .3125rem;
     width: 100%;
-}
-.menu-history-item-group.min-height {
-    min-height: 25rem;
 }
 .menu-history-item-wrapper {
     position: relative;

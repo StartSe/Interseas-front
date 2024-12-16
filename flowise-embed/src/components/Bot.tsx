@@ -983,6 +983,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           addChatMessage(updated);
           return [...updated];
         });
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_MISSING_NCM, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
       } else {
         setIsAnalyzing(true);
         setMessages((prevMessages) => {

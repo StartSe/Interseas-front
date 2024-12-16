@@ -260,6 +260,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const customerId = (props.chatflowConfig?.vars as any)?.customerId;
     setChatId(customerId ? `${customerId.toString()}+${uuidv4()}` : uuidv4());
   });
+
   // document uploading
   const [startUploadingDocument, setStartUploadingDocument] = createSignal(true);
   const [documentsUploaded, setDocumentsUploaded] = createSignal(false);
@@ -341,10 +342,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       return item;
     });
+    const userMessageType = 'userMessage';
     const chatMessage = getLocalStorageChatflow(props.chatflowid);
-    const hasUserMessage = chatMessage?.chatHistory?.some((message: MessageType) => message.type === 'userMessage');
+    const hasUserMessage = chatMessage?.chatHistory?.some((message: MessageType) => message.type === userMessageType);
 
-    if ((!chatMessage || Object.entries(chatMessage).length === 0 || !hasUserMessage) && messages[messages.length - 1].type === 'userMessage') {
+    if ((!chatMessage || Object.entries(chatMessage).length === 0 || !hasUserMessage) && messages[messages.length - 1].type === userMessageType) {
       const chatData = {
         id: chatId(),
         agent_flow: props.flow,
@@ -1907,7 +1909,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       return checklistItem;
     };
+
     let checklistMessage = '';
+
     if (fileMap) {
       checklistMessage = `<b>${fileMap.type}:</b><br>`;
     }
@@ -1915,6 +1919,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     for (const [key, value] of Object.entries(jsonData.checklist)) {
       checklistMessage += generateChecklistItemToPrint(key, value);
     }
+
     if (Object.keys(jsonData).includes('conferências') && jsonData['conferências'] !== null && Object.keys(jsonData['conferências']).length > 0) {
       checklistMessage += `<br><b>Conferências:</b><br>`;
       for (const [key, value] of Object.entries(jsonData['conferências'])) {
@@ -2151,23 +2156,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
 
       if (isUserMessage) {
-        const keywordsToIgnore = [
-          'CROSS_VALIDATION',
-          'LIST_DIFFERENT_KEYS',
-          'Specific compliance',
-          'ANALISE_1##',
-          'ANALISE_2##',
-          'ANALISE_3##',
-          'ANALISE_4##',
-          'ANALISE_5##',
-          'ANALISE_6##',
-          'ANALISE_7##',
-        ];
+        const keywordsToIgnore = ['CROSS_VALIDATION', 'LIST_DIFFERENT_KEYS', 'Specific compliance', 'ANALISE_\\d##'];
         const discoverNCMKeyword = 'DESCOBRE_NCM';
         const userKeywordsTextToReformat = ['CORRIGE_JSON', discoverNCMKeyword];
         const userKeywordsFileToReformat = ['CHECKLIST', 'EXTRACTION'];
         const userKeywordsToReformat = [...userKeywordsFileToReformat, ...userKeywordsTextToReformat];
-        const shouldIgnoreMessage = keywordsToIgnore.some((keyword: string) => message.content.startsWith(keyword));
+        const ignoreRegex = new RegExp(`^(${keywordsToIgnore.join('|')})`);
+        const shouldIgnoreMessage = ignoreRegex.test(message.content);
         const shouldReformatMessage = userKeywordsToReformat.some((keyword: string) => message.content.startsWith(keyword));
         const shouldReformatTextMessage = userKeywordsTextToReformat.some((keyword: string) => message.content.startsWith(keyword));
         const shouldReformatFileMessage = userKeywordsFileToReformat.some((keyword: string) => message.content.startsWith(keyword));

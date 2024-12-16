@@ -126,6 +126,6 @@ export type TextExtractionConfig = {
 export enum Flow {
   Compliance = 'compliance',
   CriticalAnalysis = 'critical_analysis',
-  CostEstimate = 'cost_estimate',
+  taxClassification = 'tax_classification',
   Empty = '',
 }

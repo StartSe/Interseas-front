@@ -974,9 +974,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
         if (/ncm/i.test(normalizedKey)) {
           const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
-          if (isNonEmptyArrayOrObject(jsonDataCriticalAnalysis[key])) {
-            jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
-            jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
+          jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
+          jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
+          if (!isNonEmptyArrayOrObject(jsonDataCriticalAnalysis[key])) {
+            jsonDataCriticalAnalysis[key] = null;
+          }
+        }
+        if (/hs code/i.test(normalizedKey)) {
+          const oldJson: { [key: string]: any } = { ...jsonResponseCriticalAnalysis() };
+          jsonDataCriticalAnalysis[key] = sanitizeToFlatArray(jsonDataCriticalAnalysis[key]);
+          jsonDataCriticalAnalysis[key] = compareAndMergeArrays(oldJson[key], jsonDataCriticalAnalysis[key]);
+          if (!isNonEmptyArrayOrObject(jsonDataCriticalAnalysis[key])) {
+            jsonDataCriticalAnalysis[key] = null;
           }
         }
       }
@@ -1073,7 +1082,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const hasValue = value !== 'null' && value !== null;
     const checkboxStyle = hasValue && !isChecklistItem ? 'color: white; background-color: #136FEE; ' : '';
     const readonlyAttribute = isChecklistItem ? '' : 'readonly onclick="return false;"';
-    const noValueText = isChecklistItem ? 'N/A' : 'Valor não encontrado ou não preenchido.';
+    const noValueText = isChecklistItem || /hs code/i.test(key) ? 'N/A' : 'Valor não encontrado ou não preenchido.';
 
     let item = `<input type="checkbox" ${hasValue ? 'checked' : ''} ${readonlyAttribute} style="${checkboxStyle}"> <b>${key}</b>:<br>`;
     item += hasValue ? spacedText(value) : spacedText(noValueText);

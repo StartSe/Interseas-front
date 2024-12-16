@@ -6,14 +6,14 @@ declare class DocumentsDBService {
     private fetchDocumentsByChatId;
     private fetchChatIdsForFlow;
     private sendDeleteChatRequest;
-    private sendUpdateChatRequest;
+    private sendUpdateChatRenameRequest;
     private sendDataToDBThroughN8n;
     private isHashInDatabase;
     private isChatIdInDatabase;
     private doesChatDocumentRelationExist;
     private retrieveChatIdsForFlow;
     private removeChat;
-    private updateChat;
+    private updateChatRename;
     private extractDocumentData;
     saveChatData(chatData: any): Promise<void>;
     saveDocumentData(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void>;

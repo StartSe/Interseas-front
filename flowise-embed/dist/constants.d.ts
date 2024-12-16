@@ -20,6 +20,9 @@ export declare const constants: {
     n8nFlowFetchChatIdsForFlow: string;
     n8nFlowSendDeleteChatRequest: string;
     n8nFlowSendUpdateChatRequest: string;
+    n8nFlowGetChatHistoryFromSupabase: string;
+    n8nFlowSendUpdateChatHistoryRequest: string;
+    flowiseJwtToken: string;
 };
 export declare const defaultMenuProps: MenuProps;
 export declare const defaultHomeProps: HomeProps;

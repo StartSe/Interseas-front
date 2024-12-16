@@ -111,7 +111,7 @@ export type TextExtractionConfig = {
 export declare enum Flow {
     Compliance = "compliance",
     CriticalAnalysis = "critical_analysis",
-    CostEstimate = "cost_estimate",
+    taxClassification = "tax_classification",
     Empty = ""
 }
 //# sourceMappingURL=types.d.ts.map

@@ -12,7 +12,7 @@ export const messageUtils = {
   SUPPORTED_FILE_TYPES: 'Formatos suportados:',
   ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE:
     'Um ou mais arquivos não puderam ter seu checklist identificado, mas os demais serão processados normalmente.',
-  ALL_DOCUMENTS_VALIDATED_MESSAGE: 'Todos os seus documentos estão validados corretamente! Verifique cada um dos checklists abaixo detalhadamente',
+  ALL_DOCUMENTS_VALIDATED_MESSAGE: 'Todos os seus documentos foram reconhecidos! Verifique cada um dos checklists abaixo detalhadamente',
   UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: 'Não foi possível verificar o checklist deste arquivo.',
   UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE: 'Não foi possível verificar os campos deste arquivo.',
   NO_LI_LPCO_COMPLIANCE_FEATURE: 'Ainda não faço o compliance de LI/LPCO, por favor realizá-lo manualmente.',
@@ -26,6 +26,7 @@ export const messageUtils = {
   IMPORT_LICENSE_NOT_FOUND_ALERT_MESSAGE: 'Dados de LI/Licença de importação não encontrados, revise os documentos enviados',
   CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL: `Dados Necessários para Análise Crítica:`,
   CRITICAL_ANALYSIS_MISSING_DATA: 'Algumas informações não foram encontradas, por favor digite-as para prosseguirmos.',
+  CRITICAL_ANALYSIS_MISSING_NCM: 'Caso ainda não possua a NCM, utilize o assistente de classificação fiscal.',
   CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: 'Dados enviados para análise crítica!',
   CRITICAL_ANALYSIS_PROCESSING_ERROR: 'Error processing critical analysis update.',
   DATA_NOT_FOUND: 'não encontrado',

@@ -1036,9 +1036,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       throw error;
     }
   };
-  console.log("passa em getCriticalAnalysisStepResults")
   const getCriticalAnalysisStepResults = async (ncmArray: string[], jsonDataCriticalAnalysis: any) => {
-    console.log("passa em getCriticalAnalysisStepResults")
     for (const prefix of Object.values(CriticalAnalysisPrefixes)) {
       let message = '';
       const warningMessage = criticalAnalysisWarningMapping[prefix];
@@ -2104,7 +2102,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     scrollToBottom();
-    console.log("chatis", chatId)
   };
 
   async function processNewFileData(file: any, files: any[], urls: Partial<FileUpload>[]) {

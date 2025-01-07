@@ -997,6 +997,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
 
         await getCriticalAnalysisStepResults(ncmArray, jsonDataCriticalAnalysis);
+        setLoading(false);
 
         setJsonResponseCriticalAnalysis({});
       }

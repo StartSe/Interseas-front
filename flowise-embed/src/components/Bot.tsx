@@ -1977,7 +1977,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       fileProcessed = await documentService.getProcessedDocumentData(fileMap, props.flow, chatId());
     }
 
-    if (fileProcessed != null) {
+    if (fileProcessed && fileProcessed != 'null') {
       let processedDocumentJson = JSON.parse(fileProcessed);
       processedDocumentJson = sanitizeJson(processedDocumentJson);
       structureAndSaveMessages(processedDocumentJson, fileMap);
@@ -2011,6 +2011,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     setCurrentChecklistNumber(0);
     setDocumentsUploaded(false);
+    const fileMappings = filledChecklists;
 
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
@@ -2029,19 +2030,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
     const filesCheckList = await documentService.getDocumentsByChatId(chatId());
 
-    const fileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
-      file: {
-        name: file.file_name,
-        mime: file.mime,
-        hash: file.hash,
-      } as DatabaseProvidedFile,
-      type: file.checklist_type,
-      content: file.checklist_result,
-      filledChecklist: file.checklist_result,
-    }));
+    if (filesCheckList) {
+      const cacheFileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
+        file: {
+          name: file.file_name,
+          mime: file.mime,
+          hash: file.hash,
+        } as DatabaseProvidedFile,
+        type: file.checklist_type,
+        content: file.checklist_result,
+        filledChecklist: file.checklist_result,
+      }));
+      fileMappings.push(...cacheFileMappings);
+    }
 
     const compareDocuments = new CompareDocuments({
-      fileMappings: fileMappings || filledChecklists,
+      fileMappings: fileMappings,
       sendBackgroundMessage,
       setMessages,
     });
@@ -2070,7 +2074,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const fileProcessed = await documentService.getProcessedDocumentData(fileMap, props.flow, chatId());
 
-    if (fileProcessed) {
+    if (fileProcessed && fileProcessed != 'null') {
       let processedDocumentJson = JSON.parse(fileProcessed);
       processedDocumentJson = sanitizeJson(processedDocumentJson);
       await processCriticalAnalysisUpdate(processedDocumentJson, true);

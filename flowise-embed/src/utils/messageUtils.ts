@@ -30,9 +30,6 @@ export const messageUtils = {
   CRITICAL_ANALYSIS_SUBMISSION_SUCCESS: 'Dados enviados para análise crítica!',
   CRITICAL_ANALYSIS_PROCESSING_ERROR: 'Error processing critical analysis update.',
   DATA_NOT_FOUND: 'não encontrado',
-  NCM_INITIAL_QUESTION: 'Deseja descobrir o NCM?',
-  NCM_CONTINUE_QUESTION: 'Deseja continuar com o especialista em Classificação Fiscal?',
-  NCM_RETRY: 'Deseja classificar novamente?',
   NCM_TEXT_INPUT_REQUIRED: 'Envie o template para descoberta de NCM em formato texto',
   NCM_STEP_FAILURE: 'Error processing critical analysis step',
   NCM_INPUT_INSTRUCTIONS: `
@@ -88,20 +85,11 @@ export function ncmStepFailureMessage(prefix: string, ncm: string): string {
   return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[prefix]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
-export function ncmChangeMessage(oldNcm: string, newNcm: string): string {
-  return `Atualização detectada no código NCM!\n\n
-  * O código anterior era: **${oldNcm}**\n
-  * O novo código é: **${newNcm}**\n\n`;
-}
 export function complianceErrorMessage(errorMessages: string, isPlural: boolean): string {
   const pluralize = (word: string) => (isPlural ? `${word}s` : word);
   return `Não foi possivel realizar a Análise de Compliance. ${pluralize('O')} ${pluralize('seguinte')} ${pluralize('arquivo')} não ${
     isPlural ? 'puderam' : 'pôde'
   } ser ${pluralize('processado')}: ${errorMessages}. Verifique ${pluralize('o')} ${pluralize('arquivo')} e tente novamente.`;
-}
-
-export function criticalAnalysisNcmPhase(ncm: string): string {
-  return `Análise Crítica para o NCM: **${ncm}**`;
 }
 
 export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

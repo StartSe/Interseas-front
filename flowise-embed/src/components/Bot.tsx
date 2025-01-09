@@ -94,7 +94,7 @@ type FilePreview = {
   type: string;
 };
 
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage' | 'selectionMessage';
+type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting' | 'leadCaptureMessage';
 
 export type IAgentReasoning = {
   agentName?: string;
@@ -269,8 +269,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [isUploadButtonDisabled, setIsUploadButtonDisabled] = createSignal<boolean>(false);
   const [isNextChecklistButtonDisabled, setIsNextChecklistButtonDisabled] = createSignal<boolean>(false);
   const [documentsChecklistError, setDocumentsChecklistError] = createSignal<string[]>([]);
-  const [isAnalyzing, setIsAnalyzing] = createSignal(false);
-  const basicQuestionOptions = [messageUtils.YES, messageUtils.NO];
 
   onMount(() => {
     if (props.flow === Flow.CriticalAnalysis.toString()) {
@@ -388,16 +386,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(allMessages);
       return allMessages;
     });
-  };
-  const disableLastSelectionMessage = () => {
-    const lastSelectionMessageIndex = messages().findLastIndex((message) => message.type === 'selectionMessage');
-    if (lastSelectionMessageIndex !== -1) {
-      setMessages((prev) => {
-        const updatedMessages = [...prev];
-        updatedMessages[lastSelectionMessageIndex] = { ...updatedMessages[lastSelectionMessageIndex], disabled: true };
-        return updatedMessages;
-      });
-    }
   };
 
   const updateErrorMessage = (errorMessage: string) => {
@@ -784,7 +772,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     switch (props.flow) {
       case Flow.CriticalAnalysis.toString(): {
-        disableLastSelectionMessage();
         await processCriticalAnalysisMissingData(value, uploads);
         break;
       }
@@ -990,7 +977,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...updated];
         });
       } else {
-        setIsAnalyzing(true);
         setMessages((prevMessages) => {
           const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
@@ -1003,15 +989,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         await getCriticalAnalysisStepResults(ncmArray, jsonDataCriticalAnalysis);
 
         setJsonResponseCriticalAnalysis({});
-        setIsAnalyzing(false);
       }
-
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.NCM_CONTINUE_QUESTION, type: 'selectionMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
 
       if (!isChatFlowAvailableToStream()) {
         updateLastMessage(criticalAnalysisMessage);
@@ -1739,7 +1717,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     try {
       switch (props.flow) {
         case Flow.CriticalAnalysis.toString():
-          disableLastSelectionMessage();
           await processFileCriticalAnalysis();
           break;
         default:
@@ -2170,33 +2147,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         avatarSrc={props.userMessage?.avatarSrc}
                         fontSize={props.fontSize}
                         renderHTML={props.renderHTML}
-                      />
-                    )}
-                    {message.type === 'selectionMessage' && !isAnalyzing() && (
-                      <SelectionBubble
-                        message={message}
-                        fileAnnotations={message.fileAnnotations}
-                        chatflowid={props.chatflowid}
-                        chatId={chatId()}
-                        apiHost={props.apiHost}
-                        backgroundColor={props.botMessage?.backgroundColor}
-                        textColor={props.botMessage?.textColor}
-                        feedbackColor={props.feedback?.color}
-                        showAvatar={props.botMessage?.showAvatar}
-                        avatarSrc={props.botMessage?.avatarSrc}
-                        chatFeedbackStatus={chatFeedbackStatus()}
-                        fontSize={props.fontSize}
-                        isLoading={loading() && index() === messages().length - 1}
-                        showAgentMessages={props.showAgentMessages}
-                        handleActionClick={(label, action) => handleActionClick(label, action)}
-                        setMessages={setMessages}
-                        handleSubmit={handleSubmit}
-                        clearChat={clearChat}
-                        selectionOptions={basicQuestionOptions}
-                        isDisabled={message.disabled || false}
-                        setIsDisabled={disableLastSelectionMessage}
-                        messageIndex={messages().indexOf(message)}
-                        printCriticalAnalysisData={printCriticalAnalysisData}
                       />
                     )}
                     {message.type === 'apiMessage' && message.message !== '' && (

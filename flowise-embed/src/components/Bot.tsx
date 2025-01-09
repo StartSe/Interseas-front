@@ -2111,7 +2111,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const chatDetails = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
     const localStorageData = chatDetails ? JSON.parse(chatDetails) : null;
 
-    if (props.apiHost && props.chatflowid && (localStorageData?.chatId !== chatId() || localStorageData?.chatHistory?.length === 0)) {
+    if (
+      props.apiHost &&
+      props.chatflowid &&
+      ((!!localStorageData?.chatId && localStorageData?.chatId !== chatId()) || localStorageData?.chatHistory?.length === 0)
+    ) {
       const chatHistory = await historyChatFlowiseApi.getFlowiseChatHistory(props.apiHost, props.chatflowid, localStorageData?.chatId || null);
       setChatId(localStorageData);
       const updatedMessages = processMessages(chatHistory);

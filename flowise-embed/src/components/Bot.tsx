@@ -277,6 +277,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [documentsChecklistError, setDocumentsChecklistError] = createSignal<string[]>([]);
   const hsCodeRegex = /hs code/i;
 
+  onMount(() => {
+    if (props.flow === Flow.CriticalAnalysis.toString()) {
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
+    if (props.flow === Flow.taxClassification.toString()) {
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
+  });
+
   onMount(async () => {
     await fetchAndProcessChatHistory();
     if (props.flow === Flow.CriticalAnalysis.toString()) {
@@ -289,18 +300,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...updated];
         });
       }
-      setDisableInput(false);
-      setDocumentsUploaded(true);
     }
     if (props.flow === Flow.taxClassification.toString()) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
-      setDisableInput(false);
-      setDocumentsUploaded(true);
+      const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
+      if (!chatHistoryReference) {
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
+      }
     }
     if (botProps?.observersConfig) {
       const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;

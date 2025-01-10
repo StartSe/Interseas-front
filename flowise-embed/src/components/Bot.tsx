@@ -1114,7 +1114,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (warningMessage) {
         message += `\n**${warningMessage}**\n`;
       }
-      for (const ncm of ncmArray) {
+
+      const criticalAnalysisFourthStep = prefix === CriticalAnalysisPrefixes.criticalAnalysisFourthStep;
+      const criticalAnalysisFifthStep = prefix === CriticalAnalysisPrefixes.criticalAnalysisFifthStep;
+      const limitedCriticalAnalysis = criticalAnalysisFourthStep || criticalAnalysisFifthStep;
+      const ncmList = limitedCriticalAnalysis ? [ncmArray[0]] : ncmArray;
+
+      for (const ncm of ncmList) {
         message += `\n**NCM: ${ncm}**\n`;
         const jsonCriticalAnalysisSingleNcm = JSON.stringify({ ...jsonDataCriticalAnalysis, NCM: ncm });
         const finalPayload = prefix + jsonCriticalAnalysisSingleNcm;

@@ -1961,12 +1961,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const files = filesMapping();
 
     if (files.length === 0) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: '', type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
       await executeComplianceCheck(filesMapping());
       return;
     }
@@ -2006,12 +2000,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setLoading(true);
 
       if (currentChecklistNumber() === files.length) {
-        setMessages((prevMessages) => {
-          const newMessage = { message: '', type: 'apiMessage' } as MessageType;
-          const updated = [...prevMessages, newMessage];
-          addChatMessage(updated);
-          return [...updated];
-        });
         await executeComplianceCheck(filesMapping());
       }
     } catch (error) {
@@ -2033,6 +2021,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     setCurrentChecklistNumber(0);
     setDocumentsUploaded(false);
+    setMessages((prevMessages) => {
+      const newMessage = { message: '', type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
 
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');

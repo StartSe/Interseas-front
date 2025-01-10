@@ -5,13 +5,35 @@ const AUTH_TOKEN_DUURATION_MINUTES = 60;
 const HOME_PAGE = "home.html";
 const LOGIN_PAGE = "/";
 
+const showErrorMessage = (message = "Credenciais inválidas") => {
+  const errorMessageElement = document.getElementById("error-message");
+  errorMessageElement.innerHTML = message;
+  errorMessageElement.style.display = "block";
+}
+
+const hideErrorMessage = () => {
+  const errorMessageElement = document.getElementById("error-message");
+  errorMessageElement.style.display = "none";
+  errorMessageElement.innerHTML = "";
+}
+
+const disableLoginButton = () => {
+  const loginButton = document.getElementById("login-button");
+  loginButton.disabled = true;
+}
+
+const enableLoginButton = () => {
+  const loginButton = document.getElementById("login-button");
+  loginButton.disabled = false;
+}
+
 const validateToken = async (token) => {
   if (!token) {
     return false;
   }
 
   try {
-    const response = await fetch(`${N8N_AUTH_BASE_URL}/auth/validate`, {
+    const response = await fetch(`${N8N_AUTH_BASE_URL}/auth/v2/validate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,8 +50,11 @@ const validateToken = async (token) => {
 };
 
 export const authenticate = async (username, password) => {
+  hideErrorMessage();
+  disableLoginButton();
+
   try {
-    const response = await fetch(`${N8N_AUTH_BASE_URL}/auth`, {
+    const response = await fetch(`${N8N_AUTH_BASE_URL}/auth/v2`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,6 +69,8 @@ export const authenticate = async (username, password) => {
       window.location.href = HOME_PAGE;
       return true;
     } else {
+      showErrorMessage();
+      enableLoginButton();
       return false;
     }
   } catch (error) {

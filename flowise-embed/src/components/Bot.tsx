@@ -2045,26 +2045,30 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         } as MessageType;
         const updated = [...prevMessages, newMessage];
         addChatMessage(updated);
-        return [...updated, { message: '', type: 'apiMessage' }];
+        return [...updated];
       });
       return;
     }
     const filesCheckList = await documentService.getDocumentsByChatId(chatId());
 
-    const cacheFileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
-      file: {
-        name: file.file_name,
-        mime: file.mime,
-        hash: file.hash,
-      } as DatabaseProvidedFile,
-      type: file.checklist_type,
-      content: file.checklist_result,
-      filledChecklist: file.checklist_result,
-    }));
+    let filteredFileMappings: FileMapping[] = [];
 
-    const filteredFileMappings = cacheFileMappings.filter((fileMapping) => fileMapping.content || fileMapping.filledChecklist);
+    if (filesCheckList) {
+      const cacheFileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
+        file: {
+          name: file.file_name,
+          mime: file.mime,
+          hash: file.hash,
+        } as DatabaseProvidedFile,
+        type: file.checklist_type,
+        content: file.checklist_result,
+        filledChecklist: file.checklist_result,
+      }));
+      filteredFileMappings = cacheFileMappings.filter((fileMapping) => fileMapping.content || fileMapping.filledChecklist);
+    }
+
     const compareDocuments = new CompareDocuments({
-      fileMappings: filteredFileMappings || filledChecklists,
+      fileMappings: filteredFileMappings.length > 0 ? filteredFileMappings : filledChecklists,
       sendBackgroundMessage,
       setMessages,
     });

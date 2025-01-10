@@ -1961,6 +1961,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const files = filesMapping();
 
     if (files.length === 0) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: '', type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
       await executeComplianceCheck(filesMapping());
       return;
     }
@@ -2000,6 +2006,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setLoading(true);
 
       if (currentChecklistNumber() === files.length) {
+        setMessages((prevMessages) => {
+          const newMessage = { message: '', type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
         await executeComplianceCheck(filesMapping());
       }
     } catch (error) {
@@ -2021,7 +2033,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     setCurrentChecklistNumber(0);
     setDocumentsUploaded(false);
-    const fileMappings = filledChecklists;
 
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
@@ -2034,33 +2045,30 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         } as MessageType;
         const updated = [...prevMessages, newMessage];
         addChatMessage(updated);
-        return [...updated];
+        return [...updated, { message: '', type: 'apiMessage' }];
       });
       return;
     }
     const filesCheckList = await documentService.getDocumentsByChatId(chatId());
 
-    if (filesCheckList) {
-      const cacheFileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
-        file: {
-          name: file.file_name,
-          mime: file.mime,
-          hash: file.hash,
-        } as DatabaseProvidedFile,
-        type: file.checklist_type,
-        content: file.checklist_result,
-        filledChecklist: file.checklist_result,
-      }));
-      fileMappings.push(...cacheFileMappings);
-    }
+    const cacheFileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
+      file: {
+        name: file.file_name,
+        mime: file.mime,
+        hash: file.hash,
+      } as DatabaseProvidedFile,
+      type: file.checklist_type,
+      content: file.checklist_result,
+      filledChecklist: file.checklist_result,
+    }));
 
+    const filteredFileMappings = cacheFileMappings.filter((fileMapping) => fileMapping.content || fileMapping.filledChecklist);
     const compareDocuments = new CompareDocuments({
-      fileMappings: fileMappings,
+      fileMappings: filteredFileMappings || filledChecklists,
       sendBackgroundMessage,
       setMessages,
     });
     const lastMessage = await compareDocuments.execute();
-
     if (lastMessage) {
       updateLastMessage('');
     }

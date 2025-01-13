@@ -277,6 +277,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [documentsChecklistError, setDocumentsChecklistError] = createSignal<string[]>([]);
   const hsCodeRegex = /hs code/i;
 
+  onMount(() => {
+    if (props.flow === Flow.CriticalAnalysis.toString()) {
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
+    if (props.flow === Flow.taxClassification.toString()) {
+      setDisableInput(false);
+      setDocumentsUploaded(true);
+    }
+  });
+
   onMount(async () => {
     await fetchAndProcessChatHistory();
     if (props.flow === Flow.CriticalAnalysis.toString()) {
@@ -289,18 +300,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...updated];
         });
       }
-      setDisableInput(false);
-      setDocumentsUploaded(true);
     }
     if (props.flow === Flow.taxClassification.toString()) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated];
-      });
-      setDisableInput(false);
-      setDocumentsUploaded(true);
+      const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
+      if (!chatHistoryReference) {
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
+      }
     }
     if (botProps?.observersConfig) {
       const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;
@@ -2011,7 +2021,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const executeComplianceCheck = async (filledChecklists: FileMapping[]) => {
     setCurrentChecklistNumber(0);
     setDocumentsUploaded(false);
-    const fileMappings = filledChecklists;
+    setMessages((prevMessages) => {
+      const newMessage = { message: '', type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated];
+    });
 
     if (documentsChecklistError().length > 0) {
       const errorMessages = documentsChecklistError().join(', ');
@@ -2030,6 +2045,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
     const filesCheckList = await documentService.getDocumentsByChatId(chatId());
 
+    let filteredFileMappings: FileMapping[] = [];
+
     if (filesCheckList) {
       const cacheFileMappings: FileMapping[] = filesCheckList.map((file: any) => ({
         file: {
@@ -2041,16 +2058,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         content: file.checklist_result,
         filledChecklist: file.checklist_result,
       }));
-      fileMappings.push(...cacheFileMappings);
+      filteredFileMappings = cacheFileMappings.filter((fileMapping) => fileMapping.content || fileMapping.filledChecklist);
     }
 
     const compareDocuments = new CompareDocuments({
-      fileMappings: fileMappings,
+      fileMappings: filteredFileMappings.length > 0 ? filteredFileMappings : filledChecklists,
       sendBackgroundMessage,
       setMessages,
     });
     const lastMessage = await compareDocuments.execute();
-
     if (lastMessage) {
       updateLastMessage('');
     }
@@ -2101,7 +2117,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const chatDetails = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
     const localStorageData = chatDetails ? JSON.parse(chatDetails) : null;
 
-    if (props.apiHost && props.chatflowid && (localStorageData?.chatId !== chatId() || localStorageData?.chatHistory?.length === 0)) {
+    if (
+      props.apiHost &&
+      props.chatflowid &&
+      ((!!localStorageData?.chatId && localStorageData?.chatId !== chatId()) || localStorageData?.chatHistory?.length === 0)
+    ) {
       const chatHistory = await historyChatFlowiseApi.getFlowiseChatHistory(props.apiHost, props.chatflowid, localStorageData?.chatId || null);
       setChatId(localStorageData);
       const updatedMessages = processMessages(chatHistory);

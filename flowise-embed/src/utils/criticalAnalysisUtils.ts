@@ -14,7 +14,7 @@ export function removeNcmFromArray(arr: string[], str: string): string[] {
   return arr.filter((item) => item !== str);
 }
 
-export const handleNCMExistence = async (ncm: string) => {
+export const handleNcmExistence = async (ncm: string) => {
   try {
     const result = await fetch(ncmValidatorURL, {
       method: 'POST',

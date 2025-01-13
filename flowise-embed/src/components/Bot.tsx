@@ -67,7 +67,7 @@ import {
 import { compareAndMergeArrays, customBooleanValues, isNonEmptyArrayOrObject, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
-import { CriticalAnalysisPrefixes, handleNCMExistence, ncmValidatorURL, removeNcmFromArray } from '@/utils/criticalAnalysisUtils';
+import { CriticalAnalysisPrefixes, handleNcmExistence, removeNcmFromArray } from '@/utils/criticalAnalysisUtils';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import DocumentsDBService from '@/service/documentsDBService';
@@ -1068,7 +1068,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
       return false;
     }
-    const result = await handleNCMExistence(ncmFormatted);
+    const result = await handleNcmExistence(ncmFormatted);
     if (result?.isNCM === false) {
       setMessages((prevMessages) => {
         const newMessage = { message: ncmExistenceErrorMessage(ncm), type: 'apiMessage' } as MessageType;

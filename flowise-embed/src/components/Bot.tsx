@@ -40,10 +40,15 @@ import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event
 import { UploadButton } from '@/components/buttons/UploadButton';
 import {
   complianceErrorMessage,
+  criticalAnalysisNcmErrorMessage,
   criticalAnalysisStepNameMapping,
   criticalAnalysisWarningMapping,
   messageUtils,
+  ncmExistenceErrorMessage,
+  ncmLengthErrorMessage,
   ncmStepFailureMessage,
+  ncmSucessValidation,
+  ncmValidationErrorMessage,
 } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
 import { UploadFile } from '@solid-primitives/upload';
@@ -62,7 +67,7 @@ import {
 import { compareAndMergeArrays, customBooleanValues, isNonEmptyArrayOrObject, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
-import { CriticalAnalysisPrefixes } from '@/utils/criticalAnalysisUtils';
+import { CriticalAnalysisPrefixes, handleNCMExistence, ncmValidatorURL, removeNcmFromArray } from '@/utils/criticalAnalysisUtils';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import DocumentsDBService from '@/service/documentsDBService';
@@ -997,15 +1002,44 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...updated];
         });
       } else {
+        const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
+        const validatedNcmArray = await validateNcmArray(ncmArray);
+        const jsonResponse = jsonDataCriticalAnalysis;
+        jsonResponse['NCM'] = validatedNcmArray;
+        setJsonResponseCriticalAnalysis(jsonResponse);
+
+        if (validatedNcmArray.length !== ncmArray.length) {
+          let ncmErrors = ncmArray;
+          for (const ncm of validatedNcmArray) {
+            ncmErrors = removeNcmFromArray(ncmErrors, ncm);
+          }
+          const isPlural = ncmErrors.length > 1;
+          let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
+          for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
+            criticalAnalysisMessage += generateItemToPrint(key, value as string);
+          }
+          setMessages((prevMessages) => {
+            const newMessage = { message: criticalAnalysisMessage, type: 'apiMessage' } as MessageType;
+            const updated = [...prevMessages, newMessage];
+            addChatMessage(updated);
+            return [...updated];
+          });
+          setMessages((prevMessages) => {
+            const newMessage = { message: criticalAnalysisNcmErrorMessage(ncmErrors, isPlural), type: 'apiMessage' } as MessageType;
+            const updated = [...prevMessages, newMessage];
+            addChatMessage(updated);
+            return [...updated];
+          });
+          setLoading(false);
+          return;
+        }
+
         setMessages((prevMessages) => {
           const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
           addChatMessage(updated);
           return [...updated, { message: '', type: 'apiMessage' }];
         });
-
-        const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
-
         await getCriticalAnalysisStepResults(ncmArray, jsonDataCriticalAnalysis);
         setLoading(false);
 
@@ -1021,6 +1055,62 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       console.error(messageUtils.CRITICAL_ANALYSIS_PROCESSING_ERROR, error);
       throw error;
     }
+  };
+
+  const isNCM = async (ncm: string): Promise<boolean> => {
+    const ncmFormatted = ncm.replace(/\./g, '').replace(/\D/g, '');
+    if (ncmFormatted.length !== 8) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: ncmLengthErrorMessage(ncm), type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated, { message: '', type: 'apiMessage' }];
+      });
+      return false;
+    }
+    const result = await handleNCMExistence(ncmFormatted);
+    if (result?.isNCM === false) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: ncmExistenceErrorMessage(ncm), type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated, { message: '', type: 'apiMessage' }];
+      });
+      return false;
+    }
+    if (JSON.stringify(result) === '{}') {
+      setMessages((prevMessages) => {
+        const newMessage = { message: ncmValidationErrorMessage(ncm), type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated, { message: '', type: 'apiMessage' }];
+      });
+      return true;
+    }
+    setMessages((prevMessages) => {
+      const newMessage = { message: ncmSucessValidation(ncm), type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated, { message: '', type: 'apiMessage' }];
+    });
+    return true;
+  };
+
+  const validateNcmArray = async (ncmArray: string[]) => {
+    let validatedNcmArray = ncmArray;
+    setMessages((prevMessages) => {
+      const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_NCM_VALIDATION, type: 'apiMessage' } as MessageType;
+      const updated = [...prevMessages, newMessage];
+      addChatMessage(updated);
+      return [...updated, { message: '', type: 'apiMessage' }];
+    });
+    for (const ncm of ncmArray) {
+      const validatedNCM = await isNCM(ncm);
+      if (validatedNCM == false) {
+        validatedNcmArray = removeNcmFromArray(validatedNcmArray, ncm);
+      }
+    }
+    return validatedNcmArray;
   };
 
   const getCriticalAnalysisStepResults = async (ncmArray: string[], jsonDataCriticalAnalysis: any) => {

@@ -55,6 +55,7 @@ Para realizar a classificação fiscal da sua mercadoria, precisamos de algumas 
 7. Sinônimo:`,
   criticalAnalysisFirstStepWarning: 'ATENÇÃO: Esta consulta não substitui o tratamento administrativo aplicável no momento do registro da DUIMP.',
   criticalAnalysisSecondStepWarning: 'ATENÇÃO: Esta consulta não substitui o tratamento tributário aplicável no momento do registro da DUIMP.',
+  CRITICAL_ANALYSIS_NCM_VALIDATION: 'Dados de NCM enviados para validação!',
   CRITICAL_ANALYSIS_TEMPLATE: `
 Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou faça o **upload** (ícone no canto inferior esquerdo da caixa de texto) de um documento contendo as informações e nosso time de especialistas irá analisá-los:
 
@@ -92,11 +93,33 @@ export function ncmStepFailureMessage(prefix: string, ncm: string): string {
   return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[prefix]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
+export function ncmLengthErrorMessage(ncm: string): string {
+  return `Desculpe! Não foi possível processar o NCM **${ncm}**. O campo deve ter **8 dígitos**.`;
+}
+export function ncmExistenceErrorMessage(ncm: string): string {
+  return `Desculpe! Não foi possível processar o NCM **${ncm}**. O número do NCM deve representar um produto existente.`;
+}
+
+export function ncmValidationErrorMessage(ncm: string): string {
+  return `Desculpe! Não foi possível validar o NCM **${ncm}**.`;
+}
+
+export function ncmSucessValidation(ncm: string): string {
+  return `NCM **${ncm}** validado com sucesso!`;
+}
+
 export function complianceErrorMessage(errorMessages: string, isPlural: boolean): string {
   const pluralize = (word: string) => (isPlural ? `${word}s` : word);
   return `Não foi possivel realizar a Análise de Compliance. ${pluralize('O')} ${pluralize('seguinte')} ${pluralize('arquivo')} não ${
     isPlural ? 'puderam' : 'pôde'
   } ser ${pluralize('processado')}: ${errorMessages}. Verifique ${pluralize('o')} ${pluralize('arquivo')} e tente novamente.`;
+}
+
+export function criticalAnalysisNcmErrorMessage(ncmErrors: string[], isPlural: boolean): string {
+  const pluralize = (word: string) => (isPlural ? `${word}s` : word);
+  return `Não foi possivel realizar a Análise Crítica. ${pluralize('O')} ${pluralize('seguinte')} ${pluralize('NCM')} não ${
+    isPlural ? 'puderam' : 'pôde'
+  } ser ${pluralize('processado')}: **${ncmErrors.join(', ')}**. Verifique ${pluralize('o')} ${pluralize('código')} e tente novamente.`;
 }
 
 export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

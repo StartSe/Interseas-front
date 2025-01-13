@@ -1722,6 +1722,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.CERTIFICADO_DE_ORIGEM.toString(),
               DocumentTypes.CCT.toString(),
               DocumentTypes.PROFORMA_INVOICE.toString(),
+              DocumentTypes.COMMERCIAL_INVOICE.toString(),
             ].includes(docType)
           ) {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);

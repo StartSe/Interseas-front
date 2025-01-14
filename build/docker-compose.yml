@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      context: ../
+      dockerfile: build/Dockerfile
+      target: web
+    tty: true
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    volumes:
+      - ../:/app
+      - ../flowise-embed:/app/flowise-embed
+      - embed_node_modules:/app/flowise-embed/node_modules
+
+volumes:
+  embed_node_modules:

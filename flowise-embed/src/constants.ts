@@ -33,6 +33,7 @@ export const constants = {
   n8nFlowSendUpdateChatRequest: 'sendUpdateChatRequest',
   n8nFlowGetChatHistoryFromSupabase: 'getChatHistoryFromSupabase',
   n8nFlowSendUpdateChatHistoryRequest: 'sendUpdateChatHistoryRequest',
+  n8nNcmValidatorURL: 'ncmValidator',
   flowiseJwtToken: '_tICaLVIhVs6FTLM9mlyPdMCrZmL59JloDWH9KTC0hg',
 };
 

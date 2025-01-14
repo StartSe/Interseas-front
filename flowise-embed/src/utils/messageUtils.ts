@@ -90,18 +90,18 @@ export const criticalAnalysisWarningMapping: { [key: string]: string } = {
 };
 
 export function ncmStepFailureMessage(prefix: string, ncm: string): string {
-  return `Desculpe! Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[prefix]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
+  return `Não foi possível completar a etapa de **${criticalAnalysisStepNameMapping[prefix]}** para o NCM **${ncm}**. Por favor, tente novamente.`;
 }
 
 export function ncmLengthErrorMessage(ncm: string): string {
-  return `Desculpe! Não foi possível processar o NCM **${ncm}**. O campo deve ter **8 dígitos**.`;
+  return `Não foi possível processar o NCM **${ncm}**. O campo deve ter **8 dígitos**.`;
 }
 export function ncmExistenceErrorMessage(ncm: string): string {
-  return `Desculpe! Não foi possível processar o NCM **${ncm}**. O número do NCM deve representar um produto existente.`;
+  return `Não foi possível processar o NCM **${ncm}**. O número do NCM deve representar um produto existente.`;
 }
 
 export function ncmValidationErrorMessage(ncm: string): string {
-  return `Desculpe! Não foi possível validar o NCM **${ncm}**.`;
+  return `Não foi possível validar o NCM **${ncm}**.`;
 }
 
 export function ncmSucessValidation(ncm: string): string {

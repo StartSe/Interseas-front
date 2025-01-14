@@ -67,7 +67,7 @@ import {
 import { compareAndMergeArrays, customBooleanValues, isNonEmptyArrayOrObject, sanitizeJson, sanitizeToFlatArray } from '@/utils/jsonUtils';
 import CompareDocuments from '@/utils/compareDocuments';
 import { colorTheme } from '@/utils/colorUtils';
-import { CriticalAnalysisPrefixes, handleNcmExistence, removeNcmFromArray } from '@/utils/criticalAnalysisUtils';
+import { CriticalAnalysisPrefixes, verifyNcmExistence } from '@/utils/criticalAnalysisUtils';
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import DocumentsDBService from '@/service/documentsDBService';
@@ -1004,16 +1004,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       } else {
         const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
         const validatedNcmArray = await validateNcmArray(ncmArray);
+        const ncmErrorsArray = validatedNcmArray.isNotNcm.map((ncm) => ncm.ncm);
+        const ncmSucessArray = validatedNcmArray.isNcm.map((ncm) => ncm.ncm);
+        const mergedResults = [...validatedNcmArray.isNcm, ...validatedNcmArray.isNotNcm];
+        setMessagesFromValidationResults(mergedResults);
         const jsonResponse = jsonDataCriticalAnalysis;
-        jsonResponse['NCM'] = validatedNcmArray;
+        jsonResponse['NCM'] = ncmSucessArray;
         setJsonResponseCriticalAnalysis(jsonResponse);
 
-        if (validatedNcmArray.length !== ncmArray.length) {
-          let ncmErrors = ncmArray;
-          for (const ncm of validatedNcmArray) {
-            ncmErrors = removeNcmFromArray(ncmErrors, ncm);
-          }
-          const isPlural = ncmErrors.length > 1;
+        if (validatedNcmArray.isNotNcm.length) {
+          const isPlural = validatedNcmArray.isNotNcm.length > 1;
           let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
           for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
             criticalAnalysisMessage += generateItemToPrint(key, value as string);
@@ -1025,7 +1025,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             return [...updated];
           });
           setMessages((prevMessages) => {
-            const newMessage = { message: criticalAnalysisNcmErrorMessage(ncmErrors, isPlural), type: 'apiMessage' } as MessageType;
+            const newMessage = { message: criticalAnalysisNcmErrorMessage(ncmErrorsArray, isPlural), type: 'apiMessage' } as MessageType;
             const updated = [...prevMessages, newMessage];
             addChatMessage(updated);
             return [...updated];
@@ -1057,47 +1057,42 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  const isNCM = async (ncm: string): Promise<boolean> => {
-    const ncmFormatted = ncm.replace(/\./g, '').replace(/\D/g, '');
-    if (ncmFormatted.length !== 8) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: ncmLengthErrorMessage(ncm), type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated, { message: '', type: 'apiMessage' }];
-      });
-      return false;
+  const isNCM = async (ncm: string): Promise<{ ncm: string; valid: boolean; message: string }> => {
+    const formattedNcm = ncm.replace(/\D\./g, '');
+    const ncmDigitNumber = 8;
+    if (formattedNcm.length !== ncmDigitNumber) {
+      return { ncm: ncm, valid: false, message: ncmLengthErrorMessage(ncm) };
     }
-    const result = await handleNcmExistence(ncmFormatted);
+    const result = await verifyNcmExistence(formattedNcm);
     if (result?.isNCM === false) {
-      setMessages((prevMessages) => {
-        const newMessage = { message: ncmExistenceErrorMessage(ncm), type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated, { message: '', type: 'apiMessage' }];
-      });
-      return false;
+      return { ncm: ncm, valid: false, message: ncmExistenceErrorMessage(ncm) };
     }
-    if (JSON.stringify(result) === '{}') {
-      setMessages((prevMessages) => {
-        const newMessage = { message: ncmValidationErrorMessage(ncm), type: 'apiMessage' } as MessageType;
-        const updated = [...prevMessages, newMessage];
-        addChatMessage(updated);
-        return [...updated, { message: '', type: 'apiMessage' }];
-      });
-      return true;
+    if (!Object.keys(result).length) {
+      return { ncm: ncm, valid: true, message: ncmValidationErrorMessage(ncm) };
     }
+    return { ncm: ncm, valid: true, message: ncmSucessValidation(ncm) };
+  };
+
+  const setMessagesFromValidationResults = (validationResults: { ncm: string; valid: boolean; message: string }[]) => {
     setMessages((prevMessages) => {
-      const newMessage = { message: ncmSucessValidation(ncm), type: 'apiMessage' } as MessageType;
-      const updated = [...prevMessages, newMessage];
+      const newMessages = validationResults.map((result) => ({
+        message: result.message,
+        type: 'apiMessage',
+      })) as MessageType[];
+      const updated = [...prevMessages, ...newMessages];
       addChatMessage(updated);
-      return [...updated, { message: '', type: 'apiMessage' }];
+      return updated;
     });
-    return true;
   };
 
   const validateNcmArray = async (ncmArray: string[]) => {
-    let validatedNcmArray = ncmArray;
+    const validationResults: {
+      isNcm: { ncm: string; valid: boolean; message: string }[];
+      isNotNcm: { ncm: string; valid: boolean; message: string }[];
+    } = {
+      isNcm: [],
+      isNotNcm: [],
+    };
     setMessages((prevMessages) => {
       const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_NCM_VALIDATION, type: 'apiMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
@@ -1106,11 +1101,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
     for (const ncm of ncmArray) {
       const validatedNCM = await isNCM(ncm);
-      if (validatedNCM == false) {
-        validatedNcmArray = removeNcmFromArray(validatedNcmArray, ncm);
+      if (validatedNCM.valid === false) {
+        validationResults.isNotNcm.push(validatedNCM);
+      } else {
+        validationResults.isNcm.push(validatedNCM);
       }
     }
-    return validatedNcmArray;
+    return validationResults;
   };
 
   const getCriticalAnalysisStepResults = async (ncmArray: string[], jsonDataCriticalAnalysis: any) => {

@@ -295,27 +295,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   onMount(async () => {
     await fetchAndProcessChatHistory();
-    if (props.flow === Flow.CriticalAnalysis.toString()) {
-      const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
-      if (!chatHistoryReference) {
-        setMessages((prevMessages) => {
-          const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' } as MessageType;
-          const updated = [...prevMessages, newMessage];
-          addChatMessage(updated);
-          return [...updated];
-        });
-      }
+    const minimumMessages = 2;
+    if (props.flow === Flow.CriticalAnalysis.toString() && messages().length < minimumMessages) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
     }
-    if (props.flow === Flow.taxClassification.toString()) {
-      const chatHistoryReference = localStorage.getItem(props.chatflowid + '_EXTERNAL');
-      if (!chatHistoryReference) {
-        setMessages((prevMessages) => {
-          const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
-          const updated = [...prevMessages, newMessage];
-          addChatMessage(updated);
-          return [...updated];
-        });
-      }
+    if (props.flow === Flow.taxClassification.toString() && messages().length < minimumMessages) {
+      setMessages((prevMessages) => {
+        const newMessage = { message: messageUtils.NCM_DISCOVER_TEMPLATE, type: 'apiMessage' } as MessageType;
+        const updated = [...prevMessages, newMessage];
+        addChatMessage(updated);
+        return [...updated];
+      });
     }
     if (botProps?.observersConfig) {
       const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;
@@ -1810,6 +1805,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.CERTIFICADO_DE_ORIGEM.toString(),
               DocumentTypes.CCT.toString(),
               DocumentTypes.PROFORMA_INVOICE.toString(),
+              DocumentTypes.COMMERCIAL_INVOICE.toString(),
             ].includes(docType)
           ) {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);
@@ -2211,7 +2207,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       ((!!localStorageData?.chatId && localStorageData?.chatId !== chatId()) || localStorageData?.chatHistory?.length === 0)
     ) {
       const chatHistory = await historyChatFlowiseApi.getFlowiseChatHistory(props.apiHost, props.chatflowid, localStorageData?.chatId || null);
-      setChatId(localStorageData);
+      setChatId(localStorageData.chatId);
       const updatedMessages = processMessages(chatHistory);
       setLocalStorageChatflow(props.chatflowid, localStorageData?.chatId, { chatHistory: updatedMessages });
     }

@@ -71,8 +71,8 @@ Conferências:
 • Máquina/Equipamento
 • Possui Ex-tarifário - (Sim/Não, sempre justificando)
 • Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Somatório Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)
-• Somatório Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)`;
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)`;
 
 export const checklistCeMercante = `
 • Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
@@ -138,8 +138,8 @@ export const checklistCommercialInvoice = `
 • País de Aquisição
 • INCOTERM
 • Local do INCOTERM
-• Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Seguro (tipo, moeda e valor)
+• Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Total Prepaid; Total Collect; Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
+• Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
 • Referência
 • Forma/Condições de Pagamento - (true/false)
 • Dados Bancários Exportador
@@ -157,7 +157,10 @@ Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
 • Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false)
 • Multiplicação de valor unitário dos itens comercializados - (trazer no formato valor unitário x quantidade comercializada)
-• Valor das mercadorias - (Somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator)`;
+• Valor das mercadorias - (Somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator)
+• Máquina/Equipamento
+• Possui Ex-tarifário - (Sim/Não, sempre justificando)
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)`;
 
 export const checklistConhecimentoBL = `
 • Número do documento
@@ -282,7 +285,7 @@ export const checklistCRT = `
 • Valor do frete externo
 • Declaração valor das mercadorias (valor por extenso)
 • Documentos anexos
-• Declarações e observações - detalhamento do frete internacional e nacional 
+• Declarações e observações - detalhamento do frete internacional e nacional
 • Carimbo e assinatura
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
 • Descrição EX-tarifário - (true/false)
@@ -313,9 +316,10 @@ export const checklistPackingList = `
 • Quantidade de Volumes - (crate/box/pallets)
 • Tipo de Volumes - (crate/box/pallets)
 • Peso Líquido por volume ou unidade
-• Somatório Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
-• Somatório Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
-• Somatório Cubagem total -Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
+Conferências:
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
+• Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;
 
 export const ChecklistProformaInvoice = `
@@ -345,9 +349,6 @@ export const ChecklistProformaInvoice = `
 • Quantidade de volumes estimada - (crate/box/pallets)
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
-• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Somatório Peso Líquido total - Considerando todas as páginas. somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
-• Somatório Peso Bruto total - Considerando todas as páginas. somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
 • Multiplicação de valor unitário dos itens comercializados -  (Trazer as mercadorias no formato valor unitário x quantidade comercializada)
 • Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento)
 • Máquina/Equipamento`;
@@ -375,8 +376,8 @@ const checklistCCTAereo = `
 
 Conferências:
 • Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Somatório Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
-• Somatório Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
 `;
 
 const checklistMicDta = `
@@ -437,7 +438,7 @@ export const checklistLabels = `
 • "PROIBIDA A VENDA PARA MENORES DE 18 ANOS"
 • Lote - (Exemplo: "Lote: XXXXX. Lote: vide garrafa")
 • Marca - (Incluir a marca do produto)
-• Símbolo de Grávida com o "/" de proibido 
+• Símbolo de Grávida com o "/" de proibido
 • Símbolo de retorno/reciclável`;
 
 export const checklistAnaliseDeVinhos = `

@@ -328,7 +328,7 @@ export const ChecklistProformaInvoice = `
 • Data do documento
 • Assinatura
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP) - Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - (nome, endereço, NIF)
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • País de origem
@@ -349,15 +349,15 @@ export const ChecklistProformaInvoice = `
 • Quantidade de volumes estimada - (crate/box/pallets)
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
-• Multiplicação de valor unitário dos itens comercializados -  (Trazer as mercadorias no formato valor unitário x quantidade comercializada)
-• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento)
+• Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
+• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
 • Máquina/Equipamento`;
 
 const checklistCCTAereo = `
 • Identificação do conhecimento de carga - (número do HAWB)
 • Data/hora da emissão
 • Identificação para vinculação a DI/DSI eletrônica/DTA/e-DMOV
-• Aeroporto de partida
+• Aeroporto de partida7
 • Aeroporto de destino
 • Recinto aduaneiro de destino
 • Quantidade de volumes - (crate/box/pallets)

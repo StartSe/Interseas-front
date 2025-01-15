@@ -7,4 +7,5 @@ export declare enum CriticalAnalysisPrefixes {
     criticalAnalysisSixthStep = "ANALISE_6##",
     criticalAnalysisSeventhStep = "ANALISE_7##"
 }
+export declare const verifyNcmExistence: (ncm: string) => Promise<boolean>;
 //# sourceMappingURL=criticalAnalysisUtils.d.ts.map

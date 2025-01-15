@@ -31,6 +31,7 @@ export declare const messageUtils: {
     NCM_DISCOVER_TEMPLATE: string;
     criticalAnalysisFirstStepWarning: string;
     criticalAnalysisSecondStepWarning: string;
+    CRITICAL_ANALYSIS_NCM_VALIDATION: string;
     CRITICAL_ANALYSIS_TEMPLATE: string;
     YES: string;
     NO: string;
@@ -45,6 +46,11 @@ export declare const criticalAnalysisWarningMapping: {
     [key: string]: string;
 };
 export declare function ncmStepFailureMessage(prefix: string, ncm: string): string;
+export declare function ncmLengthErrorMessage(ncm: string): string;
+export declare function ncmExistenceErrorMessage(ncm: string): string;
+export declare function ncmValidationErrorMessage(ncm: string): string;
+export declare function ncmSuccessValidation(ncm: string): string;
 export declare function complianceErrorMessage(errorMessages: string, isPlural: boolean): string;
+export declare function criticalAnalysisNcmErrorMessage(ncmErrors: string[], isPlural: boolean): string;
 export declare const DEFAULT_CHAT_NAME: (date: Date) => string;
 //# sourceMappingURL=messageUtils.d.ts.map

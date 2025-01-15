@@ -1064,8 +1064,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return { ncm: ncm, valid: false, message: ncmLengthErrorMessage(ncm) };
     }
     try {
-      const result = await verifyNcmExistence(formattedNcm);
-      if (result === false) {
+      const doesNcmExist = await verifyNcmExistence(formattedNcm);
+      if (!doesNcmExist) {
         return { ncm: ncm, valid: false, message: ncmExistenceErrorMessage(ncm) };
       }
       return { ncm: ncm, valid: true, message: ncmSuccessValidation(ncm) };

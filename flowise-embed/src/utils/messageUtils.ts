@@ -116,13 +116,9 @@ export function complianceErrorMessage(errorMessages: string, isPlural: boolean)
 }
 
 export function criticalAnalysisNcmErrorMessage(ncmErrors: string[], isPlural: boolean): string {
-  return isPlural
-    ? `Não foi possível realizar a Análise Crítica. Os seguintes NCMs não puderam ser processados: **${ncmErrors.join(
-        ', ',
-      )}**. Verifique os códigos e tente novamente.`
-    : `Não foi possível realizar a Análise Crítica. O seguinte NCM não pôde ser processado: **${ncmErrors.join(
-        ', ',
-      )}**. Verifique o código e tente novamente.`;
+  return 'Não foi possível realizar a Análise Crítica. ' + isPlural
+    ? `Os seguintes NCMs não puderam ser processados: **${ncmErrors.join(', ')}**. Verifique os códigos e tente novamente.`
+    : ` O seguinte NCM não pôde ser processado: **${ncmErrors.join(', ')}**. Verifique o código e tente novamente.`;
 }
 
 export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

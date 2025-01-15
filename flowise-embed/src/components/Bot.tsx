@@ -1051,7 +1051,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       throw error;
     }
   };
-
   const isNCM = async (ncm: string): Promise<{ ncm: string; valid: boolean; message: string }> => {
     const formattedNcm = ncm.replace(/\D\./g, '');
     const ncmDigitNumber = 8;
@@ -1106,6 +1105,21 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     return validationResults;
   };
 
+  const processNcm = async (prefix: string, ncm: string, jsonDataCriticalAnalysis: any, includeNcm: boolean) => {
+    let message = includeNcm ? `\n**NCM: ${ncm}**\n` : '';
+    const jsonDataWithNcm = { ...jsonDataCriticalAnalysis, NCM: ncm };
+    const finalPayload = prefix + JSON.stringify(jsonDataWithNcm);
+
+    try {
+      const stepResultByNcm = await sendBackgroundMessage(finalPayload, []);
+      message += `\n${stepResultByNcm.text}\n`;
+    } catch (error) {
+      console.error(error);
+      message += `\n${ncmStepFailureMessage(prefix, ncm)}\n`;
+    }
+    return message;
+  };
+
   const getCriticalAnalysisStepResults = async (ncmArray: string[], jsonDataCriticalAnalysis: any) => {
     for (const prefix of Object.values(CriticalAnalysisPrefixes)) {
       let message = '';
@@ -1114,19 +1128,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (warningMessage) {
         message += `\n**${warningMessage}**\n`;
       }
-      for (const ncm of ncmArray) {
-        message += `\n**NCM: ${ncm}**\n`;
-        const jsonCriticalAnalysisSingleNcm = JSON.stringify({ ...jsonDataCriticalAnalysis, NCM: ncm });
-        const finalPayload = prefix + jsonCriticalAnalysisSingleNcm;
-        let stepResultByNcm;
-        try {
-          stepResultByNcm = await sendBackgroundMessage(finalPayload, []);
-          message += `\n${stepResultByNcm.text}\n`;
-        } catch (error) {
-          console.error(error);
-          message += `\n${ncmStepFailureMessage(prefix, ncm)}\n`;
+
+      const singleExecutionSteps = [CriticalAnalysisPrefixes.criticalAnalysisFourthStep, CriticalAnalysisPrefixes.criticalAnalysisFifthStep];
+      const isStepOfSingleExecution = singleExecutionSteps.includes(prefix);
+
+      if (isStepOfSingleExecution) {
+        message += await processNcm(prefix, ncmArray[0], jsonDataCriticalAnalysis, false);
+      } else {
+        for (const ncm of ncmArray) {
+          message += await processNcm(prefix, ncm, jsonDataCriticalAnalysis, true);
         }
       }
+
       setMessages((prevMessages) => {
         const newMessage = { message: message, type: 'apiMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];
@@ -1135,7 +1148,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
     }
   };
-
   const generateItemToPrint = (key: string, value: string, isChecklistItem = false) => {
     const isHsCode = hsCodeRegex.test(key);
     const spacedText = (text: string) => `<div style="padding-left: 20px; margin-bottom: 10px;">${text}</div>`;

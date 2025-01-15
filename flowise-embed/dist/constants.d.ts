@@ -22,6 +22,7 @@ export declare const constants: {
     n8nFlowSendUpdateChatRequest: string;
     n8nFlowGetChatHistoryFromSupabase: string;
     n8nFlowSendUpdateChatHistoryRequest: string;
+    n8nNcmValidatorURL: string;
     flowiseJwtToken: string;
 };
 export declare const defaultMenuProps: MenuProps;

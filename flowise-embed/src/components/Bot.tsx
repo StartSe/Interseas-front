@@ -1107,8 +1107,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const processNcm = async (prefix: string, ncm: string, jsonDataCriticalAnalysis: any, includeNcm: boolean) => {
     let message = includeNcm ? `\n**NCM: ${ncm}**\n` : '';
-    const jsonCriticalAnalysisSingleNcm = JSON.stringify({ ...jsonDataCriticalAnalysis, NCM: ncm });
-    const finalPayload = prefix + jsonCriticalAnalysisSingleNcm;
+    const jsonDataWithNcm = { ...jsonDataCriticalAnalysis, NCM: ncm };
+    const finalPayload = prefix + JSON.stringify(jsonDataWithNcm);
+
     try {
       const stepResultByNcm = await sendBackgroundMessage(finalPayload, []);
       message += `\n${stepResultByNcm.text}\n`;

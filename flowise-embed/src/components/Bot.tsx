@@ -1912,7 +1912,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     if (Object.keys(jsonData).includes('conferências') && jsonData['conferências'] !== null && Object.keys(jsonData['conferências']).length > 0) {
-      checklistMessage += `<br><b>Conferências:</b><br>`;
+      checklistMessage += `<br><b>Verificações:</b><br>`;
       for (const [key, value] of Object.entries(jsonData['conferências'])) {
         checklistMessage += generateChecklistItemToPrint(key, value);
       }

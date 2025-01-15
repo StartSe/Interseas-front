@@ -104,7 +104,7 @@ export function ncmValidationErrorMessage(ncm: string): string {
   return `Não foi possível validar o NCM **${ncm}**.`;
 }
 
-export function ncmSucessValidation(ncm: string): string {
+export function ncmSuccessValidation(ncm: string): string {
   return `NCM **${ncm}** validado com sucesso!`;
 }
 
@@ -116,10 +116,13 @@ export function complianceErrorMessage(errorMessages: string, isPlural: boolean)
 }
 
 export function criticalAnalysisNcmErrorMessage(ncmErrors: string[], isPlural: boolean): string {
-  const pluralize = (word: string) => (isPlural ? `${word}s` : word);
-  return `Não foi possivel realizar a Análise Crítica. ${pluralize('O')} ${pluralize('seguinte')} ${pluralize('NCM')} não ${
-    isPlural ? 'puderam' : 'pôde'
-  } ser ${pluralize('processado')}: **${ncmErrors.join(', ')}**. Verifique ${pluralize('o')} ${pluralize('código')} e tente novamente.`;
+  return isPlural
+    ? `Não foi possível realizar a Análise Crítica. Os seguintes NCMs não puderam ser processados: **${ncmErrors.join(
+        ', ',
+      )}**. Verifique os códigos e tente novamente.`
+    : `Não foi possível realizar a Análise Crítica. O seguinte NCM não pôde ser processado: **${ncmErrors.join(
+        ', ',
+      )}**. Verifique o código e tente novamente.`;
 }
 
 export const DEFAULT_CHAT_NAME = (date: Date) => `Sem título - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

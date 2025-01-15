@@ -10,7 +10,7 @@ export enum CriticalAnalysisPrefixes {
   criticalAnalysisSeventhStep = 'ANALISE_7##',
 }
 
-export const verifyNcmExistence = async (ncm: string) => {
+export const verifyNcmExistence = async (ncm: string): Promise<boolean> => {
   try {
     const result = await fetch(constants.n8nDomain + '/webhook/' + constants.n8nNcmValidatorURL, {
       method: 'POST',
@@ -19,9 +19,9 @@ export const verifyNcmExistence = async (ncm: string) => {
       },
       body: JSON.stringify({ NCM: ncm }),
     });
-    return result.json();
+    return result.json().then((data) => data.isNCM);
   } catch (error) {
     console.error(error);
-    return {};
+    throw new Error('Error validating NCM');
   }
 };

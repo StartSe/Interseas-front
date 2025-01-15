@@ -47,7 +47,7 @@ import {
   ncmExistenceErrorMessage,
   ncmLengthErrorMessage,
   ncmStepFailureMessage,
-  ncmSucessValidation,
+  ncmSuccessValidation,
   ncmValidationErrorMessage,
 } from '@/utils/messageUtils';
 import { FileUploadModal } from '@/features/modal/FileUploadModal';
@@ -1005,11 +1005,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const ncmArray = jsonDataCriticalAnalysis['NCM'] as string[];
         const validatedNcmArray = await validateNcmArray(ncmArray);
         const ncmErrorsArray = validatedNcmArray.isNotNcm.map((ncm) => ncm.ncm);
-        const ncmSucessArray = validatedNcmArray.isNcm.map((ncm) => ncm.ncm);
+        const ncmSuccessArray = validatedNcmArray.isNcm.map((ncm) => ncm.ncm);
         const mergedResults = [...validatedNcmArray.isNcm, ...validatedNcmArray.isNotNcm];
         setMessagesFromValidationResults(mergedResults);
         const jsonResponse = jsonDataCriticalAnalysis;
-        jsonResponse['NCM'] = ncmSucessArray;
+        jsonResponse['NCM'] = ncmSuccessArray;
         setJsonResponseCriticalAnalysis(jsonResponse);
 
         if (validatedNcmArray.isNotNcm.length) {
@@ -1063,14 +1063,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     if (formattedNcm.length !== ncmDigitNumber) {
       return { ncm: ncm, valid: false, message: ncmLengthErrorMessage(ncm) };
     }
-    const result = await verifyNcmExistence(formattedNcm);
-    if (result?.isNCM === false) {
-      return { ncm: ncm, valid: false, message: ncmExistenceErrorMessage(ncm) };
-    }
-    if (!Object.keys(result).length) {
+    try {
+      const result = await verifyNcmExistence(formattedNcm);
+      if (result === false) {
+        return { ncm: ncm, valid: false, message: ncmExistenceErrorMessage(ncm) };
+      }
+      return { ncm: ncm, valid: true, message: ncmSuccessValidation(ncm) };
+    } catch {
       return { ncm: ncm, valid: true, message: ncmValidationErrorMessage(ncm) };
     }
-    return { ncm: ncm, valid: true, message: ncmSucessValidation(ncm) };
   };
 
   const setMessagesFromValidationResults = (validationResults: { ncm: string; valid: boolean; message: string }[]) => {

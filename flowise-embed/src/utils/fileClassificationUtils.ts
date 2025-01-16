@@ -346,7 +346,7 @@ export const ChecklistProformaInvoice = `
 • INCOTERM
 • Local do INCOTERM
 • Peso estimado
-• Quantidade de volumes estimada - (crate/box/pallets)
+• Quantidade de volumes estimada - (crate/box/pallets; Se não encontrar, **apenas** retorne false)
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
 • Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
@@ -357,7 +357,7 @@ const checklistCCTAereo = `
 • Identificação do conhecimento de carga - (número do HAWB)
 • Data/hora da emissão
 • Identificação para vinculação a DI/DSI eletrônica/DTA/e-DMOV
-• Aeroporto de partida7
+• Aeroporto de partida
 • Aeroporto de destino
 • Recinto aduaneiro de destino
 • Quantidade de volumes - (crate/box/pallets)

@@ -111,13 +111,13 @@ export const checklistCommercialInvoice = `
 • Número do documento
 • Nome do documento
 • Data do documento
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP); Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
+• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • Dados do Exportador - (nome, endereço, NIF)
 • Dados do Fabricante - (nome, endereço, NIF)
 • Assinatura
-• Marca
-• Numeração
+• Marca - (Incluir a marca dos produtos, se não encontrar, **apenas** retorne false)
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Código/Referência das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
@@ -127,17 +127,17 @@ export const checklistCommercialInvoice = `
 • Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • Moeda de pagamento
 • Condições de Pagamento
-• Dados Bancários do Exportador
+• Dados Bancários do Exportador - (true/false)
 • Números do lote
 • NCM/HS Code
 • Porto de Embarque
 • Porto de Desembarque
-• País de Origem
-• País Procedência
-• País de Aquisição
+• País de Origem - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
+• País Procedência - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
+• País de Aquisição - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Local do INCOTERM
-• Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Total Prepaid; Total Collect; Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
+• Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
 • Referência
 • Forma/Condições de Pagamento - (true/false)
@@ -146,8 +146,8 @@ export const checklistCommercialInvoice = `
 • Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Descrição EX-tarifário
+• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
+• Descrição EX-tarifário - (no formato "EX-[número]")
 Se mercadoria é máquina ou equipamento
 • Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
 • Marca

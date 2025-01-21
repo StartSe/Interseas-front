@@ -358,22 +358,20 @@ const checklistCCTAereo = `
 • Recinto aduaneiro de destino
 • Quantidade de volumes - (crate/box/pallets)
 • Peso bruto - (G.W)
-• Presença de peças de madeira maciça - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
+• "Presença de peças de madeira maciça" - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Moeda de origem
 • Frete por item de carga - (somatório)
 • Forma de pagamento - (por peso/valor)
 • Forma de pagamento - (outros encargos)
-• Dados do Embarcador estrangeiro - também chamado de exportador (nome, endereço, CNPJ, CEP)
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• "Dados do Embarcador estrangeiro" - também chamado de exportador (nome, endereço, CNPJ, CEP)
 • País do embarcador estrangeiro
 • Consignatário/Identificação - (CNPJ)
-• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• "Dados do Consignatário" - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Número do MAWB/AWB associados
 
 Conferências:
-• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
 `;
 
 const checklistMicDta = `

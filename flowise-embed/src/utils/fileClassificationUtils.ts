@@ -117,7 +117,7 @@ export const checklistCommercialInvoice = `
 • Dados do Exportador - (nome, endereço, NIF)
 • Dados do Fabricante - (nome, endereço, NIF)
 • Assinatura
-• Marca - (Incluir a marca dos produtos, se não encontrar, **apenas** retorne false)
+• Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne false)
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Código/Referência das mercadorias
 • Quantidade - (trazer no formato quantidade x mercadoria)
@@ -138,11 +138,7 @@ export const checklistCommercialInvoice = `
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Local do INCOTERM
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
-• Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
-• Referência
-• Forma/Condições de Pagamento - (true/false)
-• Dados Bancários Exportador
-• Valor do Seguro - (se prepaid)
+• Valor do Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
 • Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
@@ -155,8 +151,8 @@ Se mercadoria é máquina ou equipamento
 Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
 • Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false)
-• Multiplicação de valor unitário dos itens comercializados - (trazer no formato valor unitário x quantidade comercializada)
-• Valor das mercadorias - (Somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator)
+• Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
+• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
 • Máquina/Equipamento
 • Possui Ex-tarifário - (Sim/Não, sempre justificando)
 • Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (NetWeight, N.W, Peso Neto ou P.N)`;

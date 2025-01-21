@@ -165,12 +165,17 @@ export const checklistConhecimentoBL = `
 • "To order of" - identificar se consta "To order of" junto ao consignee - (true/false)
 • Dados do Notify - também chamado de Adquirente, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Navio - Campo "Vessel", também popde constar como "Vessel/Voyage"
+• Porto de Embarque
+• Porto de Desembarque
+• Local de Destino Final
 • Tipo de carga - Identificar se FCL, LCL, FCL/LCL, Breakbulk, Bulk (granel);
 • Quantidade e tipos de containers
 • Números dos containers - (no formato <3 letras>U<7 números>)
 • Números dos lacres dos containers - (seal)
 • Peso Bruto por container
 • Cubagem por container
+• Peso Bruto - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)
+• Cubagem - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 • Quantidade e tipo de volumes - (crate/box/pallets)
 • Peso bruto por tipo de volume
 • Cubagem por tipo de volume
@@ -178,23 +183,18 @@ export const checklistConhecimentoBL = `
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Código/Referência das mercadorias
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• NCM - (primeiros 4 dígitos)
+• NCM - Pode ser o HS Code se não encontrar o NCM
 • Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect/Etc); moeda e valor. Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Taxas
+• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Carga Perigosa - Código Indicador
 • Carga Perigosa - Classe
-• Dados dos containeres - Trazer todas as informações referentes a containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados, separados por vírgula (,). Não converta os atributos internos dos containers para json.
-• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
-• Descrição EX-tarifário
+• Carga Perigosa - Package group
+• Dados dos containeres - Trazer todas as informações referentes à containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
+• Descrição EX-tarifário - (no formato "EX-[número]")
+• Assinatura 
 Se mercadoria é máquina ou equipamento
 • Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
 Conferências:
-• Importação direta - (Deve retornar true apenas se o Notify for igual ao Consignee, se não, false)
-• Importação por Conta e Ordem - (Deve retornar true apenas se Notify for diferente ao Consignee, se não, false)
-• Se INCOTERM de responsabilidade do exportador:
-Tipo de frete = "Prepaid"
-• Se INCOTERM de responsabilidade do importador:
-Tipo de frete = "Collect"
 Dados de compliance:
 • Número do Conhecimento de Embarque`;
 

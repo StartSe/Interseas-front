@@ -1838,24 +1838,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const orderedFiles = sortUploadFiles(filesMap);
 
     setFilesMapping(orderedFiles);
-    try {
-      switch (props.flow) {
-        case Flow.CriticalAnalysis.toString():
-          await processFileCriticalAnalysis();
-          break;
-        default:
-          setMessages((prevMessages) => {
-            const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
-            const updated = [...prevMessages, newMessage];
-            addChatMessage(updated);
-            return [...updated];
-          });
-          setDocumentsUploaded(true);
-          setHiddenInput(true);
-          await processNextChecklist();
-      }
-    } finally {
-      setIsUploadButtonDisabled(false);
+
+    switch (props.flow) {
+      case Flow.CriticalAnalysis.toString():
+        await processFileCriticalAnalysis();
+        setIsUploadButtonDisabled(false);
+
+        break;
+      default:
+        setMessages((prevMessages) => {
+          const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          addChatMessage(updated);
+          return [...updated];
+        });
+        setDocumentsUploaded(true);
+        setHiddenInput(true);
+        await processNextChecklist();
     }
   };
 
@@ -2061,6 +2060,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     if (files.length === 0) {
       await executeComplianceCheck(filesMapping());
+      setIsUploadButtonDisabled(false);
       return;
     }
 
@@ -2100,6 +2100,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
       if (currentChecklistNumber() === files.length) {
         await executeComplianceCheck(filesMapping());
+        setIsUploadButtonDisabled(false);
       }
     } catch (error) {
       console.error(error);

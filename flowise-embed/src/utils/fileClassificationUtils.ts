@@ -343,23 +343,21 @@ const checklistCCTAereo = `
 • Aeroporto de destino
 • Recinto aduaneiro de destino
 • Quantidade de volumes - (crate/box/pallets)
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Presença de peças de madeira maciça - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
+• Peso bruto - (G.W)
+• "Presença de peças de madeira maciça" - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Moeda de origem
 • Frete por item de carga - (somatório)
 • Forma de pagamento - (por peso/valor)
 • Forma de pagamento - (outros encargos)
-• Dados do Embarcador estrangeiro - também chamado de exportador (nome, endereço, CNPJ, CEP)
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• "Dados do Embarcador estrangeiro" - também chamado de exportador (nome, endereço, CNPJ, CEP)
 • País do embarcador estrangeiro
 • Consignatário/Identificação - (CNPJ)
-• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• "Dados do Consignatário" - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Número do MAWB/AWB associados
 
 Conferências:
-• Valor total do frete - Fazer a somatória de todos os valores totais de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido total no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (NetWeight, N.W, Peso Neto ou P.N)
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
 `;
 
 const checklistMicDta = `

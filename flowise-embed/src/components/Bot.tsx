@@ -1840,7 +1840,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       case Flow.CriticalAnalysis.toString():
         await processFileCriticalAnalysis();
         setIsUploadButtonDisabled(false);
-
         break;
       default:
         setMessages((prevMessages) => {

@@ -209,7 +209,7 @@ export const checklistConhecimentoHawb = `
 • CNPJ do Consignee - (Consignatário/Identificação)
 • "To order of"
 • Notify - (razão social, endereço, CNPJ e CEP)
-• Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Frete - Todas as informações referentes a frete. Trazer Label; Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Forma de pagamento do frete
 • Aeroporto de Partida
 • Aeroporto de Destino
@@ -222,15 +222,19 @@ export const checklistConhecimentoHawb = `
 • Final Destination - (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM/HS Code
+• Nº de Série
 • Descrição Ex-tarifário
 • Frete por peso - também chamado de "Weight Charge"
-• Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados no checklist usando a ferramenta calculator
 
-Se mercadoria é máquina ou equipamento
-• Nº de Série
 Dados de Compliance:
 • Description of Goods - (Descrição resumida e completa das mercadorias)
 • Forma de pagamento - (Collect/Prepaid, por peso/valor ou outros encargos)
+• Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados no checklist usando a ferramenta calculator
+
+Conferências:
+• Máquina/Equipamento
+• Possui Ex-tarifário - (Sim/Não, sempre justificando)
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
 `;
 
 export const checklistConhecimentoMawb = `
@@ -309,11 +313,11 @@ export const checklistPackingList = `
 • Dados do Exportador - (nome, endereço, NIF)
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Código/Referência das mercadorias
-• Quantidade de Volumes - (crate/box/pallets)
-• Tipo de Volumes - (crate/box/pallets)
+• Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
+• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • Peso Líquido por volume ou unidade
 Conferências:
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento e retornar o valor total usando a ferramenta calculator - (N.W)
+• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento;
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
 • Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;

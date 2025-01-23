@@ -1818,6 +1818,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.CCT.toString(),
               DocumentTypes.PROFORMA_INVOICE.toString(),
               DocumentTypes.COMMERCIAL_INVOICE.toString(),
+              DocumentTypes.LABELS.toString(),
+              DocumentTypes.MSDS.toString(),
+              DocumentTypes.TEST_REPORT.toString(),
             ].includes(docType)
           ) {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);

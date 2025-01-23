@@ -654,7 +654,7 @@ const documentNameAndTypeMapping = {
     DocumentTypes.ANEXO_IX,
   '.*?ANEXO[_-\\s]XI|COMPROVACAO[_-\\s]OFICIAL[_-\\s]DE[_-\\s]TIPICIDADE[_-\\s]E[_-\\s]REGIONALIDADE[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]ALCOOLICAS[ ,-_]VINHOS[ ,-_]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]IMPORTACAO[_-\\s]PELO[_-\\s]BRASIL.*?':
     DocumentTypes.ANEXO_XI,
-  '.*?CERTIFICADO[_-\\s]DE[_-\\s]INSPECAO|CERTIFICADO[_-\\s]DE[_-\\s]INSPECAO[_-\\s]DE[_-\\s]IMPORTACÃO[_-\\s]DE[_-\\s]BEBIDAS[ ,-_]FERMENTADOS[ ,-_]ACÉTICOS[ ,-_]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO.*?':
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]INSPECAO|CERTIFICADO[_-\\s]DE[_-\\s]INSPECAO[_-\\s]DE[_-\\s]IMPORTACÃO[_-\\s]DE[_-\\s]BEBIDAS[ ,-_]FERMENTADOS[ ,-_]ACETICOS[ ,-_]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO.*?':
     DocumentTypes.CERTIFICADO_DE_INSPECAO,
   '.*?CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE[_-\\s]ORGANICA|DECLARACION[_-\\s]ADICIONAL[_-\\s]SOBRE[_-\\s]MEMORANDUM[_-\\s]DE[_-\\s]ACUERDO[_-\\s]CHILE[_-\\s]BRASIL.*?':
     DocumentTypes.CERTIFICADO_DE_CONFORMIDADE_ORGANICA,
@@ -781,5 +781,5 @@ export const removeAccents = (text: string) => {
   return text
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\.[^/.]+$/, '');
+    .replace(/\.[^.]+$/, '');
 };

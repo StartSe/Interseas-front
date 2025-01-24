@@ -611,9 +611,8 @@ export enum DocumentTypes {
   CERTIFICADO_DE_COMPLIANCE = 'CERTIFICADO DE COMPLIANCE',
   CERTIFICADO_DE_ESTERILIZACAO = 'CERTIFICADO DE ESTERILIZAÇÃO',
   DECLARACAO_DO_DETENTOR_DA_REGULARIZACAO = 'DECLARAÇÃO DO DETENTOR DA REGULARIZAÇÃO',
-  MSDS = 'MSDS',
+  MSDS = 'MSDS/FISPQ',
   FICHA_DE_EMERGENCIA = 'FICHA DE EMERGÊNCIA',
-  FISPQ = 'FISPQ',
   SHIPPERS_DECLARATION = "SHIPPER'S DECLARATION FOR DANGEROUS GOODS",
   ANEXO_VII = 'DECLARAÇÃO DE CARGA PERIGOSA',
   FICHA_DE_LOTE = 'FICHA DE LOTE',
@@ -623,57 +622,58 @@ export enum DocumentTypes {
 }
 
 const documentNameAndTypeMapping = {
-  'PROFORMA[_-\\s]INVOICE|PROFORMA': DocumentTypes.PROFORMA_INVOICE,
-  'COMMERCIAL[_-\\s]INVOICE|FATURA[_-\\s]COMERCIAL|CUSTOMS[_-\\s]INVOICE|INVOICE': DocumentTypes.COMMERCIAL_INVOICE,
-  'PACKING[_-\\s]LIST': DocumentTypes.PACKING_LIST,
-  'CONHECIMENTO[_-\\s]BL|CONHECIMENTO[_-\\s]B/L|BL': DocumentTypes.CONHECIMENTO_BL,
-  'CONHECIMENTO[_-\\s]HAWB|HAWB': DocumentTypes.CONHECIMENTO_HAWB,
-  'CONHECIMENTO[_-\\s]MAWB|MAWB': DocumentTypes.CONHECIMENTO_MAWB,
-  'CONHECIMENTO[_-\\s]CRT|CRT': DocumentTypes.CONHECIMENTO_CRT,
-  'CONHECIMENTO[_-\\s]MIC[_-\\s]DTA|MIC[_-\\s]DTA': DocumentTypes.CONHECIMENTO_MIC_DTA,
-  'CE[_-\\s]MERCANTE': DocumentTypes.CE_MERCANTE,
-  CCT: DocumentTypes.CCT,
-  'INSTRUCAO[_-\\s]DE[_-\\s]EMBARQUE': DocumentTypes.INSTRUCAO_DE_EMBARQUE,
-  DUIMP: DocumentTypes.DUIMP,
-  'DU-E|DU E': DocumentTypes.DUE,
-  'DECLARACAO[_-\\s]DE[_-\\s]IMPORTACAO': DocumentTypes.DECLARACAO_DE_IMPORTACAO,
-  'RESUMO[_-\\s]DA[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]IMPORTACAO': DocumentTypes.RESUMO_DA_DECLARACAO_DE_IMPORTACAO,
-  'LICENCA[_-\\s]DE[_-\\s]IMPORTACAO': DocumentTypes.LICENCA_DE_IMPORTACAO,
-  LPCO: DocumentTypes.LPCO,
-  'DOWNPAYMENT[_-\\s]INVOICE|DOWNPAYMENT': DocumentTypes.DOWNPAYMENT_INVOICE,
-  PROPOSTA: DocumentTypes.PROPOSTA,
-  'ORDEM[_-\\s]DE[_-\\s]COMPRA[_-\\s]DO[_-\\s]IMPORTADOR|PURCHASE[_-\\s]ORDER|\\bPO\\b': DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR,
-  'SALES[_-\\s]ORDER[_-\\s]DOCUMENT|SALES[_-\\s]ORDER[_-\\s]ACKNOWLEDGMENT': DocumentTypes.SALES_ORDER_DOCUMENT,
-  'CONFIRMATION[_-\\s]OF[_-\\s]ORDER': DocumentTypes.CONFIRMATION_OF_ORDER,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DIGITAL': DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM': DocumentTypes.CERTIFICADO_DE_ORIGEM,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ANALISE.*VINHO(S?)?': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
-  'TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE(?!.*VINHO)': DocumentTypes.TEST_REPORT,
-  'LABEL(?:S)?|(?:CONTRA[_\\-\\sR])?ROTULO(?:S)?': DocumentTypes.LABELS,
-  'ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL':
+  '.*?PROFORMA[_-\\s]INVOICE|PROFORMA.*?': DocumentTypes.PROFORMA_INVOICE,
+  '.*?DOWNPAYMENT[_-\\s]INVOICE|DOWNPAYMENT.*?': DocumentTypes.DOWNPAYMENT_INVOICE,
+  '.*?COMMERCIAL[_-\\s]INVOICE|FATURA[_-\\s]COMERCIAL|CUSTOMS[_-\\s]INVOICE|INVOICE|FATURA.*?': DocumentTypes.COMMERCIAL_INVOICE,
+  '.*?PACKING[_-\\s]LIST.*?': DocumentTypes.PACKING_LIST,
+  '.*?CONHECIMENTO[_-\\s]BL|CONHECIMENTO[_-\\s]B/L|\\bBL\\b.*?': DocumentTypes.CONHECIMENTO_BL,
+  '.*?CONHECIMENTO[_-\\s]HAWB|\\bHAWB\\b.*?': DocumentTypes.CONHECIMENTO_HAWB,
+  '.*?CONHECIMENTO[_-\\s]MAWB|\\bMAWB\\b.*?': DocumentTypes.CONHECIMENTO_MAWB,
+  '.*?CONHECIMENTO[_-\\s]CRT|\\bCRT\\b.*?': DocumentTypes.CONHECIMENTO_CRT,
+  '.*?CONHECIMENTO[_-\\s]MIC[_-\\s]DTA|MIC[_-\\s]DTA.*?': DocumentTypes.CONHECIMENTO_MIC_DTA,
+  '.*?CE[_-\\s]MERCANTE.*?': DocumentTypes.CE_MERCANTE,
+  '.*?\\bCCT\\b.*?': DocumentTypes.CCT,
+  '.*?INSTRUCAO[_-\\s]DE[_-\\s]EMBARQUE|SHIPPING[_-\\s]INSTRUCTION.*?': DocumentTypes.INSTRUCAO_DE_EMBARQUE,
+  '.*?\\bDUIMP\\b.*?': DocumentTypes.DUIMP,
+  '.*?\\bDU-E\\b|\\bDU E\\b.*?': DocumentTypes.DUE,
+  '.*?DECLARACAO[_-\\s]DE[_-\\s]IMPORTACAO.*?': DocumentTypes.DECLARACAO_DE_IMPORTACAO,
+  '.*?RESUMO[_-\\s]DA[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]IMPORTACAO.*?': DocumentTypes.RESUMO_DA_DECLARACAO_DE_IMPORTACAO,
+  '.*?LICENCA[_-\\s]DE[_-\\s]IMPORTACAO.*?': DocumentTypes.LICENCA_DE_IMPORTACAO,
+  '.*?\\bLPCO\\b.*?': DocumentTypes.LPCO,
+  '.*?PROPOSTA.*?': DocumentTypes.PROPOSTA,
+  '.*?ORDEM[_-\\s]DE[_-\\s]COMPRA([_-\\s]DO[_-\\s]IMPORTADOR)?|PURCHASE[_-\\s]ORDER|\\bPO\\b|\\bOC\\b.*?':
+    DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR,
+  '.*?SALES[_-\\s]ORDER[_-\\s]DOCUMENT|SALES[_-\\s]ORDER[_-\\s]ACKNOWLEDGMENT.*?': DocumentTypes.SALES_ORDER_DOCUMENT,
+  '.*?CONFIRMATION[_-\\s]OF[_-\\s]ORDER.*?': DocumentTypes.CONFIRMATION_OF_ORDER,
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DIGITAL.*?': DocumentTypes.CERTIFICADO_DE_ORIGEM_DIGITAL,
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM.*?': DocumentTypes.CERTIFICADO_DE_ORIGEM,
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]ANALISE.*VINHO(S?)?|TEST[_-\\s]REPORT.*VINHO(S?)?.*?': DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS,
+  '.*?TEST[_-\\s]REPORT|LABORATORY[_-\\s]REPORT|CERTIFICADO[_-\\s]DE[_-\\s]ANALISE(?!.*VINHO).*?': DocumentTypes.TEST_REPORT,
+  '.*?LABEL(?:S)?|(?:CONTRA[_\\-\\sR])?ROTULO(?:S)?.*?': DocumentTypes.LABELS,
+  '.*?ANEXO[_-\\s]IX|CERTIFICADO[_-\\s]DE[_-\\s]ORIGEM[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]FERMENTADOS[_-\\s]ACETICOS[_-\\s]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]O[_-\\s]BRASIL.*?':
     DocumentTypes.ANEXO_IX,
-  'ANEXO[_-\\s]XI|COMPROVACAO[_-\\s]OFICIAL[_-\\s]DE[_-\\s]TIPICIDADE[_-\\s]E[_-\\s]REGIONALIDADE[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]ALCOOLICAS[ ,-_]VINHOS[ ,-_]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]IMPORTACAO[_-\\s]PELO[_-\\s]BRASIL':
+  '.*?ANEXO[_-\\s]XI|COMPROVACAO[_-\\s]OFICIAL[_-\\s]DE[_-\\s]TIPICIDADE[_-\\s]E[_-\\s]REGIONALIDADE[_-\\s]DE[_-\\s]BEBIDAS[_-\\s]ALCOOLICAS[ ,-_]VINHOS[ ,-_]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO[_-\\s]PARA[_-\\s]IMPORTACAO[_-\\s]PELO[_-\\s]BRASIL.*?':
     DocumentTypes.ANEXO_XI,
-  'CERTIFICADO[_-\\s]DE[_-\\s]INSPEÇÃO[_-\\s]DE[_-\\s]IMPORTAÇÃO[_-\\s]DE[_-\\s]BEBIDAS[ ,-_]FERMENTADOS[ ,-_]ACÉTICOS[ ,-_]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO':
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]INSPECAO|CERTIFICADO[_-\\s]DE[_-\\s]INSPECAO[_-\\s]DE[_-\\s]IMPORTACAO[_-\\s]DE[_-\\s]BEBIDAS[ ,-_]FERMENTADOS[ ,-_]ACETICOS[ ,-_]VINHOS[_-\\s]E[_-\\s]DERIVADOS[_-\\s]DA[_-\\s]UVA[_-\\s]E[_-\\s]DO[_-\\s]VINHO.*?':
     DocumentTypes.CERTIFICADO_DE_INSPECAO,
-  'CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE[_-\\s]ORGANICA|DECLARACION[_-\\s]ADICIONAL[_-\\s]SOBRE[_-\\s]MEMORANDUM[_-\\s]DE[_-\\s]ACUERDO[_-\\s]CHILE[_-\\s]BRASIL':
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE[_-\\s]ORGANICA|DECLARACION[_-\\s]ADICIONAL[_-\\s]SOBRE[_-\\s]MEMORANDUM[_-\\s]DE[_-\\s]ACUERDO[_-\\s]CHILE[_-\\s]BRASIL.*?':
     DocumentTypes.CERTIFICADO_DE_CONFORMIDADE_ORGANICA,
-  'DECLARACAO[_-\\s]DE[_-\\s]TRANSACAO[_-\\s]COMERCIAL|CERTIFICADO[_-\\s]TRANSACCION[_-\\s]PARA[_-\\s]PRODUCTOS[_-\\s]IMPORTADOS':
+  '.*?DECLARACAO[_-\\s]DE[_-\\s]TRANSACAO[_-\\s]COMERCIAL|CERTIFICADO[_-\\s]TRANSACCION[_-\\s]PARA[_-\\s]PRODUCTOS[_-\\s]IMPORTADOS.*?':
     DocumentTypes.DECLARACAO_DE_TRANSACAO_COMERCIAL,
-  'ATESTADO[_-\\s]DE[_-\\s]INEXISTENCIA[_-\\s]DE[_-\\s]PRODUCAO[_-\\s]ESTADUAL': DocumentTypes.ATESTADO_DE_INEXISTENCIA_DE_PRODUCAO_ESTADUAL,
-  'CATALOGO[_-\\s]DE[_-\\s]EQUIPAMENTO': DocumentTypes.CATALOGO_DE_EQUIPAMENTO,
-  'CERTIFICADO[_-\\s]DE[_-\\s]COMPLIANCE|CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE': DocumentTypes.CERTIFICADO_DE_COMPLIANCE,
-  'CERTIFICADO[_-\\s]DE[_-\\s]ESTERILIZACAO': DocumentTypes.CERTIFICADO_DE_ESTERILIZACAO,
-  'DECLARACAO[_-\\s]DO[_-\\s]DETENTOR[_-\\s]DA[_-\\s]REGULARIZACAO[_-\\s]DO[_-\\s]PRODUTO[_-\\s]AUTORIZANDO[_-\\s]A[_-\\s]IMPORTACAO[_-\\s]POR[_-\\s]TERCEIRO':
+  '.*?ATESTADO[_-\\s]DE[_-\\s]INEXISTENCIA[_-\\s]DE[_-\\s]PRODUCAO[_-\\s]ESTADUAL.*?': DocumentTypes.ATESTADO_DE_INEXISTENCIA_DE_PRODUCAO_ESTADUAL,
+  '.*?CATALOGO[_-\\s]DE[_-\\s]EQUIPAMENTO.*?': DocumentTypes.CATALOGO_DE_EQUIPAMENTO,
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]COMPLIANCE|CERTIFICADO[_-\\s]DE[_-\\s]CONFORMIDADE.*?': DocumentTypes.CERTIFICADO_DE_COMPLIANCE,
+  '.*?CERTIFICADO[_-\\s]DE[_-\\s]ESTERILIZACAO.*?': DocumentTypes.CERTIFICADO_DE_ESTERILIZACAO,
+  '.*?DECLARACAO[_-\\s]DO[_-\\s]DETENTOR[_-\\s]DA[_-\\s]REGULARIZACAO[_-\\s]DO[_-\\s]PRODUTO[_-\\s]AUTORIZANDO[_-\\s]A[_-\\s]IMPORTACAO[_-\\s]POR[_-\\s]TERCEIRO.*?':
     DocumentTypes.DECLARACAO_DO_DETENTOR_DA_REGULARIZACAO,
-  'MSDS|MATERIAL[_-\\s]SAFETY[_-\\s]DATA[_-\\s]SHEET|SAFETY[_-\\s]DATA[_-\\s]SHEET': DocumentTypes.MSDS,
-  'FICHA[_-\\s]DE[_-\\s]EMERGENCIA': DocumentTypes.FICHA_DE_EMERGENCIA,
-  'FISPQ|FICHA[_-\\s]DE[_-\\s]INFORMACOES[_-\\s]DE[_-\\s]SEGURANCA[_-\\s]DE[_-\\s]PRODUTOS[_-\\s]QUIMICOS': DocumentTypes.FISPQ,
-  'SHIPPERS[_-\\s]DECLARATION[_-\\s]FOR[_-\\s]DANGEROUS[_-\\s]GOODS': DocumentTypes.SHIPPERS_DECLARATION,
-  'ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII/i': DocumentTypes.ANEXO_VII,
-  'FICHA[_-\\s]DE[_-\\s]LOTE/i': DocumentTypes.FICHA_DE_LOTE,
-  'CERTIFICADO[_-\\s]FITOSSANITARIO/i': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
-  'COTACAO[_-\\s]DE[_-\\s]FRETE/i': DocumentTypes.COTACAO_DE_FRETE,
+  '.*?\\bMSDS\\b|MATERIAL[_-\\s]SAFETY[_-\\s]DATA[_-\\s]SHEET|SAFETY[_-\\s]DATA[_-\\s]SHEET|\\bFISPQ\\b|FICHA[_-\\s]DE[_-\\s]INFORMACOES[_-\\s]DE[_-\\s]SEGURANCA[_-\\s]DE[_-\\s]PRODUTOS[_-\\s]QUIMICOS.*?':
+    DocumentTypes.MSDS,
+  '.*?FICHA[_-\\s]DE[_-\\s]EMERGENCIA.*?': DocumentTypes.FICHA_DE_EMERGENCIA,
+  '.*?SHIPPERS[_-\\s]DECLARATION[_-\\s]FOR[_-\\s]DANGEROUS[_-\\s]GOODS.*?': DocumentTypes.SHIPPERS_DECLARATION,
+  '.*?ANEXO[_-\\s]VII[_-\\s]DECLARACAO[_-\\s]DE[_-\\s]CARGA[_-\\s]PERIGOSA|ANEXO[_-\\s]VII.*?': DocumentTypes.ANEXO_VII,
+  '.*?FICHA[_-\\s]DE[_-\\s]LOTE.*?': DocumentTypes.FICHA_DE_LOTE,
+  '.*?CERTIFICADO[_-\\s]FITOSSANITARIO.*?': DocumentTypes.CERTIFICADO_FITOSSANITARIO,
+  '.*?COTACAO[_-\\s]DE[_-\\s]FRETE.*?': DocumentTypes.COTACAO_DE_FRETE,
 };
 
 export const checklistTypeMapping = {
@@ -691,7 +691,7 @@ export const checklistTypeMapping = {
   [DocumentTypes.CONHECIMENTO_MIC_DTA]: checklistMicDta,
   [DocumentTypes.LABELS]: checklistLabels,
   [DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS]: checklistAnaliseDeVinhos,
-  [DocumentTypes.SALES_ORDER_DOCUMENT]: checklistOrdemDeCompra,
+  [DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR]: checklistOrdemDeCompra,
   [DocumentTypes.INSTRUCAO_DE_EMBARQUE]: checklistInstrucaoDeEmbarque,
   [DocumentTypes.TEST_REPORT]: checklistCertificadoDeAnalise,
   [DocumentTypes.CERTIFICADO_FITOSSANITARIO]: checklistCertificadoFitossanitario,
@@ -741,7 +741,6 @@ export const documentPriorityMapping = {
   [DocumentTypes.DECLARACAO_DO_DETENTOR_DA_REGULARIZACAO.toString()]: 0,
   [DocumentTypes.MSDS.toString()]: 0,
   [DocumentTypes.FICHA_DE_EMERGENCIA.toString()]: 0,
-  [DocumentTypes.FISPQ.toString()]: 0,
   [DocumentTypes.SHIPPERS_DECLARATION.toString()]: 0,
   [DocumentTypes.ANEXO_VII.toString()]: 0,
   [DocumentTypes.FICHA_DE_LOTE.toString()]: 0,
@@ -779,5 +778,8 @@ export const identifyDocumentType = (fileName: string) => {
 };
 
 export const removeAccents = (text: string) => {
-  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\.[^.]+$/, '');
 };

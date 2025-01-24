@@ -75,6 +75,7 @@ export const authenticate = async (username, password) => {
     }
   } catch (error) {
     console.error("Login error:", error);
+    enableLoginButton();
     return false;
   }
 };

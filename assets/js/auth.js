@@ -3,7 +3,7 @@ const AUTH_TOKEN_KEY = "auth_token";
 const AUTH_TOKEN_DUURATION_MINUTES = 60;
 
 const HOME_PAGE = "home.html";
-const LOGIN_PAGE = "/";
+const LOGIN_PAGE = "/Interseas-front/";
 
 const showErrorMessage = (message = "Credenciais inválidas") => {
   const errorMessageElement = document.getElementById("error-message");

@@ -69,10 +69,10 @@ Conferências:
 export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento
-• Possui Ex-tarifário - (Sim/Não, sempre justificando)
-• Valor total do frete - Fazer a somatória de todos os valores totais de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido total no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (NetWeight, N.W, Peso Neto ou P.N)
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)`;
+• Ex-tarifário - (Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Retorne Sim/Não com uma justificativa)
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)`;
 
 export const checklistCeMercante = `
 • Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
@@ -86,9 +86,8 @@ export const checklistCeMercante = `
 • Dados do Embarcador (Campo "Identificação do Exportador" em "Consulta de conhecimento")
 • Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Descrição da mercadoria - Campo "Descrição da mercadoria" em "Consulta de conhecimento"
-• Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect/Etc); moeda e valor. Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Taxas - valores, moedas e tipos
-• Transbordo - navio 1º transporte - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
+• Frete e Taxas - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• "Transbordo - navio 1º transporte" - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Tipos de carga - Campos "Tipo" em "Relação de itens da carga"
 • Quantidade de containers por tipo - Traga os dados do container para todos os containers
@@ -126,7 +125,7 @@ export const checklistCommercialInvoice = `
 • Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • Moeda de pagamento
 • Condições de Pagamento
-• Dados Bancários do Exportador - (true/false)
+• Dados Bancários do Exportador - nome do banco pode estar em outro idioma(true/false)
 • Números do lote
 • NCM/HS Code
 • Porto de Embarque
@@ -142,7 +141,6 @@ export const checklistCommercialInvoice = `
 • Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
-• Descrição EX-tarifário - (no formato "EX-[número]", se existir no documento retorne todo o conteúdo da descrição(Análise o texto e corrija as palavras que não fazem sentido no português))
 • Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
 • Modelo
 Conferências:
@@ -151,8 +149,8 @@ Conferências:
 • Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
 • Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
 • Máquina/Equipamento
-• Possui Ex-tarifário - (Sim/Não, sempre justificando)
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (NetWeight, N.W, Peso Neto ou P.N)`;
+• Ex-tarifário - (Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Retorne Sim/Não com uma justificativa)
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)`;
 
 export const checklistConhecimentoBL = `
 • Número do documento
@@ -296,8 +294,7 @@ export const checklistPackingList = `
 • Dados do Exportador - (nome, endereço, NIF)
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Código/Referência das mercadorias
-• Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
+• Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • Peso Líquido por volume - (NetWeight, N.W, Peso Neto ou P.N per volume)
 Conferências:
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento;

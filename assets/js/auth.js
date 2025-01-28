@@ -2,8 +2,13 @@ const N8N_AUTH_BASE_URL = "https://interseas-n8n.paas.startse.com/webhook";
 const AUTH_TOKEN_KEY = "auth_token";
 const AUTH_TOKEN_DUURATION_MINUTES = 60;
 
+const isDevEnv = () => {
+  const currentUrl = window.location.href;
+  return currentUrl.includes("localhost") || currentUrl.includes("127.0.0.1");
+}
+
 const HOME_PAGE = "home.html";
-const LOGIN_PAGE = "/Interseas-front/";
+const LOGIN_PAGE = isDevEnv() ? "/" : "/Interseas-front/";
 
 const showErrorMessage = (message = "Credenciais inválidas") => {
   const errorMessageElement = document.getElementById("error-message");

@@ -1960,7 +1960,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (value && typeof value === 'object') {
         const formatted_value = Object.entries(value)
           .map(([key, value]) => {
-            return `${key}: ${value}`;
+            const multiItemFormattedValue = String(value).replace(/; |\/n/g, '<br/>');
+            return `${key}: ${multiItemFormattedValue}`;
           })
           .join('<br>');
         value = formatted_value;
@@ -1970,15 +1971,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const getMessage = (key: string, keyValue: any, validValue: boolean, justificationNotFound: boolean) => {
         const isSuccessfulMessage = validValue && !justificationNotFound;
         if (isSuccessfulMessage) {
-          return spacedText(value);
+          const multiItemFormattedValue = String(value).replace(/; |\/n/g, '<br/>');
+          return spacedText(multiItemFormattedValue);
         }
-        const defaultNotFoundMessage = justificationNotFound ? keyValue : 'Não identificado';
+        const defaultMessage = justificationNotFound ? keyValue : 'Não identificado';
         const signatureKey = 'Assinatura';
         const messageNotFoundSignature = 'A assinatura não foi identificada, por favor verifique manualmente!';
         const isSignatureKey = key === signatureKey;
         const exTariffRegex = /DESCRICAO[_-\s]?EX[_-\s]?TARIFARIO/i;
         const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        let message = isSignatureKey ? messageNotFoundSignature : defaultNotFoundMessage;
+        let message = isSignatureKey ? messageNotFoundSignature : defaultMessage;
 
         if (exTariffRegex.test(normalizedKey)) {
           message = keyValue ? messageUtils.EX_TARIFF_IDENTIFIED : messageUtils.EX_TARIFF_NOT_IDENTIFIED;

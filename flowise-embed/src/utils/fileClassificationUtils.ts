@@ -188,7 +188,7 @@ export const checklistConhecimentoBL = `
 • Taxas
 • Carga Perigosa - Código Indicador
 • Carga Perigosa - Classe
-• Dados dos containeres - Trazer todas as informações referentes à containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
+• Dados dos containeres - Trazer todas as informações referentes a containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados, separados por vírgula (,). Não converta os atributos internos dos containers para json.
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Descrição EX-tarifário - (no formato "EX-[número]")
 Se mercadoria é máquina ou equipamento

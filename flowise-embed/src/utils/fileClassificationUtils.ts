@@ -3,6 +3,9 @@
 
 import { FileMapping } from './fileUtils';
 
+const descricao_ex_checklist = `"Descrição EX-tarifário" (Checklist) - Retorne a descrição associada ao padrão do Ex-tarifário, começando imediatamente após o padrão. Se o padrão do Ex-tarifário for encontrado, mas não houver descrição associada, retorne "Descrição não identificada". Exemplo: Se o documento contiver "EX123 - Equipamento de corte a jato de água para chapas metálicas, com posicionamento CNC, recirculação de água filtrada, capacidade de cortar aços até 50mm de espessura, velocidade de 300mm/min e consumo de energia de 22kW/h, sem geração de calor ou resíduos tóxicos.", retorne "Equipamento de corte a jato de água para chapas metálicas, com posicionamento CNC, recirculação de água filtrada, capacidade de cortar aços até 50mm de espessura, velocidade de 300mm/min e consumo de energia de 22kW/h, sem geração de calor ou resíduos tóxicos.".`;
+const descricao_ex_verificacao = `"Descrição EX-tarifário" (Verificação) - (Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Retorne Sim/Não com uma justificativa)`;
+
 export const defaultChecklist = `
 • Número do documento
 • Nome do documento
@@ -54,7 +57,7 @@ export const defaultChecklist = `
 • Declaração valor das mercadorias
 • Declarações e observações - detalhamento do frete internacional e nacional
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
-• Descrição EX-tarifário - (formato "EX-[número]")
+• ${descricao_ex_checklist}
 Conferências:
 • Máquina/Equipamento
 • Marca - (se mercadoria é máquina ou equipamento)
@@ -69,7 +72,7 @@ Conferências:
 export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento
-• Ex-tarifário - (Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Retorne Sim/Não com uma justificativa)
+• ${descricao_ex_verificacao}
 • Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
 • Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)`;
@@ -86,7 +89,7 @@ export const checklistCeMercante = `
 • Dados do Embarcador (Campo "Identificação do Exportador" em "Consulta de conhecimento")
 • Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Descrição da mercadoria - Campo "Descrição da mercadoria" em "Consulta de conhecimento"
-• Frete e Taxas - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Frete e Taxas - Todas as informações referentes a frete. Trazer label; Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • "Transbordo - navio 1º transporte" - Campo "Navio do 1º Transporte" em "Consulta de conhecimento"
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Tipos de carga - Campos "Tipo" em "Relação de itens da carga"
@@ -141,7 +144,8 @@ export const checklistCommercialInvoice = `
 • Peso Bruto - (G.W)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
-• Nº de Série
+• ${descricao_ex_checklist}
+• Nº de Série - Também identificado como "Serial Number", "SN", "NS"
 • Modelo
 Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
@@ -149,7 +153,7 @@ Conferências:
 • Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
 • Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
 • Máquina/Equipamento
-• Ex-tarifário - (Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Retorne Sim/Não com uma justificativa)
+• ${descricao_ex_verificacao}
 • Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)`;
 
 export const checklistConhecimentoBL = `
@@ -185,10 +189,9 @@ export const checklistConhecimentoBL = `
 • Carga Perigosa - Classe
 • Carga Perigosa - Package group
 • Dados dos containeres - Trazer todas as informações referentes à containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
-• Descrição EX-tarifário - (no formato "EX-[número]")
+• ${descricao_ex_checklist}
 • Assinatura 
-Se mercadoria é máquina ou equipamento
-• Nº de Série
+• Nº de Série - Também identificado como "Serial Number", "SN", "NS"
 Conferências:
 Dados de compliance:
 • Número do Conhecimento de Embarque`;
@@ -203,7 +206,7 @@ export const checklistConhecimentoHawb = `
 • CNPJ do Consignee - (Consignatário/Identificação)
 • "To order of"
 • Notify - (razão social, endereço, CNPJ e CEP)
-• Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Frete - Todas as informações referentes a frete. Trazer Label; Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Forma de pagamento do frete
 • Aeroporto de Partida
 • Aeroporto de Destino
@@ -217,18 +220,19 @@ export const checklistConhecimentoHawb = `
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • NCM/HS Code
 • Nº de Série
-• Descrição Ex-tarifário
+• ${descricao_ex_checklist}
 • Frete por peso - também chamado de "Weight Charge"
+
+Conferências:
+• Máquina/Equipamento
+• ${descricao_ex_verificacao}
+• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os **totais** (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados. Separe os valores por prepaid e collect e some-os com a ferramenta calculator
 
 Dados de Compliance:
 • Description of Goods - (Descrição resumida e completa das mercadorias)
 • Forma de pagamento - (Collect/Prepaid, por peso/valor ou outros encargos)
-• Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados
-
-Conferências:
-• Máquina/Equipamento
-• Possui Ex-tarifário - (Sim/Não, sempre justificando)
-• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados. Separe os valores por prepaid e collect e some-os com a ferramenta calculator
 `;
 
 export const checklistConhecimentoMawb = `

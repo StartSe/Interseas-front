@@ -155,6 +155,7 @@ export const Menu = (props: MenuProps) => {
     const flowTitleMapping = {
       compliance: 'Compliance Documental',
       critical_analysis: 'Análise Pré-Embarque',
+      tax_classification: 'Classificação Fiscal',
     };
 
     try {

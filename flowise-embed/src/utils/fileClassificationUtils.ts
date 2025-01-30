@@ -192,8 +192,8 @@ export const checklistConhecimentoBL = `
 • Carga Perigosa - Package group
 • Dados dos containeres - Trazer todas as informações referentes à containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
 • ${descricao_ex_checklist}
-• Assinatura 
-• Nº de Série - Também identificado como "Serial Number", "SN", "NS"
+• Assinatura
+• Número de Série - (se mercadoria é máquina ou equipamento, buscar como "Serial Number", SN, NS, S/N, N/S)
 Conferências:
 Dados de compliance:
 • Número do Conhecimento de Embarque`;
@@ -304,7 +304,7 @@ export const checklistPackingList = `
 • Peso Líquido por volume - (NetWeight, N.W, Peso Neto ou P.N per volume)
 Conferências:
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento;
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator - (G.W)
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
 • Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;
 
@@ -361,8 +361,6 @@ const checklistCCTAereo = `
 • Consignatário/Identificação - (CNPJ)
 • "Dados do Consignatário" - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Número do MAWB/AWB associados
-
-Conferências:
 `;
 
 const checklistMicDta = `

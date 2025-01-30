@@ -138,6 +138,8 @@ export const checklistCommercialInvoice = `
 • País de Aquisição - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Local do INCOTERM
+• Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
+• Referência
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Valor do Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
 • Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
@@ -145,7 +147,7 @@ export const checklistCommercialInvoice = `
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • ${descricao_ex_checklist}
-• Nº de Série - Também identificado como "Serial Number", "SN", "NS"
+• Número de Série - (se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S)
 • Modelo
 Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)

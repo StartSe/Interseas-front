@@ -294,8 +294,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   });
 
   onMount(async () => {
-    console.log(chatId());
-    clearChat();
     await fetchAndProcessChatHistory();
     const minimumMessages = 2;
     if (props.flow === Flow.CriticalAnalysis.toString() && messages().length < minimumMessages) {
@@ -415,23 +413,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       allMessages.push({ message: props.errorMessage || errorMessage, type: 'apiMessage' });
       addChatMessage(allMessages);
       return allMessages;
-    });
-  };
-
-  const printCriticalAnalysisData = () => {
-    let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
-
-    for (const [key, value] of Object.entries(jsonResponseCriticalAnalysis())) {
-      criticalAnalysisMessage += generateItemToPrint(key, value as string, false);
-    }
-    setMessages((prevMessages) => {
-      const newMessage = {
-        message: Object.keys(jsonResponseCriticalAnalysis()).length === 0 ? messageUtils.CRITICAL_ANALYSIS_TEMPLATE : criticalAnalysisMessage,
-        type: 'apiMessage',
-      } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
     });
   };
 
@@ -2229,6 +2210,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setChatId(localStorageData.chatId);
       const updatedMessages = processMessages(chatHistory);
       setLocalStorageChatflow(props.chatflowid, localStorageData?.chatId, { chatHistory: updatedMessages });
+      setMessages(updatedMessages);
     }
   };
   const setInitialMessages = (messages: ChatMessage[]) => {

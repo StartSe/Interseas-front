@@ -30,9 +30,9 @@ export const defaultChecklist = `
 • Quantidade de containers
 • Número dos containers - (formato <3 letras>U<7 números>)
 • Número dos lacres dos containers - (seal)
-• Peso Líquido por volume - (NetWeight, N.W, Peso Neto ou P.N per volume)
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Líquido por volume - (Net Weight, N.W, Peso Neto ou P.N per volume)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Peso Taxado
 • Cubagem - (m³/m3)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
@@ -73,16 +73,16 @@ export const conferencesDefault = `
 Conferências:
 • Máquina/Equipamento
 • ${descricao_ex_verificacao}
-• Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)`;
+• Valor total do frete - Fazer a somatória de todos os valores totais de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido total no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (Net Weight, N.W, Peso Neto ou P.N)
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)`;
 
 export const checklistCeMercante = `
 • Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
 • Número do conhecimento de embarque
 • Data de emissão
 • Cubagem - (m³/m3)
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Porto de origem
 • Porto de destino
 • Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
@@ -142,8 +142,8 @@ export const checklistCommercialInvoice = `
 • Referência
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Valor do Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • ${descricao_ex_checklist}
@@ -156,7 +156,7 @@ Conferências:
 • Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
 • Máquina/Equipamento
 • ${descricao_ex_verificacao}
-• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (N.W)`;
+• Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (Net Weight, N.W, Peso Neto ou P.N)`;
 
 export const checklistConhecimentoBL = `
 • Número do documento
@@ -214,7 +214,7 @@ export const checklistConhecimentoHawb = `
 • Aeroporto de Destino
 • Moeda
 • Quantidade de volumes - (crate/box/pallets)
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Peso Taxado
 • Cubagem - (m³/m3)
 • Informação "Wooden Packing" - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
@@ -243,7 +243,7 @@ export const checklistConhecimentoMawb = `
 • Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Aeroporto de Partida
 • Aeroporto de Destino
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Peso Taxado
 • Quantidade de Volumes - (crate/box/pallets)
 • Informação Wooden Packing - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
@@ -274,8 +274,8 @@ export const checklistCRT = `
 • Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Cubagem - (m³/m3)
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Valor da Mercadoria
@@ -301,7 +301,7 @@ export const checklistPackingList = `
 • Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Código/Referência das mercadorias
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
-• Peso Líquido por volume - (NetWeight, N.W, Peso Neto ou P.N per volume)
+• Peso Líquido por volume - (Net Weight, N.W, Peso Neto ou P.N per volume)
 Conferências:
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento;
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
@@ -348,7 +348,7 @@ const checklistCCTAereo = `
 • Aeroporto de destino
 • Recinto aduaneiro de destino
 • Quantidade de volumes - (crate/box/pallets)
-• Peso bruto - (G.W)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • "Presença de peças de madeira maciça" - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
 • Moeda de origem
@@ -384,8 +384,8 @@ const checklistMicDta = `
 • Valor do Frete - Trazer o valor dado ao frete, pode ser encontrado em outros idiomas.
 • Valor do seguro
 • Quantidade e tipo de volumes - (crate/box/pallets)
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Documentos Anexos
 • Informação Wooden Packing - (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
 • Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
@@ -393,11 +393,11 @@ const checklistMicDta = `
 • NCM - (4 dígitos a 8 dígitos de cada NCM)
 • Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
+• Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Assinatura
 
 Conferências:
-• Descrição EX-tarifário `;
+• ${descricao_ex_verificacao} `;
 
 export const checklistLabels = `
 • Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
@@ -472,7 +472,7 @@ export const checklistInstrucaoDeEmbarque = `
 • Local de Desembarque
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Cubagem - (m³/m3)
 • NCMs
 • Descrição das mercadorias`;
@@ -485,7 +485,7 @@ export const checklistCertificadoDeAnalise = `
 • Descrição das mercadorias
 • Números de lote
 • Quantidade - Trazer a soma da quantidade em todas as páginas do documento
-• Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 `;
@@ -511,8 +511,8 @@ export const checklistAnexoVII = `
 • Porto de Descarga
 • Número dos containers
 • Descrição da mercadoria
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como NetWeight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
 • Quantidade e tipo de volumes
 • Carga perigosa - Código Indicador (UN)
 • Carga perigosa - Classe
@@ -540,7 +540,7 @@ export const checklistCotacaoDeFrete = `
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
 • Cubagem - (m³/m3)
-• Peso Bruto - (Procure no documento chaves como GrossWeight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
 • Peso Taxado
 • Custos totais na origem (Moeda e valor) - também encontrado como "Total custos na origem" ou "Custos totais origem"
 • Custos totais de frete (Moeda e valor) - também encontrado como "Total do frete marítimo", "Total do frete aéreo", "Total do frete rodoviário", "Total custos no frete", "Custos totais frete" ou "Frete Total"

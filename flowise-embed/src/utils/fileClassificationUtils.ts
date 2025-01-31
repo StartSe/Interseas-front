@@ -154,7 +154,7 @@ Conferências:
 • Importação direta - Deve retornar true apenas se Adquirente for igual ao Importador, se não, false
 • Importação por Conta e Ordem - Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
-• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)".
 • Máquina/Equipamento
 • ${descricao_ex_verificacao}
 • Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (Net Weight, N.W, Peso Neto ou P.N)`;
@@ -304,7 +304,7 @@ export const checklistPackingList = `
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
 Conferências:
-• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO);
+• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
 • Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;

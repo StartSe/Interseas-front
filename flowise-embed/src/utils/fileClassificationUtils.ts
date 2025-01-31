@@ -4,7 +4,7 @@
 import { FileMapping } from './fileUtils';
 
 const descricao_ex_checklist = `"Descrição EX-tarifário" (Checklist) - Retorne a descrição associada ao padrão do Ex-tarifário, começando imediatamente após o padrão. Se o padrão do Ex-tarifário for encontrado, mas não houver descrição associada, retorne null. Exemplo: Se o documento contiver "EX123 - Equipamento de corte a jato de água para chapas metálicas, com posicionamento CNC, recirculação de água filtrada, capacidade de cortar aços até 50mm de espessura, velocidade de 300mm/min e consumo de energia de 22kW/h, sem geração de calor ou resíduos tóxicos.", retorne "Equipamento de corte a jato de água para chapas metálicas, com posicionamento CNC, recirculação de água filtrada, capacidade de cortar aços até 50mm de espessura, velocidade de 300mm/min e consumo de energia de 22kW/h, sem geração de calor ou resíduos tóxicos.".`;
-const descricao_ex_verificacao = `"Descrição EX-tarifário" (Verificação) - (Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Sempre retorne Sim/null com uma justificativa)`;
+const descricao_ex_verificacao = `"Descrição EX-tarifário" (Verificação) - Procure pelo padrão do EX tarífário(padrão do Ex tarifário é "ex"(Podem ser maiusculas ou minusculas)+[3 dígitos]), exemplo: "Ex 451", "ex 058". Sempre retorne Sim/null com uma justificativa`;
 
 export const defaultChecklist = `
 • Número do documento
@@ -152,8 +152,8 @@ export const checklistCommercialInvoice = `
 Conferências:
 • Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
 • Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false)
-• Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
-• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado (Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
+• Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)
 • Máquina/Equipamento
 • ${descricao_ex_verificacao}
 • Peso Líquido total - Considerando todas as páginas, somar as informações relacionadas a peso líquido no documento usando o calculator ou extrair diretamente a informação caso já se encontre no documento. - (Net Weight, N.W, Peso Neto ou P.N)`;
@@ -303,7 +303,7 @@ export const checklistPackingList = `
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • Peso Líquido por volume - (Net Weight, N.W, Peso Neto ou P.N per volume)
 Conferências:
-• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento;
+• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO);
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
 • Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;
@@ -336,8 +336,8 @@ export const ChecklistProformaInvoice = `
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
 
-• Multiplicação de valor unitário dos itens comercializados -  (Retornar as mercadorias no formato: valor unitário x quantidade comercializada = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total da mercadoria no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total da mercadoria no documento) Inclua "<br>" para separar as mercadorias)
-• Valor Total das Mercadorias - (Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total mercadoria 1 + total mercadoria 2 + ... + total mercadoria n = resultado ()(Dentro de () retorne VALOR TOTAL DE ACORDO se o resultado for igual ao valor total informado no documento e VALOR TOTAL NÃO ESTÁ DE ACORDO se o resultado for diferente do valor total informado no documento))
+• Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)
 • Máquina/Equipamento`;
 
 const checklistCCTAereo = `

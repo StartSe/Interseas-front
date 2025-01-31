@@ -12,42 +12,42 @@ export const defaultChecklist = `
 • Data da emissão
 • Assinatura
 • Dados do Remetente - Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Exportador (nome, endereço, NIF)
+• Dados do Exportador nome, endereço, NIF
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço, CNPJ, CEP)
 • Dados do Adquirente - Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Dados do Consignatário - (se houver)
-• Dados do Destinatário - (razão social, endereço, CNPJ e CEP)
+• Dados do Consignatário - se houver
+• Dados do Destinatário - razão social, endereço, CNPJ e CEP
 • País de origem
 • País de Procedência
 • País de Aquisição
 • Tipo de Frete - pode ser 'Prepaid', 'Collect' ou 'Prepaid/Collect' quando houver os dois. Sempre verifique se há os dois tipos de frete.
 • Moeda do Frete
 • Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Componentes do frete - (Prepaid/Collect; moeda; valor)
-• Forma/Condições de Pagamento - (true/false)
-• Frete por item de carga - (somatório)
-• Valor do Seguro - (se prepaid)
+• Componentes do frete - Prepaid/Collect; moeda; valor
+• Forma/Condições de Pagamento - true/false
+• Frete por item de carga - somatório 
+• Valor do Seguro - se prepaid
 • Quantidade de containers
-• Número dos containers - (formato <3 letras>U<7 números>)
-• Número dos lacres dos containers - (seal)
-• Peso Líquido por volume - (Net Weight, N.W, Peso Neto ou P.N per volume)
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Número dos containers - formato <3 letras>U<7 números>
+• Número dos lacres dos containers - seal
+• Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Peso Taxado
-• Cubagem - (m³/m3)
+• Cubagem - m³/m3
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Dimensão estimada dos volumes - (volume x altura x largura)
-• Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
-• Informação Wooden Packing - (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
-• NCM - (4 a 8 dígitos de cada NCM)
+• Dimensão estimada dos volumes - volume x altura x largura
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
+• Informação Wooden Packing - Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
+• NCM - 4 a 8 dígitos de cada NCM
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
 • Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
-• Quantidade - (formato quantidade x mercadoria)
+• Quantidade - formato quantidade x mercadoria
 • Unidade Comercializada
-• Descrição resumida das mercadorias - (todos os nomes de produtos diferentes)
+• Descrição resumida das mercadorias - todos os nomes de produtos diferentes
 • Referência à Ordem de Compra (OC) ou Fatura Comercial (nº) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", "OC", "PO", "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Marca e Numeração - (Referência dos volumes)
+• Marca e Numeração - Referência dos volumes
 • Porto de Embarque
 • Porto de Desembarque
 • Local de Recebimento
@@ -60,9 +60,9 @@ export const defaultChecklist = `
 • ${descricao_ex_checklist}
 Conferências:
 • Máquina/Equipamento
-• Marca - (se mercadoria é máquina ou equipamento)
-• Modelo - (se mercadoria é máquina ou equipamento)
-• Possui Ex-tarifário - (Sim/Não, sempre justificando)
+• Marca - se mercadoria é máquina ou equipamento
+• Modelo - se mercadoria é máquina ou equipamento
+• Possui Ex-tarifário - Sim/Não, sempre justificando
 • Multiplicação de valor unitário = quantidade comercializada de cada item
 • Somatório dos itens = valor total informado
 • Se INCOTERM de responsabilidade do exportador: Tipo de frete = "Prepaid"
@@ -81,8 +81,8 @@ export const checklistCeMercante = `
 • Navio - Campo "Código da Embarcação" em "Consulta de conhecimento"
 • Número do conhecimento de embarque
 • Data de emissão
-• Cubagem - (m³/m3)
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Cubagem - m³/m3
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Porto de origem
 • Porto de destino
 • Dados do Consignatário - também chamado de Consignee, Importador, Importer, Ship To  (Razão social, endereço, CNPJ, CEP)
@@ -97,7 +97,7 @@ export const checklistCeMercante = `
 • Dados dos containeres - Trazer todas as informações referentes à Relação de itens de carga mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.`;
 
 export const checklistCertificadoOrigem = `
-• Dados do Exportador - (nome, endereço, NIF)
+• Dados do Exportador - nome, endereço, NIF
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Consignatário
 • Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
@@ -106,7 +106,8 @@ export const checklistCertificadoOrigem = `
 • Valor Total das mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • Quantidade
 • NCM
-• NALADI/NALADISA - (pode ter de 8 a 12 dígitos, **Não confundir com NCM**) `;
+• NALADI/NALADISA - código de 8 a 12 dígitos, chamado de Código NALADI ou Código NALADISA, **Não confundir com NCM**
+ `;
 
 export const checklistCommercialInvoice = `
 • Número do documento
@@ -115,13 +116,13 @@ export const checklistCommercialInvoice = `
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP); Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
-• Dados do Exportador - (nome, endereço, NIF)
-• Dados do Fabricante - (nome, endereço, NIF)
+• Dados do Exportador - nome, endereço, NIF
+• Dados do Fabricante - nome, endereço, NIF
 • Assinatura
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne false)
-• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
-• Quantidade - (trazer no formato quantidade x mercadoria)
+• Quantidade - trazer no formato quantidade x mercadoria
 • Unidade Comercializada
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
 • Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
@@ -142,16 +143,16 @@ export const checklistCommercialInvoice = `
 • Referência
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Valor do Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
 • Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
 • ${descricao_ex_checklist}
-• Número de Série - (se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S)
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S
 • Modelo
 Conferências:
-• Importação direta - (Deve retornar true apenas se Adquirente for igual ao Importador, se não, false)
-• Importação por Conta e Ordem - (Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false)
+• Importação direta - Deve retornar true apenas se Adquirente for igual ao Importador, se não, false
+• Importação por Conta e Ordem - Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
 • Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)
 • Máquina/Equipamento
@@ -171,17 +172,17 @@ export const checklistConhecimentoBL = `
 • Local de Destino Final
 • Tipo de carga - Identificar se FCL, LCL, FCL/LCL, Breakbulk, Bulk (granel);
 • Quantidade e tipos de containers
-• Números dos containers - (no formato <3 letras>U<7 números>)
-• Números dos lacres dos containers - (seal)
+• Números dos containers - no formato <3 letras>U<7 números>
+• Números dos lacres dos containers - seal
 • Peso Bruto por container
 • Cubagem por container
 • Peso Bruto - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (G.W)
 • Cubagem - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
-• Quantidade e tipo de volumes - (crate/box/pallets)
+• Quantidade e tipo de volumes - crate/box/pallets
 • Peso bruto por tipo de volume
 • Cubagem por tipo de volume
-• Informação Wooden Packing - (Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Informação Wooden Packing - Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A
+• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • NCM - Pode ser o HS Code se não encontrar o NCM
@@ -193,7 +194,7 @@ export const checklistConhecimentoBL = `
 • Dados dos containeres - Trazer todas as informações referentes à containeres mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
 • ${descricao_ex_checklist}
 • Assinatura
-• Número de Série - (se mercadoria é máquina ou equipamento, buscar como "Serial Number", SN, NS, S/N, N/S)
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como "Serial Number", SN, NS, S/N, N/S
 Conferências:
 Dados de compliance:
 • Número do Conhecimento de Embarque`;
@@ -205,23 +206,23 @@ export const checklistConhecimentoHawb = `
 • Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
 • País do Shipper
 • Dados do Consignee - também chamado de Importador, Importer, Ship To (razão social, endereço e CNPJ, CEP)
-• CNPJ do Consignee - (Consignatário/Identificação)
+• CNPJ do Consignee - Consignatário/Identificação
 • "To order of"
-• Notify - (razão social, endereço, CNPJ e CEP)
+• Notify - razão social, endereço, CNPJ e CEP
 • Frete - Todas as informações referentes a frete. Trazer Label; Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Forma de pagamento do frete
 • Aeroporto de Partida
 • Aeroporto de Destino
 • Moeda
-• Quantidade de volumes - (crate/box/pallets)
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Quantidade de volumes - crate/box/pallets
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Taxado
-• Cubagem - (m³/m3)
-• Informação "Wooden Packing" - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
-• Final Destination - (Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination)
-• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Cubagem - m³/m3
+• Informação "Wooden Packing" - Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A
+• Final Destination - Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination
+• Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • NCM/HS Code
-• Nº de Série
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S
 • ${descricao_ex_checklist}
 • Frete por peso - também chamado de "Weight Charge"
 
@@ -232,8 +233,8 @@ Conferências:
 • Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados. Separe os valores por prepaid e collect e some-os com a ferramenta calculator
 
 Dados de Compliance:
-• Description of Goods - (Descrição resumida e completa das mercadorias)
-• Forma de pagamento - (Collect/Prepaid, por peso/valor ou outros encargos)
+• Description of Goods - Descrição resumida e completa das mercadorias
+• Forma de pagamento - Collect/Prepaid, por peso/valor ou outros encargos
 • Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados. Separe os valores por prepaid e collect e some-os com a ferramenta calculator
 `;
 
@@ -243,15 +244,15 @@ export const checklistConhecimentoMawb = `
 • Dados do Notify - também chamado de Adquirente, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Aeroporto de Partida
 • Aeroporto de Destino
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Taxado
-• Quantidade de Volumes - (crate/box/pallets)
-• Informação Wooden Packing - (Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A)
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Quantidade de Volumes - crate/box/pallets
+• Informação Wooden Packing - Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A
+• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 
 Se mercadoria é máquina ou equipamento
-• Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
 • Se INCOTERM de responsabilidade do exportador:
 Tipo de frete = "Prepaid"
 • Se INCOTERM de responsabilidade do importador:
@@ -261,22 +262,22 @@ export const checklistCRT = `
 • Número do Documento
 • Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
 • Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Destinatário - (razão social, endereço, CNPJ e CEP)
+• Dados do Destinatário - razão social, endereço, CNPJ e CEP
 • Notificar
 • Nome e endereço do transportador
 • Local de embarque
 • Local de Destino Final
-• Quantidade e tipo de volumes - (crate/box/pallets)
-• Informação Wooden Packing - (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Quantidade e tipo de volumes - crate/box/pallets
+• Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
+• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
-• NCM - (4 dígitos a 8 dígitos de cada NCM)
-• Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
+• NCM - 4 dígitos a 8 dígitos de cada NCM
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
-• Cubagem - (m³/m3)
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
+• Cubagem - m³/m3
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Valor da Mercadoria
 • Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
@@ -297,11 +298,11 @@ export const checklistPackingList = `
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Dados do Exportador - (nome, endereço, NIF)
-• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Dados do Exportador - nome, endereço, NIF
+• Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
-• Peso Líquido por volume - (Net Weight, N.W, Peso Neto ou P.N per volume)
+• Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
 Conferências:
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO);
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
@@ -315,24 +316,24 @@ export const ChecklistProformaInvoice = `
 • Assinatura
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP) - Em casos em que não está esplicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Dados do Exportador - (nome, endereço, NIF)
+• Dados do Exportador - nome, endereço, NIF
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • País de origem
-• Descrição das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
-• Quantidade - (trazer no formato quantidade x mercadoria)
+• Quantidade - trazer no formato quantidade x mercadoria
 • Unidade comercializada
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
 • Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
-• Valor Total das Mercadorias - (Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento)
+• Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • NCM/HS Code
 • Moeda de pagamento
 • Forma/Condições de Pagamento
-• Dados bancários do exportador - (true/false)
+• Dados bancários do exportador - true/false
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Local do INCOTERM
 • Peso estimado
-• Quantidade de volumes estimada - (crate/box/pallets; Se não encontrar, **apenas** retorne false)
+• Quantidade de volumes estimada - crate/box/pallets; Se não encontrar, **apenas** retorne false
 • Dimensão estimada dos volumes - (referente a crate/box/pallets) (volume x altura x largura)
 Conferências:
 
@@ -347,18 +348,18 @@ const checklistCCTAereo = `
 • Aeroporto de partida
 • Aeroporto de destino
 • Recinto aduaneiro de destino
-• Quantidade de volumes - (crate/box/pallets)
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Quantidade de volumes - crate/box/pallets
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • "Presença de peças de madeira maciça" - Se "Wooden Packing : not applicable" no HAWB - Não; Se "Wooden Packing : Treated and Certified" no HAWB - Sim; Se "Wooden Packing : Not-Treated and Not-Certified" - Sim; Se "Wooden Packing : Processed" - Sim.
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Moeda de origem
-• Frete por item de carga - (somatório)
-• Forma de pagamento - (por peso/valor)
-• Forma de pagamento - (outros encargos)
+• Frete por item de carga - somatório
+• Forma de pagamento - por peso/valor
+• Forma de pagamento - outros encargos
 • Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
 • "Dados do Embarcador estrangeiro" - também chamado de exportador (nome, endereço, CNPJ, CEP)
 • País do embarcador estrangeiro
-• Consignatário/Identificação - (CNPJ)
+• Consignatário/Identificação - CNPJ
 • "Dados do Consignatário" - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Número do MAWB/AWB associados
 `;
@@ -383,15 +384,15 @@ const checklistMicDta = `
 • Valor da mercadoria - FOT
 • Valor do Frete - Trazer o valor dado ao frete, pode ser encontrado em outros idiomas.
 • Valor do seguro
-• Quantidade e tipo de volumes - (crate/box/pallets)
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Quantidade e tipo de volumes - crate/box/pallets
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Documentos Anexos
-• Informação Wooden Packing - (Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed)
-• Descrição resumida das mercadorias - (Trazer todos os nomes de produtos diferentes na descrição)
+• Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
+• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
-• NCM - (4 dígitos a 8 dígitos de cada NCM)
-• Número de Série - (se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S)
+• NCM - 4 dígitos a 8 dígitos de cada NCM
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Assinatura
@@ -400,48 +401,48 @@ Conferências:
 • ${descricao_ex_verificacao} `;
 
 export const checklistLabels = `
-• Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
-• Produzido e engarrafado por - (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
+• Denominação - VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE
+• Produzido e engarrafado por - NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver
 • Dados do exportador - (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
-• Dados do importador - (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
+• Dados do importador - NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA
 • Distribuidor - (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-• Ingredientes e aditivos alimentares - (Exemplo: "Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)")
-• Prazo de validade e conservação do produto - (Exemplo: "Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal")
-• Conteúdo líquido - (A indicação quantitativa pode ser precedida das declarações "Peso líquido" ou "Conteúdo líquido")
-• Graduação alcoólica - (Exemplo: "13,5% Vol.")
-• Safra - (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
-• País de origem - (Informar o país de origem)
+• Ingredientes e aditivos alimentares - Exemplo: "Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)"
+• Prazo de validade e conservação do produto - Exemplo: "Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal"
+• Conteúdo líquido - A indicação quantitativa pode ser precedida das declarações "Peso líquido" ou "Conteúdo líquido"
+• Graduação alcoólica - Exemplo: "13,5% Vol."
+• Safra - (opcional) Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada
+• País de origem - Informar o país de origem
 • EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
 • "NÃO CONTÉM GLÚTEN"
 • "PROIBIDA A VENDA PARA MENORES DE 18 ANOS"
-• Lote - (Exemplo: "Lote: XXXXX. Lote: vide garrafa")
-• Marca - (Incluir a marca do produto)
+• Lote - Exemplo: "Lote: XXXXX. Lote: vide garrafa"
+• Marca - Incluir a marca do produto
 `;
 
 export const checklistAnaliseDeVinhos = `
-• Usuário deve informar qual é o tipo de vinho - (não consta no certificado de análise)
-• Número de lote - ("Lote: XXXX”, "Lote No. XXXX", "L-XXXX")
-• Descrição do produto - (pode variar, não exatamente igual à proforma)
-• Embalagem - (Exemplo: garrafa 750ml; botella 750 c.c.)
-• Origem Geográfica - ("Denominação de Origem")
+• Usuário deve informar qual é o tipo de vinho - não consta no certificado de análise
+• Número de lote - "Lote: XXXX”, "Lote No. XXXX", "L-XXXX"
+• Descrição do produto - pode variar, não exatamente igual à proforma
+• Embalagem - Exemplo: garrafa 750ml; botella 750 c.c.
+• Origem Geográfica - "Denominação de Origem"
 `;
 export const checklistRotulosEContrarrotulosVinhos = `
-• Denominação - (VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE)
-• Produzido e engarrafado por - (NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver)
+• Denominação - VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE
+• Produzido e engarrafado por - NOME, ENDEREÇO, REGISTRO JUNTO AO MAPA, se houver
 • Dados do Exportador - (opcional) (NOME / ENDEREÇO / REGISTRO JUNTO AO MAPA, se houver)
-• Dados do Importador - (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-• Distribuidor - (opcional) (NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA)
-• Ingredientes e aditivos alimentares - (Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”)
-• Prazo de validade e conservação do produto - (Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”)
-• Conteúdo líquido - (A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”)
-• Graduação alcoólica - (Exemplo: “13,5% Vol.”)
-• Safra - (opcional) (Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada)
-• País de origem - (Informar o país de origem)
+• Dados do Importador - NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA
+• Distribuidor - (opcional) NOME / ENDEREÇO COMPLETO / CNPJ / Registro no MAPA
+• Ingredientes e aditivos alimentares - Exemplo: “Ingredientes: elaborado com uvas viníferas, conservador anidrido sulfuroso (INS 220)”
+• Prazo de validade e conservação do produto - Exemplo: “Prazo de validade indeterminado desde que conservado em local seco e ao abrigo da luz, preferencialmente na posição horizontal”
+• Conteúdo líquido - A indicação quantitativa pode ser precedida das declarações “Peso líquido” ou “Conteúdo líquido”
+• Graduação alcoólica - Exemplo: “13,5% Vol.”
+• Safra - (opcional) Permitida a indicação da safra para vinhos feitos com uvas de 85% da safra indicada
+• País de origem - Informar o país de origem
 • EVITE O CONSUMO EXCESSIVO DE ÁLCOOL
 • “NÃO CONTÉM GLÚTEN”
 • “PROIBIDA A VENDA PARA MENORES DE 18 ANOS”
-• Lote - (Exemplo: “Lote: XXXXX. Lote: vide garrafa”)
-• Marca - (Incluir a marca do produto)
+• Lote - Exemplo: “Lote: XXXXX. Lote: vide garrafa”
+• Marca - Incluir a marca do produto
 • Símbolo de Grávida com o “r” de proibido
 • Símbolo de retorno/reciclável`;
 
@@ -449,8 +450,8 @@ export const checklistOrdemDeCompra = `
 • Nome do documento
 • Data do documento
 • Número da ordem da compra
-• Dados do emissor do documento (Adquirente/Notify/Destinatário) - (Razão social, endereço e CNPJ)
-• Dados do Importador - (Também chamado de "Importação por conta e ordem" ou "importação por encomenda", trazer os seguintes detalhes: Razão social, endereço e CNPJ)
+• Dados do emissor do documento Adquirente/Notify/Destinatário) - (Razão social, endereço e CNPJ
+• Dados do Importador - Também chamado de "Importação por conta e ordem" ou "importação por encomenda", trazer os seguintes detalhes: Razão social, endereço e CNPJ
 • Dados do Exportador/Fornecedor - (Razão social, endereço e CNPJ) - Buscar também por "importação por conta e ordem" ou "importação por encomenda".
 • Descrição das mercadorias
 • Quantidade
@@ -464,37 +465,37 @@ export const checklistOrdemDeCompra = `
 • Local do INCOTERM`;
 
 export const checklistInstrucaoDeEmbarque = `
-• Dados do Exportador/Shipper - (Razão social, endereço e CNPJ)
-• Dados do Consignatário - (Razão social, endereço e CNPJ)
-• Dados do Notify/Destinatário - (Razão social, endereço e CNPJ)
+• Dados do Exportador/Shipper - Razão social, endereço e CNPJ
+• Dados do Consignatário - Razão social, endereço e CNPJ
+• Dados do Notify/Destinatário - Razão social, endereço e CNPJ
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • Local de Embarque
 • Local de Desembarque
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Cubagem - (m³/m3)
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Cubagem - m³/m3
 • NCMs
 • Descrição das mercadorias`;
 
 export const checklistCertificadoDeAnalise = `
-• Dados do Shipper/Exportador - (Razão social, endereço e CNPJ)
-• Dados do Importador/Consignatário - (Razão social, endereço e CNPJ)
-• Dados do Adquirente/Encomendante/Destinatário - (Razão social, endereço e CNPJ)
+• Dados do Shipper/Exportador - Razão social, endereço e CNPJ
+• Dados do Importador/Consignatário - Razão social, endereço e CNPJ
+• Dados do Adquirente/Encomendante/Destinatário - Razão social, endereço e CNPJ
 • Código/Referência da mercadoria
 • Descrição das mercadorias
 • Números de lote
 • Quantidade - Trazer a soma da quantidade em todas as páginas do documento
-• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 `;
 
 export const checklistCertificadoFitossanitario = `
 • Número
-• Dados do Exportador - (Razão social, endereço e CNPJ)
-• Dados do Consignatário/Importador - (Razão social, endereço e CNPJ)
-• "To Plant Protection Organization of" - (País de destino)
+• Dados do Exportador - Razão social, endereço e CNPJ
+• Dados do Consignatário/Importador - Razão social, endereço e CNPJ
+• "To Plant Protection Organization of" - País de destino
 • Local de origem
 • Descrição das mercadorias
 • Quantidade
@@ -511,8 +512,8 @@ export const checklistAnexoVII = `
 • Porto de Descarga
 • Número dos containers
 • Descrição da mercadoria
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
-• Peso Liquido – (Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso)
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Quantidade e tipo de volumes
 • Carga perigosa - Código Indicador (UN)
 • Carga perigosa - Classe
@@ -539,8 +540,8 @@ export const checklistCotacaoDeFrete = `
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
-• Cubagem - (m³/m3)
-• Peso Bruto - (Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso)
+• Cubagem - m³/m3
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Taxado
 • Custos totais na origem (Moeda e valor) - também encontrado como "Total custos na origem" ou "Custos totais origem"
 • Custos totais de frete (Moeda e valor) - também encontrado como "Total do frete marítimo", "Total do frete aéreo", "Total do frete rodoviário", "Total custos no frete", "Custos totais frete" ou "Frete Total"

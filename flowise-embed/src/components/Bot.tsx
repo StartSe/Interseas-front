@@ -900,12 +900,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    setMessages((prevMessages) => {
-      const newMessage = { message: messageUtils.NCM_INPUT_INSTRUCTIONS, type: 'apiMessage' } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
-    });
     setLoading(false);
   };
 
@@ -1167,6 +1161,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
+      setLocalStorageChatflow(props.chatflowid, chatId());
       setUploadedFiles([]);
       window.location.reload();
 

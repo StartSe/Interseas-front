@@ -53,7 +53,7 @@ export const Menu = (props: MenuProps) => {
 
   createEffect(async () => {
     if (open()) {
-      fetchChatIds();
+      await getChatHistory();
     }
     if (props.currentFlow !== currentFlow()) {
       setCurrentFLow(props.currentFlow);

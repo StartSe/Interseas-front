@@ -294,6 +294,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   });
 
   onMount(async () => {
+    console.log(chatId());
+    clearChat();
     await fetchAndProcessChatHistory();
     const minimumMessages = 2;
     if (props.flow === Flow.CriticalAnalysis.toString() && messages().length < minimumMessages) {
@@ -2229,9 +2231,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setLocalStorageChatflow(props.chatflowid, localStorageData?.chatId, { chatHistory: updatedMessages });
     }
   };
+  const setInitialMessages = (messages: ChatMessage[]) => {
+    messages.push({ content: props.welcomeMessage || '', role: 'apiMessage' } as ChatMessage);
+    switch (props.flow) {
+      case Flow.CriticalAnalysis.toString():
+        messages.push({ content: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, role: 'apiMessage' } as ChatMessage);
+        break;
+      case Flow.taxClassification.toString():
+        messages.push({ content: messageUtils.NCM_DISCOVER_TEMPLATE, role: 'apiMessage' } as ChatMessage);
+        break;
+    }
+    return messages;
+  };
 
   const processMessages = (historyMessages: ChatMessage[]) => {
-    const visibleMessages: ChatMessage[] = [];
+    let visibleMessages: ChatMessage[] = [];
+    visibleMessages = setInitialMessages(visibleMessages);
+
     let currentFileMap: FileMapping | null = null;
 
     for (const message of historyMessages) {

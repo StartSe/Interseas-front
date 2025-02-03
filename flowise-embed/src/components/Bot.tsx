@@ -416,23 +416,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
-  const printCriticalAnalysisData = () => {
-    let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
-
-    for (const [key, value] of Object.entries(jsonResponseCriticalAnalysis())) {
-      criticalAnalysisMessage += generateItemToPrint(key, value as string, false);
-    }
-    setMessages((prevMessages) => {
-      const newMessage = {
-        message: Object.keys(jsonResponseCriticalAnalysis()).length === 0 ? messageUtils.CRITICAL_ANALYSIS_TEMPLATE : criticalAnalysisMessage,
-        type: 'apiMessage',
-      } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
-    });
-  };
-
   const updateLastMessageSourceDocuments = (sourceDocuments: any) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
@@ -917,12 +900,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       addChatMessage(updated);
       return [...updated];
     });
-    setMessages((prevMessages) => {
-      const newMessage = { message: messageUtils.NCM_INPUT_INSTRUCTIONS, type: 'apiMessage' } as MessageType;
-      const updated = [...prevMessages, newMessage];
-      addChatMessage(updated);
-      return [...updated];
-    });
     setLoading(false);
   };
 
@@ -1184,6 +1161,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
+      setLocalStorageChatflow(props.chatflowid, newChatId);
       setUploadedFiles([]);
       window.location.reload();
 
@@ -2229,11 +2207,25 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       setChatId(localStorageData.chatId);
       const updatedMessages = processMessages(chatHistory);
       setLocalStorageChatflow(props.chatflowid, localStorageData?.chatId, { chatHistory: updatedMessages });
+      setMessages(updatedMessages);
     }
+  };
+  const setInitialMessages = (messages: ChatMessage[]) => {
+    messages.push({ content: props.welcomeMessage || '', role: 'apiMessage' } as ChatMessage);
+    switch (props.flow) {
+      case Flow.CriticalAnalysis.toString():
+        messages.push({ content: messageUtils.CRITICAL_ANALYSIS_TEMPLATE, role: 'apiMessage' } as ChatMessage);
+        break;
+      case Flow.taxClassification.toString():
+        messages.push({ content: messageUtils.NCM_DISCOVER_TEMPLATE, role: 'apiMessage' } as ChatMessage);
+        break;
+    }
+    return messages;
   };
 
   const processMessages = (historyMessages: ChatMessage[]) => {
-    const visibleMessages: ChatMessage[] = [];
+    const visibleMessages = setInitialMessages([]);
+
     let currentFileMap: FileMapping | null = null;
 
     for (const message of historyMessages) {

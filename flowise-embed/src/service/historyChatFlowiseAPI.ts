@@ -61,6 +61,11 @@ export interface ChatMessage {
   disabled?: boolean;
 }
 
+export enum ChatRole {
+  apiMessage = 'apiMessage',
+  userMessage = 'userMessage',
+}
+
 export class historyChatFlowiseAPI {
   async getFlowiseChatHistory(apiHost: string, chatFlowId: string, chatHistoryId: string) {
     const response = await fetch(`${apiHost}/api/v1/chatmessage/${chatFlowId}?chatId=${chatHistoryId}`, {
@@ -72,5 +77,31 @@ export class historyChatFlowiseAPI {
     const chatData: ChatMessage[] = await response.json();
     return chatData;
   }
+
+  async setFlowiseChatHistory(apiHost: string, chatFlowId: string, chatHistoryId: string, data: string, role: string) {
+    try {
+      const body = {
+        chatflowid: chatFlowId,
+        chatId: chatHistoryId,
+        role: role,
+        content: data,
+      };
+
+      const response = await fetch(`${apiHost}/api/v1/chatmessage/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${constants.flowiseJwtToken}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      await response.json();
+    } catch (error) {
+      console.error('Error setting chat history:', error);
+      throw error;
+    }
+  }
 }
+
 export default historyChatFlowiseAPI;

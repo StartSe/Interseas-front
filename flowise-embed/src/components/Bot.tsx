@@ -71,7 +71,7 @@ import { CriticalAnalysisPrefixes, verifyNcmExistence } from '@/utils/criticalAn
 import { Flow } from '@/features/bubble/types';
 import { locationValues, normalizeLocationNames, removeAccents } from '@/utils/locationUtils';
 import DocumentsDBService from '@/service/documentsDBService';
-import historyChatFlowiseAPI, { ChatMessage } from '@/service/historyChatFlowiseAPI';
+import historyChatFlowiseAPI, { ChatMessage, ChatRole } from '@/service/historyChatFlowiseAPI';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -1996,6 +1996,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     return checklistMessage;
   };
 
+  const saveCacheExtractionMessages = async (fileName: any, fileResults: any) => {
+    if (props.apiHost && props.chatflowid && chatId()) {
+      await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost, props.chatflowid, chatId(), fileName, ChatRole.userMessage);
+      await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost, props.chatflowid, chatId(), fileResults, ChatRole.apiMessage);
+    }
+  };
+
   const showChecklistMessage = (jsonData: any, checklistMessage: string) => {
     setMessages((prevMessages) => {
       const newMessage = { message: checklistMessage, type: 'apiMessage' } as MessageType;
@@ -2066,6 +2073,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
 
     if (fileProcessed && fileProcessed != 'null') {
+      await saveCacheExtractionMessages(file.name, fileProcessed);
       let processedDocumentJson = JSON.parse(fileProcessed);
       processedDocumentJson = sanitizeJson(processedDocumentJson);
       structureAndSaveMessages(processedDocumentJson, fileMap);
@@ -2170,6 +2178,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const fileProcessed = await documentService.getProcessedDocumentData(fileMap, props.flow, chatId());
 
     if (fileProcessed && fileProcessed != 'null') {
+      await saveCacheExtractionMessages(file.name, fileProcessed);
       let processedDocumentJson = JSON.parse(fileProcessed);
       processedDocumentJson = sanitizeJson(processedDocumentJson);
       await processCriticalAnalysisUpdate(processedDocumentJson, true);

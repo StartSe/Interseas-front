@@ -1161,7 +1161,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         : uuidv4();
 
       setChatId(newChatId);
-      setLocalStorageChatflow(props.chatflowid, chatId());
+      setLocalStorageChatflow(props.chatflowid, newChatId);
       setUploadedFiles([]);
       window.location.reload();
 
@@ -2222,8 +2222,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const processMessages = (historyMessages: ChatMessage[]) => {
-    let visibleMessages: ChatMessage[] = [];
-    visibleMessages = setInitialMessages(visibleMessages);
+    const visibleMessages = setInitialMessages([]);
 
     let currentFileMap: FileMapping | null = null;
 

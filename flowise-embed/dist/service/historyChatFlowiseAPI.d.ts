@@ -52,8 +52,13 @@ export interface ChatMessage {
     leadEmail: string | null;
     disabled?: boolean;
 }
+export declare enum ChatRole {
+    apiMessage = "apiMessage",
+    userMessage = "userMessage"
+}
 export declare class historyChatFlowiseAPI {
     getFlowiseChatHistory(apiHost: string, chatFlowId: string, chatHistoryId: string): Promise<ChatMessage[]>;
+    setFlowiseChatHistory(apiHost: string, chatFlowId: string, chatHistoryId: string, data: string, role: string): Promise<void>;
 }
 export default historyChatFlowiseAPI;
 //# sourceMappingURL=historyChatFlowiseAPI.d.ts.map

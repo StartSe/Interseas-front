@@ -165,7 +165,7 @@ export const Menu = (props: MenuProps) => {
     }
   };
 
-  const formatDateChat = (item: ChatItem) => {
+  const formatChatName = (item: ChatItem) => {
     if (item.chatName) {
       return item.chatName;
     } else {
@@ -292,13 +292,13 @@ export const Menu = (props: MenuProps) => {
                                               type="text"
                                               name="chat-name"
                                               id={item.id}
-                                              value={formatDateChat(item)}
+                                              value={formatChatName(item)}
                                               onInput={handleInputChange}
                                             />
                                           </form>
                                         ) : (
                                           <>
-                                            <span onClick={() => handleItemClick(item.id)}>{formatDateChat(item)}</span>
+                                            <span onClick={() => handleItemClick(item.id)}>{formatChatName(item)}</span>
                                             <button
                                               class="menu-history-button"
                                               ref={(element) => (buttonRef = element)}
@@ -318,7 +318,7 @@ export const Menu = (props: MenuProps) => {
                                                 </button>
                                               </div>
                                               <div class="menu-history-option-delete">
-                                                <button onClick={() => handleOpenDeleteModal(item.id, formatDateChat(item))}>
+                                                <button onClick={() => handleOpenDeleteModal(item.id, formatChatName(item))}>
                                                   <TrashIcon color="#e41d1d" />
                                                   Excluir chat
                                                 </button>

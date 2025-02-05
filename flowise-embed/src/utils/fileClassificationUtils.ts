@@ -25,7 +25,7 @@ export const defaultChecklist = `
 • Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Componentes do frete - Prepaid/Collect; moeda; valor
 • Forma/Condições de Pagamento - true/false
-• Frete por item de carga - somatório 
+• Frete por item de carga - somatório
 • Valor do Seguro - se prepaid
 • Quantidade de containers
 • Número dos containers - formato <3 letras>U<7 números>
@@ -271,7 +271,7 @@ export const checklistCRT = `
 • Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
 • Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
-• NCM - 4 dígitos a 8 dígitos de cada NCM
+• NCM - 8 dígitos de cada NCM
 • Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
@@ -290,8 +290,7 @@ export const checklistCRT = `
 • Carimbo e assinatura
 Conferências:
 • Documentos Anexos/D.E. Estrangeira - procure como "destinácion" ou "permiso de exportacion" e inicia com 2 ou 4 caracteres ref. ao ano (24 ou 2024, por exemplo), traga os dados.
-• Máquina/Equipamento
-• Descrição Ex-tarifário`;
+• Máquina/Equipamento`;
 
 export const checklistPackingList = `
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
@@ -396,9 +395,7 @@ const checklistMicDta = `
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Assinatura
-
-Conferências:
-• ${descricao_ex_verificacao} `;
+`;
 
 export const checklistLabels = `
 • Denominação - VINHO TIPO + COR + AÇÚCAR, nesta ordem, exceto para VINHO MOSCATO ESPUMANTE ou VINHO MOSCATEL ESPUMANTE

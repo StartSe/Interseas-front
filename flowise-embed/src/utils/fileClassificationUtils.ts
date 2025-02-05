@@ -476,9 +476,9 @@ export const checklistInstrucaoDeEmbarque = `
 • Descrição das mercadorias`;
 
 export const checklistCertificadoDeAnalise = `
-• Dados do Shipper/Exportador - Razão social, endereço e CNPJ
-• Dados do Importador/Consignatário - Razão social, endereço e CNPJ
-• Dados do Adquirente/Encomendante/Destinatário - Razão social, endereço e CNPJ
+• Dados do Shipper/Exportador - Caso não encontre nenhum valor associado aos nomes específicos, considere como "não encontrado". Trazer razão social, endereço e CNPJ
+• Dados do Importador/Consignatário - Também chamado de "ship-to", "ship-to address". Caso não encontre nenhum valor associado aos nomes específicos, considere como "não encontrado". Trazer razão social, endereço e CNPJ
+• Dados do Adquirente/Encomendante/Destinatário - Caso não encontre nenhum valor associado aos nomes específicos, considere como "não encontrado". Trazer razão social, endereço e CNPJ
 • Código/Referência da mercadoria
 • Descrição das mercadorias
 • Números de lote

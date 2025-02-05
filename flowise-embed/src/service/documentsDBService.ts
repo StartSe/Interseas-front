@@ -20,7 +20,7 @@ interface DocumentData {
 
 class DocumentsDBService {
   private getN8NUrl(flowId: string): string {
-    const envParam = isDevEnv() ? 'Dev' : 'Prod';
+    const envParam = isDevEnv() ? 'Dev' : '';
     return `${constants.n8nDomain}/webhook/${flowId}${envParam}`;
   }
 

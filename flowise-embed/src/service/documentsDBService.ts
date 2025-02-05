@@ -19,14 +19,14 @@ interface DocumentData {
 }
 
 class DocumentsDBService {
-  private getN8NUrl(flowId: string): string {
+  private getN8nWebhookUrl(flowId: string): string {
     const envParam = isDevEnv() ? 'Dev' : '';
     return `${constants.n8nDomain}/webhook/${flowId}${envParam}`;
   }
 
   private async sendDataToN8n(tableName: string, data: any): Promise<void> {
     try {
-      await fetch(this.getN8NUrl(constants.n8nFlowSendDataToSupabase), {
+      await fetch(this.getN8nWebhookUrl(constants.n8nFlowSendDataToSupabase), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ class DocumentsDBService {
 
   private async getDocumentFromDBByHash(hash: any, agent_flow: Flow): Promise<any> {
     try {
-      const response = await fetch(this.getN8NUrl(constants.n8nFlowGetDataFromSupabase), {
+      const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowGetDataFromSupabase), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ class DocumentsDBService {
 
   private async fetchChatDocumentRelation(chatId: any, documentId: any): Promise<any> {
     try {
-      const response = await fetch(this.getN8NUrl(constants.n8nFlowFetchChatDocumentRelation), {
+      const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowFetchChatDocumentRelation), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ class DocumentsDBService {
 
   private async fetchDocumentsByChatId(chatId: any): Promise<any> {
     try {
-      const response = await fetch(this.getN8NUrl(constants.n8nFlowFetchDocumentsByChatId), {
+      const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowFetchDocumentsByChatId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ class DocumentsDBService {
 
   private async fetchChatIdsForFlow(flow: string): Promise<any> {
     try {
-      const response = await fetch(this.getN8NUrl(constants.n8nFlowFetchChatIdsForFlow), {
+      const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowFetchChatIdsForFlow), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ class DocumentsDBService {
 
   private async sendDeleteChatRequest(chatId: string): Promise<void> {
     try {
-      await fetch(this.getN8NUrl(constants.n8nFlowSendDeleteChatRequest), {
+      await fetch(this.getN8nWebhookUrl(constants.n8nFlowSendDeleteChatRequest), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ class DocumentsDBService {
 
   private async sendUpdateChatRenameRequest(chatId: string, chatName: string): Promise<any> {
     try {
-      const response = await fetch(this.getN8NUrl(constants.n8nFlowSendUpdateChatRequest), {
+      const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowSendUpdateChatRequest), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

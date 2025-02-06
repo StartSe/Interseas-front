@@ -297,7 +297,7 @@ export const checklistPackingList = `
 • Dados do Exportador - nome, endereço, NIF
 • Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
 • Código/Referência das mercadorias
-• Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
+• Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes". A saída deve manter a estrutura completa da informação, incluindo agrupamentos secundários e múltiplos tipos de embalagem. Garanta que nenhum tipo de volume seja omitido.
 • Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
 Conferências:
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";

@@ -1,5 +1,6 @@
 import { Flow } from '@/features/bubble/types';
 declare class DocumentsDBService {
+    private getN8nWebhookUrl;
     private sendDataToN8n;
     private getDocumentFromDBByHash;
     private fetchChatDocumentRelation;

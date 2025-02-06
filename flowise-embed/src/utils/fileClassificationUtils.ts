@@ -144,8 +144,7 @@ export const checklistCommercialInvoice = `
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
-• Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes".
+• Quantidade e tipo de volumes - crate/box/pallets
 • ${descricao_ex_checklist}
 • Número de Série - se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S
 • Modelo
@@ -153,9 +152,9 @@ Conferências:
 • Importação direta - Deve retornar true apenas se Adquirente for igual ao Importador, se não, false
 • Importação por Conta e Ordem - Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
-• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)".
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "valor da mercadoria 1 + valor da mercadoria 2 + ... + valor da mercadoria n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)".
 • Máquina/Equipamento
-• ${descricao_ex_verificacao}`
+• ${descricao_ex_verificacao}`;
 
 export const checklistConhecimentoBL = `
 • Número do documento
@@ -335,7 +334,7 @@ export const ChecklistProformaInvoice = `
 Conferências:
 
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
-• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)
+• Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "valor da mercadoria 1 + valor da mercadoria 2 + ... + valor da mercadoria n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)"
 • Máquina/Equipamento`;
 
 const checklistCCTAereo = `

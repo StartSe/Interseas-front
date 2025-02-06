@@ -2194,7 +2194,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   async function processNewFileData(file: any, files: any[], urls: Partial<FileUpload>[]) {
     const textContent = await getTextContent(file.file);
 
-    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA`;
+    const promptCriticalAnalysis = `VERIFICAR DADOS ANALISE CRITICA\n\nPlainText:${textContent} `;
     const dataFoundCriticalAnalysis = await sendBackgroundMessage(promptCriticalAnalysis, urls as any[]);
 
     for (const file of files) {

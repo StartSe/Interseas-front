@@ -14,7 +14,7 @@ const getN8nWebhookUrl = (flowId) => {
 };
 
 const HOME_PAGE = "home.html";
-const LOGIN_PAGE = isDevEnv() ? "/" : "/Interseas-front/";
+const LOGIN_PAGE = "/";
 
 const showErrorMessage = (message = "Credenciais inválidas") => {
   const errorMessageElement = document.getElementById("error-message");

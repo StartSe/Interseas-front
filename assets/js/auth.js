@@ -1,5 +1,5 @@
-const N8N_AUTH_BASE_URL =
-  "https://ca-n8n-interseas-prod-eastus2-01.ambitiouscliff-2460d16d.eastus2.azurecontainerapps.io";
+const N8N_AUTH_BASE_URL = "https://ca-n8n-interseas-prod-eastus2-01.ambitiouscliff-2460d16d.eastus2.azurecontainerapps.io";
+
 const AUTH_TOKEN_KEY = "auth_token";
 const AUTH_TOKEN_DUURATION_MINUTES = 60;
 

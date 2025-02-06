@@ -1,11 +1,17 @@
-const N8N_AUTH_BASE_URL = "https://ca-n8n-interseas-prod-eastus2-01.ambitiouscliff-2460d16d.eastus2.azurecontainerapps.io/webhook";
+const N8N_AUTH_BASE_URL =
+  "https://ca-n8n-interseas-prod-eastus2-01.ambitiouscliff-2460d16d.eastus2.azurecontainerapps.io";
 const AUTH_TOKEN_KEY = "auth_token";
 const AUTH_TOKEN_DUURATION_MINUTES = 60;
 
 const isDevEnv = () => {
   const currentUrl = window.location.href;
   return currentUrl.includes("localhost") || currentUrl.includes("127.0.0.1");
-}
+};
+
+const getN8nWebhookUrl = (flowId) => {
+  const envParam = isDevEnv() ? "Dev" : "";
+  return `${N8N_AUTH_BASE_URL}/webhook/${flowId}${envParam}`;
+};
 
 const HOME_PAGE = "home.html";
 const LOGIN_PAGE = isDevEnv() ? "/" : "/Interseas-front/";
@@ -14,23 +20,23 @@ const showErrorMessage = (message = "Credenciais inválidas") => {
   const errorMessageElement = document.getElementById("error-message");
   errorMessageElement.innerHTML = message;
   errorMessageElement.style.display = "block";
-}
+};
 
 const hideErrorMessage = () => {
   const errorMessageElement = document.getElementById("error-message");
   errorMessageElement.style.display = "none";
   errorMessageElement.innerHTML = "";
-}
+};
 
 const disableLoginButton = () => {
   const loginButton = document.getElementById("login-button");
   loginButton.disabled = true;
-}
+};
 
 const enableLoginButton = () => {
   const loginButton = document.getElementById("login-button");
   loginButton.disabled = false;
-}
+};
 
 const validateToken = async (token) => {
   if (!token) {
@@ -38,7 +44,7 @@ const validateToken = async (token) => {
   }
 
   try {
-    const response = await fetch(`${N8N_AUTH_BASE_URL}/auth/v2/validate`, {
+    const response = await fetch(getN8nWebhookUrl("auth/v2/validate"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +65,7 @@ export const authenticate = async (username, password) => {
   disableLoginButton();
 
   try {
-    const response = await fetch(`${N8N_AUTH_BASE_URL}/auth/v2`, {
+    const response = await fetch(getN8nWebhookUrl("auth/v2"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -121,7 +121,7 @@ export const checklistCommercialInvoice = `
 • Assinatura
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne false)
 • Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
-• Código/Referência das mercadorias
+• Código/Referência das mercadorias - Nunca considerar o NCM ou HS Code nesse campo. Traga apenas outros códigos identificadores encontrados no documento. Caso não encontre, retorne como "Não identificado".
 • Quantidade - trazer no formato quantidade x mercadoria
 • Unidade Comercializada
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
@@ -319,7 +319,7 @@ export const ChecklistProformaInvoice = `
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • País de origem
 • Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
-• Código/Referência das mercadorias
+• Código/Referência das mercadorias - Nunca considerar o NCM ou HS Code nesse campo. Traga apenas outros códigos identificadores encontrados no documento. Caso não encontre, retorne como "Não identificado".
 • Quantidade - trazer no formato quantidade x mercadoria
 • Unidade comercializada
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')

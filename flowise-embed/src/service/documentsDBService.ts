@@ -25,6 +25,8 @@ class DocumentsDBService {
   }
 
   private async sendDataToN8n(tableName: string, data: any): Promise<void> {
+    if (!constants.useDatabase) return;
+
     try {
       await fetch(this.getN8nWebhookUrl(constants.n8nFlowSendDataToSupabase), {
         method: 'POST',

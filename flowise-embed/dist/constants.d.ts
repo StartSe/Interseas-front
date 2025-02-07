@@ -3,6 +3,8 @@ import type { MenuProps } from './features/menu';
 import { HomeProps } from './pages/Home/Home';
 export declare const defaultBotProps: BubbleProps;
 export declare const constants: {
+    useDatabase: boolean;
+    useDocumentCache: boolean;
     apiUtilsUrl: string;
     n8nPdfPath: string;
     n8nDomain: string;

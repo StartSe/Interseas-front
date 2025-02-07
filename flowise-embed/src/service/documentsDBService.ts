@@ -39,6 +39,8 @@ class DocumentsDBService {
   }
 
   private async getDocumentFromDBByHash(hash: any, agent_flow: Flow): Promise<any> {
+    if (!constants.useDocumentCache) return null;
+
     try {
       const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowGetDataFromSupabase), {
         method: 'POST',
@@ -73,6 +75,8 @@ class DocumentsDBService {
   }
 
   private async fetchDocumentsByChatId(chatId: any): Promise<any> {
+    if (!constants.useDocumentCache) return [];
+
     try {
       const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowFetchDocumentsByChatId), {
         method: 'POST',
@@ -193,6 +197,8 @@ class DocumentsDBService {
   }
 
   public async saveDocumentData(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
+    if (!constants.useDocumentCache) return;
+
     const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
     await this.sendDataToDBThroughN8n(tableName, documentData);
@@ -200,6 +206,8 @@ class DocumentsDBService {
   }
 
   public async getDocumentsByChatId(chatId: any): Promise<any> {
+    if (!constants.useDocumentCache) return null;
+
     try {
       const result = await this.isChatIdInDatabase(chatId);
       return result;
@@ -244,6 +252,8 @@ class DocumentsDBService {
   }
 
   public async getProcessedDocumentData(fileMap: any, agentFlow: Flow, chatId: any): Promise<string | null> {
+    if (!constants.useDocumentCache) return null;
+
     const hashPdf = await pdfToHash(fileMap.file.file);
     const hasBeenProcessed = await this.checkDocumentHash(hashPdf, agentFlow, chatId);
     if (hasBeenProcessed) {

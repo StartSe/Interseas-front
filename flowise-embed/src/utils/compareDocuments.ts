@@ -102,12 +102,14 @@ export default class CompareDocuments {
       type: secondFile.type,
     });
 
+    const baseSpecificCompliancePrompt = 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey;
+
     if (CCTxHAWB) {
-      return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CCTCOMPLIANCE;
+      return baseSpecificCompliancePrompt + CCTCOMPLIANCE;
     } else if (CE_MERCANTExBL_CONHECIMENTO) {
-      return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CE_MERCANTE;
+      return baseSpecificCompliancePrompt + CE_MERCANTE;
     } else if (CRTxMIC_DTA) {
-      return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CRT;
+      return baseSpecificCompliancePrompt + CRT;
     }
 
     return '';

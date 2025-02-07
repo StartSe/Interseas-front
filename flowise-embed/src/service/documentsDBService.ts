@@ -25,7 +25,7 @@ class DocumentsDBService {
   }
 
   private async sendDataToN8n(tableName: string, data: any): Promise<void> {
-    if (!constants.useDatabase) return;
+    if (!constants.useDatabase && isDevEnv()) return;
 
     try {
       await fetch(this.getN8nWebhookUrl(constants.n8nFlowSendDataToSupabase), {
@@ -41,7 +41,7 @@ class DocumentsDBService {
   }
 
   private async getDocumentFromDBByHash(hash: any, agent_flow: Flow): Promise<any> {
-    if (!constants.useDocumentCache) return null;
+    if (!constants.useDocumentCache && isDevEnv()) return null;
 
     try {
       const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowGetDataFromSupabase), {
@@ -77,7 +77,7 @@ class DocumentsDBService {
   }
 
   private async fetchDocumentsByChatId(chatId: any): Promise<any> {
-    if (!constants.useDocumentCache) return [];
+    if (!constants.useDocumentCache && isDevEnv()) return [];
 
     try {
       const response = await fetch(this.getN8nWebhookUrl(constants.n8nFlowFetchDocumentsByChatId), {
@@ -199,7 +199,7 @@ class DocumentsDBService {
   }
 
   public async saveDocumentData(fileMap: any, textContent: any, agentFlow: Flow, chatId: any, agentResult?: any): Promise<void> {
-    if (!constants.useDocumentCache) return;
+    if (!constants.useDocumentCache && isDevEnv()) return;
 
     const tableName = 'documents';
     const documentData = await this.extractDocumentData(fileMap, textContent, agentFlow, agentResult?.text);
@@ -208,7 +208,7 @@ class DocumentsDBService {
   }
 
   public async getDocumentsByChatId(chatId: any): Promise<any> {
-    if (!constants.useDocumentCache) return null;
+    if (!constants.useDocumentCache && isDevEnv()) return null;
 
     try {
       const result = await this.isChatIdInDatabase(chatId);
@@ -254,7 +254,7 @@ class DocumentsDBService {
   }
 
   public async getProcessedDocumentData(fileMap: any, agentFlow: Flow, chatId: any): Promise<string | null> {
-    if (!constants.useDocumentCache) return null;
+    if (!constants.useDocumentCache && isDevEnv()) return null;
 
     const hashPdf = await pdfToHash(fileMap.file.file);
     const hasBeenProcessed = await this.checkDocumentHash(hashPdf, agentFlow, chatId);

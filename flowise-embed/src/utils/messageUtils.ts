@@ -66,7 +66,9 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
 5. **m³ estimada/quantidade de volumes e dimensões:**
 6. **País de origem/fabricação:**
 7. **País de Embarque:**
-8. **Estado do Importador:**`,
+8. **Estado do Importador:**
+9. **Descrição da Mercadoria:**
+10. **Valor da Mercadoria:**`,
   YES: 'Sim',
   NO: 'Não',
   DELETE_CONFIRMATION: (chatName: string) => `Tem certeza que deseja excluir ${chatName}? Essa é uma ação permanente.`,

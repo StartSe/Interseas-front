@@ -1801,6 +1801,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.TEST_REPORT.toString(),
               DocumentTypes.CONHECIMENTO_CRT.toString(),
               DocumentTypes.CONHECIMENTO_MIC_DTA.toString(),
+              DocumentTypes.CONHECIMENTO_HAWB.toString(),
+              DocumentTypes.COTACAO_DE_FRETE.toString(),
             ].includes(docType)
           ) {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);

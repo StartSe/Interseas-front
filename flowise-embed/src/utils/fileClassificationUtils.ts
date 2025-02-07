@@ -124,8 +124,8 @@ export const checklistCommercialInvoice = `
 • Código/Referência das mercadorias - Nunca considerar o NCM ou HS Code nesse campo. Traga apenas outros códigos identificadores encontrados no documento. Caso não encontre, retorne como "Não identificado".
 • Quantidade - trazer no formato quantidade x mercadoria
 • Unidade Comercializada
-• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
-• Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
+• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é apenas o valor unitário de cada espécie de mercadoria (separando mercadorias diferentes por ';')
+• Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';'). Exiba no formato "valor unitário x quantidade = resultado"
 • Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
 • Moeda de pagamento
 • Condições de Pagamento
@@ -200,7 +200,7 @@ export const checklistConhecimentoHawb = `
 • Número do HAWB
 • Data da emissão
 • Número do MAWB/AWB associados
-• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP)
+• Dados do Shipper - também chamado de Remetente (nome, endereço, CNPJ, CEP - se houver. Caso algum dos dados não esteja explicitamente indicado, não o inclua)
 • País do Shipper
 • Dados do Consignee - também chamado de Importador, Importer, Ship To (razão social, endereço e CNPJ, CEP)
 • CNPJ do Consignee - Consignatário/Identificação
@@ -209,11 +209,11 @@ export const checklistConhecimentoHawb = `
 • Frete - Todas as informações referentes a frete. Trazer Label; Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Forma de pagamento do frete
 • Aeroporto de Partida
-• Aeroporto de Destino
+• Aeroporto de Destino - também chamado de "Airport of Destination". Se não encontrar a referência, indique como "não identificado".
 • Moeda
 • Quantidade de volumes - crate/box/pallets
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
-• Peso Taxado
+• Peso Taxado - também chamado de "Chargeable Weight"
 • Cubagem - m³/m3
 • Informação "Wooden Packing" - Tipo usado: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed; N/A
 • Final Destination - Recinto aduaneiro de destino, se não constar, igual ao Airport of Destination
@@ -224,10 +224,10 @@ export const checklistConhecimentoHawb = `
 • Frete por peso - também chamado de "Weight Charge"
 
 Conferências:
-• Máquina/Equipamento
-• ${descricao_ex_verificacao}
+• Máquina/Equipamento - Não considere partes de máquina como máquina
 • Valor total do frete - Fazer a somatória de todos os valores de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os **totais** (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
 • Somatório frete e taxas - Considerando todas as páginas, fazer a somatória do 'Valor total do frete' e taxas encontrados. Separe os valores por prepaid e collect e some-os com a ferramenta calculator
+• ${descricao_ex_verificacao}
 
 Dados de Compliance:
 • Description of Goods - Descrição resumida e completa das mercadorias
@@ -299,9 +299,10 @@ export const checklistPackingList = `
 • Código/Referência das mercadorias
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes". A saída deve manter a estrutura completa da informação, incluindo agrupamentos secundários e múltiplos tipos de embalagem. Garanta que nenhum tipo de volume seja omitido.
 • Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
-Conferências:
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
+Conferências:
+• Peso líquido por volume = peso líquido total - Faça a somatório do peso líquido por volume usando a ferramenta calculator e verifique se seu resultado é igual ao peso líquido total informado no documento. Retorne no formato total: "peso liquido do volume 1 + peso liquido do volume 2 + ... + peso liquido do volume n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
 • Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;
 
@@ -534,13 +535,16 @@ export const checklistCotacaoDeFrete = `
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Quantidade e tipo de containers
 • Quantidade e tipo de volumes
-• Cubagem - m³/m3
+• Cubagem - Considere APENAS valores explicitamente demarcados em "m³" ou "m3". NUNCA considere outras informações, como "peso cúbico", ainda que o nome se assemelhe. Caso não encontre valores demarcados em "m³" ou "m3", retorne null. NUNCA preencha com outras informações.
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Taxado
 • Custos totais na origem (Moeda e valor) - também encontrado como "Total custos na origem" ou "Custos totais origem"
 • Custos totais de frete (Moeda e valor) - também encontrado como "Total do frete marítimo", "Total do frete aéreo", "Total do frete rodoviário", "Total custos no frete", "Custos totais frete" ou "Frete Total"
 • Capatazia (Moeda e valor) - também consta como "Capatazia (DTHC)", "Destination Terminal Handling Charges" ou "THC no Destino (Capatazia)"
 • Frete - Somatória dos valores da capatazia, custos totais de frete e custos totais na origem
+
+Conferências:
+• Valor total do frete - Fazer a somatória de todos os valores totais de frete encontrados no item 'frete' do checklist usando a ferramenta calculator, considere todos os totais (Ex: Total Prepaid, Total Collect) como parte do real valor total e os some com a ferramenta calculator
 `;
 
 export enum DocumentTypes {

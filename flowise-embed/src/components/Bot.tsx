@@ -958,6 +958,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         addChatMessage(updated);
         return [...updated];
       });
+      if (props.chatflowid && props.apiHost && chatId()) {
+        await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost, props.chatflowid, chatId(), criticalAnalysisMessage, ChatRole.apiMessage);
+      }
 
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setLoading(false);
@@ -2291,7 +2294,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         const keywordsToIgnore = ['CROSS_VALIDATION', 'LIST_DIFFERENT_KEYS', 'Specific compliance', 'ANALISE_\\d##'];
         const discoverNCMKeyword = 'DESCOBRE_NCM';
         const userKeywordsTextToReformat = ['CORRIGE_JSON', discoverNCMKeyword];
-        const userKeywordsFileToReformat = ['CHECKLIST', 'EXTRACTION'];
+        const userKeywordsFileToReformat = ['CHECKLIST', 'EXTRACTION', 'VERIFICAR DADOS ANALISE CRITICA'];
         const userKeywordsToReformat = [...userKeywordsFileToReformat, ...userKeywordsTextToReformat];
         const ignoreRegex = new RegExp(`^(${keywordsToIgnore.join('|')})`);
         const shouldIgnoreMessage = ignoreRegex.test(message.content);

@@ -10,8 +10,6 @@ export const messageUtils = {
   NEW_CHAT_BUTTON_LABEL: 'Novo chat',
   UPLOAD_LIMIT: 'Limite de arquivos:',
   SUPPORTED_FILE_TYPES: 'Formatos suportados:',
-  ANY_DOCUMENT_WITHOUT_CHECKLIST_MESSAGE:
-    'Um ou mais arquivos não puderam ter seu checklist identificado, mas os demais serão processados normalmente.',
   ALL_DOCUMENTS_VALIDATED_MESSAGE: 'Todos os seus documentos foram reconhecidos! Verifique cada um dos checklists abaixo detalhadamente',
   UNABLE_TO_PROCESS_CHECKLIST_MESSAGE: 'Não foi possível verificar o checklist deste arquivo.',
   UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE: 'Não foi possível verificar os campos deste arquivo.',

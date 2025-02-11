@@ -952,18 +952,29 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         criticalAnalysisMessage += generateItemToPrint(key, value as string);
       }
 
+      historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), criticalAnalysisMessage, ChatRole.apiMessage);
       setMessages((prevMessages) => {
         const newMessage = { message: criticalAnalysisMessage, type: 'apiMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];
         addChatMessage(updated);
         return [...updated];
       });
-      if (props.chatflowid && props.apiHost && chatId()) {
-        await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost, props.chatflowid, chatId(), criticalAnalysisMessage, ChatRole.apiMessage);
-      }
-
       if (criticalAnalysisMessage.includes(messageUtils.DATA_NOT_FOUND)) {
         setLoading(false);
+        historyChatFlowiseApi.setFlowiseChatHistory(
+          props.apiHost ?? '',
+          props.chatflowid,
+          chatId(),
+          messageUtils.CRITICAL_ANALYSIS_MISSING_DATA,
+          ChatRole.apiMessage,
+        );
+        historyChatFlowiseApi.setFlowiseChatHistory(
+          props.apiHost ?? '',
+          props.chatflowid,
+          chatId(),
+          messageUtils.CRITICAL_ANALYSIS_MISSING_NCM,
+          ChatRole.apiMessage,
+        );
         setMessages((prevMessages) => {
           const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_MISSING_DATA, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
@@ -989,10 +1000,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
         if (validatedNcmArray.isNotNcm.length) {
           const isPlural = validatedNcmArray.isNotNcm.length > 1;
+          const errorMessage = criticalAnalysisNcmErrorMessage(ncmErrorsArray, isPlural);
           let criticalAnalysisMessage = `<b>${messageUtils.CRITICAL_ANALYSIS_REQUIRED_DATA_LABEL}</b><br>`;
           for (const [key, value] of Object.entries(jsonDataCriticalAnalysis)) {
             criticalAnalysisMessage += generateItemToPrint(key, value as string);
           }
+          historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), criticalAnalysisMessage, ChatRole.apiMessage);
+          historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), errorMessage, ChatRole.apiMessage);
           setMessages((prevMessages) => {
             const newMessage = { message: criticalAnalysisMessage, type: 'apiMessage' } as MessageType;
             const updated = [...prevMessages, newMessage];
@@ -1000,7 +1014,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             return [...updated];
           });
           setMessages((prevMessages) => {
-            const newMessage = { message: criticalAnalysisNcmErrorMessage(ncmErrorsArray, isPlural), type: 'apiMessage' } as MessageType;
+            const newMessage = { message: errorMessage, type: 'apiMessage' } as MessageType;
             const updated = [...prevMessages, newMessage];
             addChatMessage(updated);
             return [...updated];
@@ -1008,7 +1022,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           setLoading(false);
           return;
         }
-
+        historyChatFlowiseApi.setFlowiseChatHistory(
+          props.apiHost ?? '',
+          props.chatflowid,
+          chatId(),
+          messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS,
+          ChatRole.apiMessage,
+        );
         setMessages((prevMessages) => {
           const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_SUBMISSION_SUCCESS, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
@@ -1068,6 +1088,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       isNcm: [],
       isNotNcm: [],
     };
+    historyChatFlowiseApi.setFlowiseChatHistory(
+      props.apiHost ?? '',
+      props.chatflowid,
+      chatId(),
+      messageUtils.CRITICAL_ANALYSIS_NCM_VALIDATION,
+      ChatRole.apiMessage,
+    );
+
     setMessages((prevMessages) => {
       const newMessage = { message: messageUtils.CRITICAL_ANALYSIS_NCM_VALIDATION, type: 'apiMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
@@ -1076,6 +1104,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
     for (const ncm of ncmArray) {
       const validatedNCM = await isNCM(ncm);
+      historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), validatedNCM.message, ChatRole.apiMessage);
+
       if (validatedNCM.valid === false) {
         validationResults.isNotNcm.push(validatedNCM);
       } else {
@@ -1696,10 +1726,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const readImagesUrls = (imagesToUpload: any[]) => {
     // Logic from handleSubmit function
     const urls = imagesToUpload.map((item, index) => {
+      const nameParts = item.name.split('.');
+      const extension = nameParts.pop();
+      const baseName = nameParts.join('.');
+      const newName = `${baseName}${index}.${extension}`;
       return {
         data: item.data,
         type: item.type,
-        name: item.name.split('.')[0] + index + '.' + item.name.split('.')[1],
+        name: newName,
         mime: item.mime,
       };
     });
@@ -1831,6 +1865,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setIsUploadButtonDisabled(false);
         break;
       default:
+        historyChatFlowiseApi.setFlowiseChatHistory(
+          props.apiHost ?? '',
+          props.chatflowid,
+          chatId(),
+          messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE,
+          ChatRole.apiMessage,
+        );
         setMessages((prevMessages) => {
           const newMessage = { message: messageUtils.ALL_DOCUMENTS_VALIDATED_MESSAGE, type: 'apiMessage' } as MessageType;
           const updated = [...prevMessages, newMessage];
@@ -1873,6 +1914,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const maxAttempts = 3;
 
     if ([DocumentTypes.LICENCA_DE_IMPORTACAO, DocumentTypes.LPCO].includes(fileMap.type)) {
+      historyChatFlowiseApi.setFlowiseChatHistory(
+        props.apiHost ?? '',
+        props.chatflowid,
+        chatId(),
+        messageUtils.NO_LI_LPCO_COMPLIANCE_FEATURE,
+        ChatRole.apiMessage,
+      );
       setMessages((prevMessages) => {
         const newMessage = { message: messageUtils.NO_LI_LPCO_COMPLIANCE_FEATURE, type: 'apiMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];
@@ -1884,6 +1932,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
     if (fileMap.type === DocumentTypes.COMMERCIAL_INVOICE) {
+      historyChatFlowiseApi.setFlowiseChatHistory(
+        props.apiHost ?? '',
+        props.chatflowid,
+        chatId(),
+        messageUtils.MANUAL_COMPLIANCE_ALERT,
+        ChatRole.apiMessage,
+      );
       setMessages((prevMessages) => {
         const newMessage = { message: messageUtils.MANUAL_COMPLIANCE_ALERT, type: 'apiMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];
@@ -1939,6 +1994,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         console.error(error);
         if (attempt === maxAttempts) {
           const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+          historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), errorMessage, ChatRole.apiMessage);
 
           const documentErrors = [...documentsChecklistError()];
           documentErrors.push(fileMap.file.name);
@@ -2022,10 +2078,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const saveCacheExtractionMessages = async (fileName: any, fileResults: any) => {
-    if (props.apiHost && props.chatflowid && chatId()) {
-      await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost, props.chatflowid, chatId(), fileName, ChatRole.userMessage);
-      await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost, props.chatflowid, chatId(), fileResults, ChatRole.apiMessage);
-    }
+    await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), fileName, ChatRole.userMessage);
+    await historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), fileResults, ChatRole.apiMessage);
   };
 
   const showChecklistMessage = (jsonData: any, checklistMessage: string) => {
@@ -2117,7 +2171,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     } catch (error) {
       console.error(error);
       const errorMessage = messageUtils.UNABLE_TO_PROCESS_CROSS_VALIDATION_MESSAGE;
-
+      historyChatFlowiseApi.setFlowiseChatHistory(props.apiHost ?? '', props.chatflowid, chatId(), errorMessage, ChatRole.apiMessage);
       setMessages((prevMessages) => {
         const newMessage = { message: errorMessage, type: 'apiMessage' } as MessageType;
         const updated = [...prevMessages, newMessage];

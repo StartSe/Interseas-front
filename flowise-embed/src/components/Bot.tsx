@@ -2016,6 +2016,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   const structureChecklistMessage = (jsonData: any, fileMap?: any) => {
     const generateChecklistItemToPrint = (key: string, value: any) => {
+      if (typeof value === 'string' && value.trim().toLowerCase() === 'null') {
+        value = null;
+      }
+
       if (value && typeof value === 'object') {
         const formatted_value = Object.entries(value)
           .map(([key, value]) => {

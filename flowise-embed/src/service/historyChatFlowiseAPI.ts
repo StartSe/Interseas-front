@@ -80,23 +80,25 @@ export class historyChatFlowiseAPI {
 
   async setFlowiseChatHistory(apiHost: string, chatFlowId: string, chatHistoryId: string, data: string, role: string) {
     try {
-      const body = {
-        chatflowid: chatFlowId,
-        chatId: chatHistoryId,
-        role: role,
-        content: data,
-      };
+      if (chatFlowId && apiHost && chatHistoryId) {
+        const body = {
+          chatflowid: chatFlowId,
+          chatId: chatHistoryId,
+          role: role,
+          content: data,
+        };
 
-      const response = await fetch(`${apiHost}/api/v1/chatmessage/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `${constants.flowiseJwtToken}`,
-        },
-        body: JSON.stringify(body),
-      });
+        const response = await fetch(`${apiHost}/api/v1/chatmessage/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${constants.flowiseJwtToken}`,
+          },
+          body: JSON.stringify(body),
+        });
 
-      await response.json();
+        await response.json();
+      }
     } catch (error) {
       console.error('Error setting chat history:', error);
       throw error;

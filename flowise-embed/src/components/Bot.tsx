@@ -1808,6 +1808,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);
           }
         } else {
+          fileMap.type = DocumentTypes.DOCUMENTO_SEM_CHECKLIST;
           fileMap.checklist = defaultChecklist;
         }
       } else {
@@ -1910,8 +1911,25 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (!Object.keys(jsonData).includes('checklist')) {
           throw new Error(messageUtils.CHECKLIST_NOT_FOUND_IN_RESPONSE_ERROR);
         }
+
         await documentService.saveDocumentData(fileMap, textContent, props.flow, chatId());
         structureAndSaveMessages(jsonData, fileMap, resultFromBackgroundMessage);
+
+        if (fileMap.type === DocumentTypes.DOCUMENTO_SEM_CHECKLIST) {
+          historyChatFlowiseApi.setFlowiseChatHistory(
+            props.apiHost!,
+            props.chatflowid,
+            chatId(),
+            messageUtils.DEFAULT_CHECKLIST_ALERT,
+            ChatRole.apiMessage,
+          );
+          setMessages((prevMessages) => {
+            const newMessage = { message: messageUtils.DEFAULT_CHECKLIST_ALERT, type: 'apiMessage' } as MessageType;
+            const updated = [...prevMessages, newMessage];
+            addChatMessage(updated);
+            return [...updated, { message: '', type: 'apiMessage' } as MessageType];
+          });
+        }
 
         break;
       } catch (error) {
@@ -2255,12 +2273,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (message.fileUploads && message.fileUploads.length > 0) {
           const firstPageImageFileName = message.fileUploads[0].name;
           documentName = firstPageImageFileName.replace(/(?:[^\w]\d+)*\.\w+$/, '').trim();
+
+          if (documentName[documentName.length - 1] === '0') {
+            documentName = documentName.slice(0, -1);
+          }
         }
         const mime = '';
         const hash = '';
 
         const file = { name: documentName, mime, hash };
-        const type = identifyDocumentType(documentName) || '';
+        const type = identifyDocumentType(documentName);
 
         currentFileMap = { file, type };
       }

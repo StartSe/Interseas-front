@@ -10,63 +10,15 @@ export const defaultChecklist = `
 • Número do documento
 • Nome do documento
 • Data da emissão
-• Assinatura
-• Dados do Remetente - Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Exportador nome, endereço, NIF
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço, CNPJ, CEP)
-• Dados do Adquirente - Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Dados do Consignatário - se houver
-• Dados do Destinatário - razão social, endereço, CNPJ e CEP
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço, CNPJ)
+• Dados do Adquirente - Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ)
+• Dados do Exportador (nome, endereço)
+• Descrição das mercadorias
+• Números de lote
+• NCM/HS Code - 8 dígitos de cada NCM
 • País de origem
-• País de Procedência
-• País de Aquisição
-• Tipo de Frete - pode ser 'Prepaid', 'Collect' ou 'Prepaid/Collect' quando houver os dois. Sempre verifique se há os dois tipos de frete.
-• Moeda do Frete
-• Frete - Todas as informações referentes a frete. Trazer tipo (Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Componentes do frete - Prepaid/Collect; moeda; valor
-• Forma/Condições de Pagamento - true/false
-• Frete por item de carga - somatório
-• Valor do Seguro - se prepaid
-• Quantidade de containers
-• Número dos containers - formato <3 letras>U<7 números>
-• Número dos lacres dos containers - seal
-• Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
-• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
-• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
-• Peso Taxado
-• Cubagem - m³/m3
-• Quantidade de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume
-• Dimensão estimada dos volumes - volume x altura x largura
-• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
-• Informação Wooden Packing - Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
-• NCM - 4 a 8 dígitos de cada NCM
-• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias (quantidade X valor unitário, separando mercadorias diferentes por ';')
-• Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
-• Quantidade - formato quantidade x mercadoria
-• Unidade Comercializada
-• Descrição resumida das mercadorias - todos os nomes de produtos diferentes
-• Referência à Ordem de Compra (OC) ou Fatura Comercial (nº) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", "OC", "PO", "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Marca e Numeração - Referência dos volumes
-• Porto de Embarque
-• Porto de Desembarque
-• Local de Recebimento
-• Local de Destino Final
-• Aeroporto de Partida
-• Aeroporto de Destino
-• Declaração valor das mercadorias
-• Declarações e observações - detalhamento do frete internacional e nacional
-• Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
-• ${descricao_ex_checklist}
-Conferências:
-• Máquina/Equipamento
-• Marca - se mercadoria é máquina ou equipamento
-• Modelo - se mercadoria é máquina ou equipamento
-• Possui Ex-tarifário - Sim/Não, sempre justificando
-• Multiplicação de valor unitário = quantidade comercializada de cada item
-• Somatório dos itens = valor total informado
-• Se INCOTERM de responsabilidade do exportador: Tipo de frete = "Prepaid"
-• Se INCOTERM de responsabilidade do importador: Tipo de frete = "Collect"
+• Peso líquido total
+• Peso bruto total
 `;
 
 export const conferencesDefault = `
@@ -149,8 +101,8 @@ export const checklistCommercialInvoice = `
 • Número de Série - se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S
 • Modelo
 Conferências:
-• Importação direta - Deve retornar true apenas se Adquirente for igual ao Importador, se não, false
-• Importação por Conta e Ordem - Deve retornar true apenas se Adquirente for diferente ao Importador, se não, false
+• Importação direta - Deve retornar true apenas se Adquirente for igual ao Importador *ou* se dados do importador forem identificados, mas dados do adquirente não. Caso contrário, retornar false
+• Importação por Conta e Ordem ou Encomenda - Deve retornar true apenas se Adquirente for diferente ao Importador e ambos os dados forem encontrados. Caso contrário, retornar false
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
 • Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "valor da mercadoria 1 + valor da mercadoria 2 + ... + valor da mercadoria n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)".
 • Máquina/Equipamento
@@ -739,7 +691,7 @@ export const identifyDocumentChecklist = (documentType: keyof typeof DocumentTyp
   if (documentType in checklistTypeMapping) {
     return checklistTypeMapping[documentType as keyof typeof checklistTypeMapping];
   }
-  return null;
+  return defaultChecklist;
 };
 
 export const identifyDocumentType = (fileName: string) => {
@@ -748,7 +700,7 @@ export const identifyDocumentType = (fileName: string) => {
       return type as keyof typeof DocumentTypes;
     }
   }
-  return null;
+  return DocumentTypes.DOCUMENTO_SEM_CHECKLIST as keyof typeof DocumentTypes;
 };
 
 export const removeAccents = (text: string) => {

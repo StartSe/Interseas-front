@@ -74,6 +74,8 @@ Para iniciarmos a análise envie uma mensagem preenchendo os campos abaixo ou fa
   DELETE_CONFIRMATION: (chatName: string) => `Tem certeza que deseja excluir ${chatName}? Essa é uma ação permanente.`,
   CANCEL_BUTTON: 'Cancelar',
   DELETE_BUTTON: 'Excluir',
+  DEFAULT_CHECKLIST_ALERT:
+    'ATENÇÃO - Não identificado checklist específico para esse documento, considerado checklist básico para compliance mínimo. Verifique se há legislação específica.',
 };
 
 export const criticalAnalysisStepNameMapping: { [key: string]: string } = {

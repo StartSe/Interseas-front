@@ -38,6 +38,7 @@ export declare const messageUtils: {
     DELETE_CONFIRMATION: (chatName: string) => string;
     CANCEL_BUTTON: string;
     DELETE_BUTTON: string;
+    DEFAULT_CHECKLIST_ALERT: string;
 };
 export declare const criticalAnalysisStepNameMapping: {
     [key: string]: string;

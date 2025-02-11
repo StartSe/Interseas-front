@@ -553,7 +553,7 @@ const documentNameAndTypeMapping = {
   '.*?COMMERCIAL[_-\\s]INVOICE|FATURA[_-\\s]COMERCIAL|CUSTOMS[_-\\s]INVOICE|INVOICE|FATURA.*?': DocumentTypes.COMMERCIAL_INVOICE,
   '.*?PACKING[_-\\s]LIST.*?': DocumentTypes.PACKING_LIST,
   '.*?CONHECIMENTO[_-\\s]BL|CONHECIMENTO[_-\\s]B/L|\\bBL\\b.*?': DocumentTypes.CONHECIMENTO_BL,
-  '.*?CONHECIMENTO[_-\\s]HAWB|\\bHAWB\\b.*?': DocumentTypes.CONHECIMENTO_HAWB,
+  '.*?CONHECIMENTO[_-\\s]HAWB|\\bHAWB\\b.*?|\\bAWB\\b.*?': DocumentTypes.CONHECIMENTO_HAWB,
   '.*?CONHECIMENTO[_-\\s]MAWB|\\bMAWB\\b.*?': DocumentTypes.CONHECIMENTO_MAWB,
   '.*?CONHECIMENTO[_-\\s]CRT|\\bCRT\\b.*?': DocumentTypes.CONHECIMENTO_CRT,
   '.*?CONHECIMENTO[_-\\s]MIC[_-\\s]DTA|MIC[_-\\s]DTA.*?': DocumentTypes.CONHECIMENTO_MIC_DTA,

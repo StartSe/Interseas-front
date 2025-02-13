@@ -6,7 +6,7 @@ export const isEmpty = (value: string | undefined | null): value is undefined =>
 
 export const isNotEmpty = (value: string | undefined | null): value is string => value !== undefined && value !== null && value !== '';
 
-const fourMinutesInMilliseconds = 4 * 60 * 1000;
+const fiveMinutesInMilliseconds = 5 * 60 * 1000;
 
 export const sendRequest = async <ResponseData>(
   params:
@@ -22,7 +22,7 @@ export const sendRequest = async <ResponseData>(
     | string,
 ): Promise<{ data?: ResponseData; error?: Error }> => {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), fourMinutesInMilliseconds);
+  const timeoutId = setTimeout(() => controller.abort(), fiveMinutesInMilliseconds);
   try {
     const url = typeof params === 'string' ? params : params.url;
     const headers =

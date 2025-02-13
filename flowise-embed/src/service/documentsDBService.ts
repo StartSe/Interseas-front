@@ -4,6 +4,7 @@ import { pdfToHash } from '@/utils/pdfUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { extractNewFileProperties } from '@/utils/pdfUtils';
 import { isDevEnv } from '@/utils/environmentUtils';
+import { getAuthToken } from '@/utils/auth';
 
 interface DocumentData {
   id: string;
@@ -32,6 +33,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ tableName, data }),
       });
@@ -48,6 +50,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ hash, agent_flow }),
       });
@@ -65,6 +68,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ chatId, documentId }),
       });
@@ -84,6 +88,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ chatId }),
       });
@@ -101,6 +106,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ flow }),
       });
@@ -118,6 +124,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ chatId }),
       });
@@ -132,6 +139,7 @@ class DocumentsDBService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify({ chatId, chatName }),
       });

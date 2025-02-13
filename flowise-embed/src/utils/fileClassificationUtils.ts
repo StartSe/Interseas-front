@@ -92,7 +92,6 @@ export const checklistCommercialInvoice = `
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Local do INCOTERM
 • Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
-• Referência
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
@@ -253,9 +252,9 @@ export const checklistPackingList = `
 • Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
 • Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
 • Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
+• Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 Conferências:
 • Peso líquido por volume = peso líquido total - Faça a somatório do peso líquido por volume usando a ferramenta calculator e verifique se seu resultado é igual ao peso líquido total informado no documento. Retorne no formato total: "peso liquido do volume 1 + peso liquido do volume 2 + ... + peso liquido do volume n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
-• Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
 `;
 
 export const ChecklistProformaInvoice = `

@@ -1840,6 +1840,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.CONHECIMENTO_MIC_DTA.toString(),
               DocumentTypes.CONHECIMENTO_HAWB.toString(),
               DocumentTypes.COTACAO_DE_FRETE.toString(),
+              DocumentTypes.DOCUMENTO_SEM_CHECKLIST.toString(),
+              DocumentTypes.ORDEM_DE_COMPRA_DO_IMPORTADOR.toString(),
+              DocumentTypes.ANEXO_VII.toString(),
+              DocumentTypes.INSTRUCAO_DE_EMBARQUE.toString(),
+              DocumentTypes.CERTIFICADO_FITOSSANITARIO.toString(),
+              DocumentTypes.FICHA_DE_EMERGENCIA.toString(),
+              DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS.toString(),
             ].includes(docType)
           ) {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);

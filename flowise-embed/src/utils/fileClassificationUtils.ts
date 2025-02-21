@@ -52,7 +52,7 @@ export const checklistCertificadoOrigem = `
 • Dados do Exportador - nome, endereço, NIF
 • Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
 • Dados do Consignatário
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party, Terceiro Operador (Razão social, endereço, CNPJ, CEP)
 • Acordo - acordos comerciais, como exemplo ACE Nº[número]
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Valor Total das mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento

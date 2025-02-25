@@ -202,6 +202,8 @@ class DocumentsDBService {
   }
 
   public async saveChatData(chatData: any): Promise<void> {
+    if (!constants.useChatsHistory && isDevEnv()) return;
+
     const tableName = 'chats';
     await this.sendDataToDBThroughN8n(tableName, chatData);
   }
@@ -228,6 +230,8 @@ class DocumentsDBService {
   }
 
   public async saveChatDocumentData(chatId: any, documentId: string): Promise<void> {
+    if (!constants.useChatsHistory && isDevEnv()) return;
+
     const tableName = 'chats_documents';
     const chatDocumentData = {
       chat_id: chatId,

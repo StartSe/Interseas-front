@@ -5,6 +5,7 @@ export declare const defaultBotProps: BubbleProps;
 export declare const constants: {
     useDatabase: boolean;
     useDocumentCache: boolean;
+    useChatsHistory: boolean;
     apiUtilsUrl: string;
     n8nPdfPath: string;
     n8nDomain: string;

@@ -16,6 +16,7 @@ export const defaultBotProps: BubbleProps = {
 export const constants = {
   useDatabase: true,
   useDocumentCache: true,
+  useChatsHistory: true,
   apiUtilsUrl: 'https://ca-ai-utils-api-prod-eastus2-001.bravepond-9830b784.eastus2.azurecontainerapps.io',
   n8nPdfPath: 'webhook/plain-text',
   n8nDomain: 'https://n8n.interseas-caprover.startse.com',

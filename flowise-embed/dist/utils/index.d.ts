@@ -5,7 +5,7 @@ export declare const isNotEmpty: (value: string | undefined | null) => value is 
 export declare const sendRequest: <ResponseData>(params: string | {
     url: string;
     method: string;
-    body?: Record<string, unknown> | FormData | undefined;
+    body?: FormData | Record<string, unknown> | undefined;
     type?: string | undefined;
     headers?: Record<string, any> | undefined;
     formData?: FormData | undefined;

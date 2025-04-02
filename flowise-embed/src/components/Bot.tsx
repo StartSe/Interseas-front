@@ -2069,10 +2069,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return checklistItem;
     };
 
-    let checklistMessage = '';
-
+    let checklistMessage = `<span data-testid="checklist-message">`;
     if (fileMap) {
-      checklistMessage = `<b>${fileMap.type}:</b><br>`;
+      checklistMessage += `<b>${fileMap.type}:</b><br>`;
     }
 
     for (const [key, value] of Object.entries(jsonData.checklist)) {
@@ -2085,6 +2084,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         checklistMessage += generateChecklistItemToPrint(key, value);
       }
     }
+    checklistMessage += '</span>';
     return checklistMessage;
   };
 

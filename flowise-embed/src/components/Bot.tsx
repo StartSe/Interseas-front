@@ -1847,6 +1847,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               DocumentTypes.CERTIFICADO_FITOSSANITARIO.toString(),
               DocumentTypes.FICHA_DE_EMERGENCIA.toString(),
               DocumentTypes.CERTIFICADO_DE_ANALISE_DE_VINHOS.toString(),
+              DocumentTypes.CE_MERCANTE.toString(),
             ].includes(docType)
           ) {
             fileMap.checklist = fileMap.checklist.concat(conferencesDefault);

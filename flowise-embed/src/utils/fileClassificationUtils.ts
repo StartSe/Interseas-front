@@ -54,16 +54,16 @@ export const checklistCeMercante = `
 `;
 
 export const checklistCertificadoOrigem = `
-• Dados do Exportador - nome, endereço, NIF
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
+• NCM
+• Acordo - acordos comerciais, como exemplo ACE Nº[número]. Traga apenas o valor do campo 
+• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party, Terceiro Operador (Razão social, endereço, CNPJ, CEP). Caso nao encontre apenas retorne "Não identificado"
+• Dados do Exportador - nome, endereço, NIF, cidade e país. Traga todos os campos completos
+• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP, país)
+• Quantidade
 • Dados do Consignatário
-• Dados do Adquirente - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party, Terceiro Operador (Razão social, endereço, CNPJ, CEP)
-• Acordo - acordos comerciais, como exemplo ACE Nº[número]
+• NALADI/NALADISA - código de 8 a 12 dígitos, chamado de Código NALADI ou Código NALADISA, **Não confundir com NCM**. Caso nao encontre apenas retorne "Não identificado". Nunca gere esse codigo
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Valor Total das mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento
-• Quantidade
-• NCM
-• NALADI/NALADISA - código de 8 a 12 dígitos, chamado de Código NALADI ou Código NALADISA, **Não confundir com NCM**
  `;
 
 export const checklistCommercialInvoice = `
@@ -73,22 +73,22 @@ export const checklistCommercialInvoice = `
 • Dados do Importador – Também chamado de Consignee, Importer, Ship To. Obtenha todos os dados relacionados ao importador. Em casos em que não estiver explicitamente indicado, considere como dados do importador as primeiras informações que constam no documento.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
-• Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "null".
-• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço, NIF. Caso não encontre, retorne como "null".
+• Dados do Exportador - Apresente o nome, Razão social, endereço e CNPJ, CEP, Pais separados "," e sem pular linhas. Caso não encontre, retorne como "null".
+• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço e pais "," e sem pular linhas. Caso não encontre, retorne como "null".
 • Assinatura
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne "Não identificado")
-• Descrição das mercadorias - Trazer todos os valores de produtos diferentes na descrição, por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment
-• Código/Referência das mercadorias - Nunca considerar o NCM ou HS Code nesse campo. Traga apenas outros códigos identificadores encontrados no documento. Caso não encontre, retorne como "Não identificado".
+• Descrição das mercadorias – Certifique-se de incluir todos os valores distintos presentes na descrição dos produtos. Por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment.
+• Código/Referência das mercadorias – Pode ser identificado pelo campo articulo ou por outros códigos específicos presentes no documento. Nunca utilize o NCM ou HS Code neste campo. Caso nenhum código identificador seja encontrado, registre como "Não identificado".
 • Quantidade  - apresentar no formato "<quantidade> <unidade de medida>" (ex: 10 pcs, 5 boxes, 20 pallets, etc). Caso não encontre, retorne como "Não identificado".
-• Unidade Comercializada
-• Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é apenas o valor unitário de cada espécie de mercadoria (separando mercadorias diferentes por ';')
-• Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';'). Exibir apenas o resultado da operação 
-• Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento.
+• Unidade Comercializada – Apresentar a unidade de comercialização do item. Caso não seja possível identificá-la, exibir "Não identificado".
+• Valor unitário de cada espécie de mercadoria – Pode ser identificado na coluna com o título "PRECIO", considerando os valores listados abaixo desse título. Analise todas as páginas do documento e extraia os valores unitários de cada espécie de mercadoria, separando mercadorias diferentes com ponto e vírgula ";".
+• Valor Total de cada espécie de mercadoria - Pode ser identificado em uma coluna com o titulo "total",considerando os valores listados abaixo desse título Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';'). Exibir apenas o resultado da operação 
+• Valor total de cada espécie de mercadoria – Pode ser identificado em uma coluna com o título "Total", considerando os valores listados abaixo desse cabeçalho. Analise todas as páginas do documento. O valor total corresponde à multiplicação da quantidade pelo valor unitário ou ao valor total já informado no documento. Exiba apenas o resultado final da operação, separando mercadorias diferentes com ponto e vírgula ';'.
 • Moeda de pagamento - trazer a moeda de pagamento
 • Condições de Pagamento
-• Dados Bancários do Exportador - nome do banco pode estar em outro idioma(true/false)
+• Dados Bancários do Exportador - nome do banco pode estar em outro idioma, Se exibir exiba "Consta" se nao traga "Nao Consta"
 • Números do lote - Se o número do lote não estiver explícito, retorne **apenas** "Não identificado"
-• NCM/HS Code - Trazer informacoes de NCM/HS Code.
+• NCM/HS Code 
 • Porto de Embarque  - Caso não encontre, retorne como "Não identificado"
 • Porto de Desembarque  - Caso não encontre, retorne como "Não identificado"
 • País de Origem - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
@@ -98,7 +98,7 @@ export const checklistCommercialInvoice = `
 • Local do INCOTERM
 • Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
-• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso. Caso não encontre, retorne como "Não identificado"
 • Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Quantidade e tipo de volumes 
 • ${descricao_ex_checklist}
@@ -209,51 +209,53 @@ Tipo de frete = "Prepaid"
 Tipo de frete = "Collect"`;
 
 export const checklistCRT = `
-• Número do Documento
-• Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Destinatário - razão social, endereço, CNPJ e CEP
-• Notificar
-• Nome e endereço do transportador
-• Local de embarque
-• Local de Destino Final
-• Quantidade e tipo de volumes - crate/box/pallets
-• Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
-• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
-• Código/Referência das mercadorias
 • NCM - 8 dígitos de cada NCM
-• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
-• Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
-• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
-• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
+• Seguro (tipo, moeda e valor) - apresente os valores assim: tipo:tipo, moeda:moeda, valor: valor
 • Cubagem - m³/m3
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
+• Notificar -  - Apresente os valores separados por virgula
+• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
+• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
+• Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Frete:tipo, moeda:moeda, valor:valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
+• Documentos anexos - Traga o valor completo do campo
+• Local de embarque
+• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
+• Dados do Remetente - também chamado de Shipper. Apresente os seguintes valores: nome, endereço, país, CNPJ, separados por virgula. Caso não encontre, retorne como "Não identificado"
 • Valor da Mercadoria
-• Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, Tipo, moeda, valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
-• Seguro (tipo, moeda e valor)
-• Outros gastos a pagar (tipo, moeda e valor)
+• Carimbo e assinatura - caso nao encontre retorne "Não identificado"
+• Número do Documento
+• Outros gastos a pagar (tipo, moeda e valor) - Caso não encontre, retorne como "Não identificado"
+• Dados do Destinatário - Apresente os seguintes valores: razão social, endereço, CNPJ e CEP, separados por virgula. Caso não encontre, retorne como "Não identificado"
+• Local de Destino Final - também chamado de Localidade, pais e prazo de entrega
 • Valor do frete externo
-• Declaração valor das mercadorias (valor por extenso)
-• Documentos anexos
+• Dados do Consignatário - também chamado de Consignee, Importer, Ship To. Apresente os seguintes valores: Razão social, endereço e CNPJ, separados por virgula. Caso não encontre, retorne como "Não identificado"
+• Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
+• Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed. Caso nao encontre retorne "Não identificado"
+• Quantidade e tipo de volumes - crate/box/pallets. Apresente no seguinte formato: "quantidade, Tipo: tipo", use esse formato apenas para esse caso . Caso não encontre, retorne como "Não identificado".
 • Declarações e observações - detalhamento do frete internacional e nacional
-• Carimbo e assinatura
+• Nome e endereço do transportador - Apresente os valores separados por virgula
+• Declaração valor das mercadorias (valor por extenso)
+• Código/Referência das mercadorias
+• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
+
 Conferências:
-• Documentos Anexos/D.E. Estrangeira - procure como "destinácion" ou "permiso de exportacion" e inicia com 2 ou 4 caracteres ref. ao ano (24 ou 2024, por exemplo), traga os dados.
-• Máquina/Equipamento`;
+• Máquina/Equipamento
+• Documentos Anexos/D.E. Estrangeira - procure como "destinácion" ou "permiso de exportacion" e inicia com 2 ou 4 caracteres ref. ao ano (24 ou 2024, por exemplo), traga apenas os dados do campo
+`;
 
 export const checklistPackingList = `
-• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
-• Dados do Importador - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP, Pais)
-• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Ordem de compra - Também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number". Traga apenas o valor do campo
+• Fatura Comercial (Número) - Também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
+• Dados do Importador/Importer - Também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP, Pais). Traga o valor desse campo
+• Dados do Adquirente ou Encomendante - Também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - nome, endereço, NIF ou EIN: apresentar o numero completo.
 • Descrição das mercadorias - Trazer todos os valores de produtos diferentes na descrição, por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment
 • Código/Referência das mercadorias
-• Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes". A saída deve manter a estrutura completa da informação, incluindo agrupamentos secundários e múltiplos tipos de embalagem. Garanta que nenhum tipo de volume seja omitido.
-• Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume, apresente os valores desse campo
-• Peso Líquido total - Procure no documento chaves como Total Net Weight, Total N.W,  acompanhado de valores númericos e unidades de medida de peso
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar apenas o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B). Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado. Não esqueça de incluir na soma os valores de impostos e taxas.
+• Quantidade e Tipo de Volumes - Pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes". A saída deve manter a estrutura completa da informação, incluindo agrupamentos secundários e múltiplos tipos de embalagem. Garanta que nenhum tipo de volume seja omitido.
+• Peso Líquido por volume - Pode estar com os seguintes nomes: Net Weight, N.W, N.W KGS Peso Neto ou P.N per volume, apresente os valores desse campo. Nunca faça calulos ou operações com esses valores. Caso não encontre, retorne como "Não identificado"
+• Peso Líquido total - Procure no documento chaves como Total Net Weight, Total N.W,  acompanhado de valores númericos e unidades de medida de peso. Nunca faça calulos ou operações com esses valores. Caso não encontre, retorne como "Não identificado"
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar apenas o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B). Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado. Nao esqueca de incluir na soma os valores de impostos e taxas.
 • Cubagem total - Somar todas as informações de cubagem do documento, considerando todas as páginas, e retornar apenas o valor total (m³/m3) utilizando a ferramenta Calculator. Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado.
 
 Conferências:
@@ -316,35 +318,38 @@ const checklistCCTAereo = `
 const checklistMicDta = `
 • Número do documento
 • Data de emissão
-• Dados do Remetente - também chamado de Shipper (nome, endereço, CNPJ, CEP)
-• Dados do Consignatário - também chamado de Consignee, Importer, Ship To (Razão social, endereço e CNPJ, CEP)
-• Dados do Destinatário - também chamado de Buyer (se importação por Conta e Ordem ou por Encomenda)
-• Nome e endereço do transportador
-• Local de Embarque
-• Local de Destino Final
-• Placa do Veículo
-• Placa do reboque/semireboque
+• Dados do Remetente – também chamado de Shipper ou Remitente. Traga os valores desse campo (nome, endereço, CNPJ)
+• Dados do Consignatário – também chamado de Consignee, Importer ou Ship To. Traga os valores desse campo (razão social, endereço, CNPJ, CEP)
+• Dados do Destinatário – também chamado de Buyer (se for importação por Conta e Ordem ou por Encomenda). Traga os valores desse campo (nome, endereço, CNPJ)
+• Nome e endereço do Transportador – também chamado de Nombre y domicilio del transportador. Traga os valores desse campo (nome, endereço, CNPJ, CEP, país). Caso não encontre, retorne como "Não identificado"
+• Local de embarque
+• Local de destino final
+• Placa do veículo – pode ser encontrada como Placa de Camion, Placa do Caminhão. Caso não encontre, retorne como "Não identificado"
+• Placa do reboque/semirreboque – pode ser encontrada como semi-reboque, semiremolque, reboque, remolque. Traga o valor desse campo
 • Placa do veículo substituto
-• Placa do reboque/semireboque substituto
-• Número do CRT - pode ser encontrado também como número do conhecimento de transporte, ou número da carta de porte conhecimento
-• Aduana de destino
+• Placa do reboque/semirreboque substituto
+• Número do CRT – pode ser encontrado também como número do conhecimento de transporte, número da carta de porte, número do conhecimento
+• Aduana de destino – também pode aparecer como Alfândega de destino
 • País de origem
 • Moeda da mercadoria
-• Valor da mercadoria - FOT
-• Valor do Frete - Trazer o valor dado ao frete, pode ser encontrado em outros idiomas.
+• Valor da mercadoria – FOT
+• Valor do frete – trazer o valor correspondente, podendo ser identificado também em outros idiomas
 • Valor do seguro
-• Quantidade e tipo de volumes - crate/box/pallets
-• Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
-• Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
-• Documentos Anexos
-• Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed
-• Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
-• Código/Referência das mercadorias
-• NCM - 4 dígitos a 8 dígitos de cada NCM
-• Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
-• Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
-• Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
-• Assinatura
+• Quantidade e tipo de volumes – exemplo: crate, box, pallets
+• Peso Bruto – procurar no documento chaves como Gross Weight, GW, Peso Bruto, PB, acompanhado de valores numéricos e unidades de medida
+• Peso Líquido – procurar no documento chaves como Net Weight, NW, Peso Neto, PN, acompanhado de valores numéricos e unidades de medida
+• Documentos anexos
+• Informação sobre Wooden Packing – valores esperados: Not applicable, Treated and Certified, Not-Treated and Not-Certified, Processed
+• Descrição resumida das mercadorias – trazer todos os nomes de produtos diferentes contidos na descrição
+• Código/Referência das mercadorias – caso não encontre, retorne como "Não identificado"
+• NCM – extrair códigos de 4 a 8 dígitos de cada NCM mencionado
+• Número de Série – se a mercadoria for máquina ou equipamento, buscar por: SN, NS, S/N, N/S
+• Ordem de compra – também encontrado pelas siglas OC ou PO. Também pode constar como Ordem de Compra, Orden de compra, Pedido de compra, Purchase Order, Customer Order Number
+• Fatura Comercial (número) – também chamada de Invoice, Nº Commercial Invoice, Commercial Invoice, Factura Comercial, factura, factura comercial, factura e, factura de exportacion, fat.coml. Retornar o número correspondente
+• Assinatura - caso não encontre, retorne como "Não identificado"
+
+Conferências:
+• Máquina/Equipamento
 `;
 
 export const checklistLabels = `

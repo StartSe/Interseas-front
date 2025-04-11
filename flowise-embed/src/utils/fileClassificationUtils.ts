@@ -70,7 +70,7 @@ export const checklistCommercialInvoice = `
 • Número do documento
 • Nome do documento
 • Data do documento
-• Dados do Importador - também chamado de Consignee, Importer, Ship To, traga os valores desse campo; Em casos em que não está explicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
+• Dados do Importador – Também chamado de Consignee, Importer, Ship To. Obtenha todos os dados relacionados ao importador. Em casos em que não estiver explicitamente indicado, considere como dados do importador as primeiras informações que constam no documento.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "Null".
@@ -79,7 +79,7 @@ export const checklistCommercialInvoice = `
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne "Não identificado")
 • Descrição das mercadorias - Trazer todos os valores de produtos diferentes na descrição, por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment
 • Código/Referência das mercadorias - Nunca considerar o NCM ou HS Code nesse campo. Traga apenas outros códigos identificadores encontrados no documento. Caso não encontre, retorne como "Não identificado".
-• Quantidade  - apresentar no formato quantidade e unidade de medida (ex: 10 pcs, 5 boxes, 20 pallets, etc). Caso não encontre, retorne como "Não identificado".
+• Quantidade  - apresentar no formato "<quantidade> <unidade de medida>" (ex: 10 pcs, 5 boxes, 20 pallets, etc). Caso não encontre, retorne como "Não identificado".
 • Unidade Comercializada
 • Valor unitário de cada espécie de mercadoria - Considerando todas as páginas, é apenas o valor unitário de cada espécie de mercadoria (separando mercadorias diferentes por ';')
 • Valor Total de cada espécie de mercadoria - Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';'). Exibir apenas o resultado da operação 
@@ -265,7 +265,7 @@ export const ChecklistProformaInvoice = `
 • Nome do documento
 • Data do documento
 • Assinatura
-• Dados do Importador - também chamado de Consignee, Importer, Ship To, traga os valores desse campo; Em casos em que não está explicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
+• Dados do Importador - também chamado de Consignee, Importer, Ship To, traga os valores desse campo. Em casos em que não está explicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "Null".
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
@@ -402,8 +402,8 @@ export const checklistOrdemDeCompra = `
 • Dados do Exportador/Fornecedor - (Razão social, endereço e CNPJ) - Buscar também por "importação por conta e ordem" ou "importação por encomenda". Caso nao encontre nenhum valor associado aos nomes específicos, considere como "Não identificado". 
 • Descrição das mercadorias
 • Quantidade
-• Unidade Comercializada - Separe os valores por virgula
-• Valor unitário de cada espécie de mercadoria - Apresente o valor unitário de cada mercadoria. Caso não encontre, retorne como "Não identificado". Separe os valores por ;
+• Unidade Comercializada - Separe os valores por ","
+• Valor unitário de cada espécie de mercadoria - Apresente o valor unitário de cada mercadoria. Caso não encontre, retorne como "Não identificado". Separe os valores por ";"
 • Valor Total de cada espécie de mercadoria - Considerando todas as páginas é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';')
 • Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento, lembre-se de considerar o valor total com impostos
 • Moeda de pagamento
@@ -484,7 +484,7 @@ export const checklistMSDS = `
 
 export const checklistCotacaoDeFrete = `
 • Cubagem - Considere APENAS valores explicitamente demarcados em "m³" ou "m3". NUNCA considere outras informações, como "peso cúbico", ainda que o nome se assemelhe. Caso não encontre valores demarcados em "m³" ou "m3", retorne null. NUNCA preencha com outras informações.
-• INCOTERM -  procure os possíveis valores de Incoterm no documento, retorne apenas a sigla, ou seja, Se o valor do campo for Ex Works, exiba EXW. Se o valor do campo for Free on Board, exiba FOB. Se o valor do campo for Cost, Insurance and Freight, exiba CIF. Se o valor do campo for Cost and Freight, exiba CFR. Se o valor do campo for Free Alongside Ship, exiba FAS. Se o valor do campo for Free Carrier, exiba FCA. Se o valor do campo for Delivered Duty Paid, exiba DDP. Se o valor do campo for Delivered Duty Unpaid, exiba DDU. Se o valor do campo for Carriage Paid To, exiba CPT. Se o valor do campo for Carriage and Insurance Paid To, exiba CIP.
+• INCOTERM – Procure os possíveis valores de Incoterm no documento. Retorne apenas a sigla, ou seja: Se o valor do campo for Ex Works, exiba EXW. Se o valor do campo for Free on Board, exiba FOB. Se o valor do campo for Cost, Insurance and Freight, exiba CIF. Se o valor do campo for Cost and Freight, exiba CFR. Se o valor do campo for Free Alongside Ship, exiba FAS. Se o valor do campo for Free Carrier, exiba FCA. Se o valor do campo for Delivered Duty Paid, exiba DDP. Se o valor do campo for Delivered Duty Unpaid, exiba DDU. Se o valor do campo for Carriage Paid To, exiba CPT. Se o valor do campo for Carriage and Insurance Paid To, exiba CIP.
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Taxado
 • Mercadorias/Commodity - Caso não encontre valores retorne "Não identificado".

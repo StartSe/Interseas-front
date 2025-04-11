@@ -266,7 +266,7 @@ export const ChecklistProformaInvoice = `
 • Data do documento
 • Assinatura
 • Dados do Importador - também chamado de Consignee, Importer, Ship To, traga os valores desse campo. Em casos em que não está explicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
-• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado"
 • Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "null".
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • País de origem

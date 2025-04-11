@@ -71,7 +71,7 @@ export const checklistCommercialInvoice = `
 • Nome do documento
 • Data do documento
 • Dados do Importador – Também chamado de Consignee, Importer, Ship To. Obtenha todos os dados relacionados ao importador. Em casos em que não estiver explicitamente indicado, considere como dados do importador as primeiras informações que constam no documento.
-• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "null".
 • Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço, NIF. Caso não encontre, retorne como "null".

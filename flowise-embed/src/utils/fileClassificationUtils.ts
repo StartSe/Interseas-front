@@ -50,7 +50,7 @@ export const checklistCeMercante = `
 • Carga perigosa - Código Indicador 
 • Carga perigosa - Classe
 • NCMs
-• Quantidade e tipo de volumes - Se nao encontrar, **apenas** retorne "Não identificado"
+• Quantidade e tipo de volumes - Se não encontrar, **apenas** retorne "Não identificado"
 `;
 
 export const checklistCertificadoOrigem = `
@@ -253,7 +253,7 @@ export const checklistPackingList = `
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes". A saída deve manter a estrutura completa da informação, incluindo agrupamentos secundários e múltiplos tipos de embalagem. Garanta que nenhum tipo de volume seja omitido.
 • Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume, apresente os valores desse campo
 • Peso Líquido total - Procure no documento chaves como Total Net Weight, Total N.W,  acompanhado de valores númericos e unidades de medida de peso
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar apenas o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B). Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado. Nao esqueca de incluir na soma os valores de impostos e taxas.
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar apenas o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B). Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado. Não esqueça de incluir na soma os valores de impostos e taxas.
 • Cubagem total - Somar todas as informações de cubagem do documento, considerando todas as páginas, e retornar apenas o valor total (m³/m3) utilizando a ferramenta Calculator. Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado.
 
 Conferências:
@@ -399,7 +399,7 @@ export const checklistOrdemDeCompra = `
 • Número da ordem da compra
 • Dados do emissor do documento Adquirente/Notify/Destinatário) - Apresentar os valores deste item separados por vírgula. Caso as informações não estejam explicitadas, indicar como "Não identificado".
 • Dados do Importador - Também chamado de "Importação por conta e ordem" ou "importação por encomenda". Caso as informações não estejam explicitadas, indicar como "Não identificado".
-• Dados do Exportador/Fornecedor - (Razão social, endereço e CNPJ) - Buscar também por "importação por conta e ordem" ou "importação por encomenda". Caso nao encontre nenhum valor associado aos nomes específicos, considere como "Não identificado". 
+• Dados do Exportador/Fornecedor - (Razão social, endereço e CNPJ) - Buscar também por "importação por conta e ordem" ou "importação por encomenda". Caso não encontre nenhum valor associado aos nomes específicos, considere como "Não identificado". 
 • Descrição das mercadorias
 • Quantidade
 • Unidade Comercializada - Separe os valores por ","

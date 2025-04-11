@@ -73,8 +73,8 @@ export const checklistCommercialInvoice = `
 • Dados do Importador – Também chamado de Consignee, Importer, Ship To. Obtenha todos os dados relacionados ao importador. Em casos em que não estiver explicitamente indicado, considere como dados do importador as primeiras informações que constam no documento.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
-• Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "Null".
-• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço, NIF. Caso não encontre, retorne como "Null".
+• Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "null".
+• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço, NIF. Caso não encontre, retorne como "null".
 • Assinatura
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne "Não identificado")
 • Descrição das mercadorias - Trazer todos os valores de produtos diferentes na descrição, por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment
@@ -267,7 +267,7 @@ export const ChecklistProformaInvoice = `
 • Assinatura
 • Dados do Importador - também chamado de Consignee, Importer, Ship To, traga os valores desse campo. Em casos em que não está explicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
-• Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "Null".
+• Dados do Exportador - nome, endereço, NIF. Caso não encontre, retorne como "null".
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • País de origem
 • Descrição das mercadorias - Trazer todos os nomes de produtos diferentes na descrição

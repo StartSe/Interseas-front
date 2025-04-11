@@ -70,20 +70,36 @@ export const checklistCommercialInvoice = `
 • Número do documento
 • Nome do documento
 • Data do documento
+<<<<<<< HEAD
 • Dados do Importador – Também chamado de Consignee, Importer, Ship To. Obtenha todos os dados relacionados ao importador. Em casos em que não estiver explicitamente indicado, considere como dados do importador as primeiras informações que constam no documento.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
 • Dados do Exportador - Apresente o nome, Razão social, endereço e CNPJ, CEP, Pais separados "," e sem pular linhas. Caso não encontre, retorne como "null".
 • Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço e pais "," e sem pular linhas. Caso não encontre, retorne como "null".
+=======
+• Dados do Importador - também chamado de Consignee, Importer, Ship To, traga os valores desse campo; Em casos em que não está explicitamente indicado, os primeiros dados que constam no documento são considerados como dados do importador. Apresente os valores (nome, endereço, CNPJ, CEP, Pais) de  separados por virgulas e sem pular linhas.
+• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".• Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP)
+• Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
+• Dados do Exportador - Apresente o nome, Razão social, endereço e CNPJ, CEP, Pais separados por virgulas e sem pular linhas. Caso não encontre, retorne como "Null". 
+• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço e pais apresente separados por virgulas e sem pular linhas. Caso não encontre, retorne como "null".
+>>>>>>> f9c8880524f9835ed36f3931441fefa5a2ce42f0
 • Assinatura
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne "Não identificado")
 • Descrição das mercadorias – Certifique-se de incluir todos os valores distintos presentes na descrição dos produtos. Por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment.
 • Código/Referência das mercadorias – Pode ser identificado pelo campo articulo ou por outros códigos específicos presentes no documento. Nunca utilize o NCM ou HS Code neste campo. Caso nenhum código identificador seja encontrado, registre como "Não identificado".
+<<<<<<< HEAD
 • Quantidade  - apresentar no formato "<quantidade> <unidade de medida>" (ex: 10 pcs, 5 boxes, 20 pallets, etc). Caso não encontre, retorne como "Não identificado".
+=======
+• Quantidade – Apresentar no formato "quantidade + unidade de medida" (ex: 10 pcs, 5 boxes, 20 pallets). Caso a unidade de medida não seja encontrada, exibir apenas a quantidade. Se a quantidade não puder ser identificada, retornar como "Não identificado".
+>>>>>>> f9c8880524f9835ed36f3931441fefa5a2ce42f0
 • Unidade Comercializada – Apresentar a unidade de comercialização do item. Caso não seja possível identificá-la, exibir "Não identificado".
 • Valor unitário de cada espécie de mercadoria – Pode ser identificado na coluna com o título "PRECIO", considerando os valores listados abaixo desse título. Analise todas as páginas do documento e extraia os valores unitários de cada espécie de mercadoria, separando mercadorias diferentes com ponto e vírgula ";".
 • Valor Total de cada espécie de mercadoria - Pode ser identificado em uma coluna com o titulo "total",considerando os valores listados abaixo desse título Considerando todas as páginas, é o valor unitário multiplicado pela quantidade das mercadorias ou apenas o valor total já informado no documento (quantidade X valor unitário separando mercadorias diferentes por ';'). Exibir apenas o resultado da operação 
 • Valor total de cada espécie de mercadoria – Pode ser identificado em uma coluna com o título "Total", considerando os valores listados abaixo desse cabeçalho. Analise todas as páginas do documento. O valor total corresponde à multiplicação da quantidade pelo valor unitário ou ao valor total já informado no documento. Exiba apenas o resultado final da operação, separando mercadorias diferentes com ponto e vírgula ';'.
+<<<<<<< HEAD
+=======
+• Valor Total das Mercadorias - Considerando todas as páginas, faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator ou apenas recupere o valor total já informado no documento.
+>>>>>>> f9c8880524f9835ed36f3931441fefa5a2ce42f0
 • Moeda de pagamento - trazer a moeda de pagamento
 • Condições de Pagamento
 • Dados Bancários do Exportador - nome do banco pode estar em outro idioma, Se exibir exiba "Consta" se nao traga "Nao Consta"

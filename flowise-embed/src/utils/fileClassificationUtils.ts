@@ -105,7 +105,7 @@ export const checklistCommercialInvoice = `
 • Número de Série - se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S
 • Modelo
 Conferências:
-• Importação direta - Deve retornar "Consta" apenas os dados do importador forem identificados (com os dados do adquirente/encomendante não identificados) **ou** os dados do importador forem iguais aos do adquirente/encomendante, mas os dados do adquirente não forem identificados.Caso contrário, deve retornar "Não consta".
+• Importação direta - Deve retornar "Consta" apenas se os dados do importador forem identificados (com os dados do adquirente/encomendante não identificados) **ou** se os dados do importador forem iguais aos do adquirente/encomendante, mas os dados do adquirente não forem identificados. Caso contrário, deve retornar "Não consta".
 • Importação por Conta e Ordem ou Encomenda - Deve retornar "Consta" quando identificados dados do importador e dados do adquirente/encomendante, e estes são diferentes. Caso contrário, deve retornar "Não consta".
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
 • Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "valor da mercadoria 1 + valor da mercadoria 2 + ... + valor da mercadoria n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)".

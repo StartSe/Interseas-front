@@ -216,7 +216,7 @@ export const checklistCRT = `
 • Notificar - Apresente os valores separados ","
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
-• Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Frete:tipo, moeda:moeda, valor:valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
+• Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada da seguinte forma: "Frete: <tipo>, moeda: <moeda>, valor: <valor>". Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.
 • Ordem de compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order", "Customer Order Number".
 • Documentos anexos - Traga o valor completo do campo
 • Local de embarque

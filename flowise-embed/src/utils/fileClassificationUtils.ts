@@ -73,8 +73,8 @@ export const checklistCommercialInvoice = `
 • Dados do Importador – Também chamado de Consignee, Importer, Ship To. Obtenha todos os dados relacionados ao importador. Em casos em que não estiver explicitamente indicado, considere como dados do importador as primeiras informações que constam no documento.
 • Dados do Adquirente ou Encomendante - também chamado de Notify, Buyer, Sold to, Encomendante, Bill to, Notify Party (Razão social, endereço, CNPJ, CEP). Caso não encontre, retorne como "Não identificado".
 • Ordem de Compra - também encontrado pelas siglas "OC" ou "PO", também pode constar como "Ordem de Compra", "Orden de compra", "Pedido de compra", "Purchase Order".
-• Dados do Exportador - Apresente o nome, Razão social, endereço e CNPJ, CEP, Pais separados "," e sem pular linhas. Caso não encontre, retorne como "null".
-• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço e pais "," e sem pular linhas. Caso não encontre, retorne como "null".
+• Dados do Exportador - Apresente o nome, Razão social, endereço e CNPJ, CEP, Pais separados por "," e sem pular linhas. Caso não encontre, retorne como "null".
+• Dados do Fabricante/Manufacturer - Tambem chamado de Manufacturer. Trazer as informacoes de nome, endereço e pais, separados por "," e sem pular linhas. Caso não encontre, retorne como "null".
 • Assinatura
 • Marca - (Incluir a marca dos produtos **apenas** se encontrar termo brand ou similar, se não encontrar, **apenas** retorne "Não identificado")
 • Descrição das mercadorias – Certifique-se de incluir todos os valores distintos presentes na descrição dos produtos. Por exemplo: HC5JD63-04-4-0901-990G Harvesting Equipment.
@@ -91,9 +91,9 @@ export const checklistCommercialInvoice = `
 • NCM/HS Code 
 • Porto de Embarque  - Caso não encontre, retorne como "Não identificado"
 • Porto de Desembarque  - Caso não encontre, retorne como "Não identificado"
-• País de Origem - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
-• País Procedência - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
-• País de Aquisição - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por vírgula ou listados.
+• País de Origem - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por "," ou listados.
+• País Procedência - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por ","  ou listados.
+• País de Aquisição - Deve trazer todos os valores encontrados, mesmo que sejam múltiplos, separados por "," ou listados.
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
 • Local do INCOTERM
 • Seguro - Também identificado como "Insurance". Trazer tipo, label, moeda e valor, indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Insurance; Moeda: USD; Valor: 1000;"
@@ -162,7 +162,7 @@ export const checklistConhecimentoHawb = `
 • CNPJ do Consignee - Consignatário/Identificação
 • To order of
 • Notify - Traga todas informacões do Notify (Razão social, endereço, CNPJ, CEP)
-• Frete – Extraia todas as informações relacionadas ao frete. Apresente os seguintes atributos separados por vírgula: tipo, moeda e valor. Não converta os dados internos do frete para JSON, apenas extraia e apresente no formato solicitado.
+• Frete – Extraia todas as informações relacionadas ao frete. Apresente os seguintes atributos separados por ",": tipo, moeda e valor. Não converta os dados internos do frete para JSON, apenas extraia e apresente no formato solicitado.
 • Forma de pagamento do frete – Se houver indicação no campo PPD, exiba Prepaid; se houver indicação no campo COL, exiba Collect.
 • Aeroporto de Partida
 • Aeroporto de Destino - também chamado de "Airport of Destination". Se não encontrar a referência, indique como "não identificado".
@@ -221,20 +221,20 @@ export const checklistCRT = `
 • Documentos anexos - Traga o valor completo do campo
 • Local de embarque
 • Número de Série - se mercadoria é máquina ou equipamento, buscar como SN, NS, S/N, N/S
-• Dados do Remetente - também chamado de Shipper. Apresente os seguintes valores: nome, endereço, país, CNPJ, separados por virgula. Caso não encontre, retorne como "Não identificado"
+• Dados do Remetente - também chamado de Shipper. Apresente os seguintes valores: nome, endereço, país, CNPJ, separados por ",". Caso não encontre, retorne como "Não identificado"
 • Valor da Mercadoria
 • Carimbo e assinatura - caso nao encontre retorne "Não identificado"
 • Número do Documento
 • Outros gastos a pagar (tipo, moeda e valor) - Caso não encontre, retorne como "Não identificado"
-• Dados do Destinatário - Apresente os seguintes valores: razão social, endereço, CNPJ e CEP, separados por virgula. Caso não encontre, retorne como "Não identificado"
+• Dados do Destinatário - Apresente os seguintes valores: razão social, endereço, CNPJ e CEP, separados por ",". Caso não encontre, retorne como "Não identificado"
 • Local de Destino Final - também chamado de Localidade, pais e prazo de entrega
 • Valor do frete externo
-• Dados do Consignatário - também chamado de Consignee, Importer, Ship To. Apresente os seguintes valores: Razão social, endereço e CNPJ, separados por virgula. Caso não encontre, retorne como "Não identificado"
+• Dados do Consignatário - também chamado de Consignee, Importer, Ship To. Apresente os seguintes valores: Razão social, endereço e CNPJ, separados por ",". Caso não encontre, retorne como "Não identificado"
 • Fatura Comercial (Número) - também chamado de Invoice, Nº Commercial Invoice, Factura Comercial, "factura"/"factura comercial"/"factura e"/"factura de exportacion"/"fat.coml", retornar o número do mesmo
 • Informação Wooden Packing - Valores: Not applicable; Treated and Certified; Not-Treated and Not-Certified; Processed. Caso nao encontre retorne "Não identificado"
 • Quantidade e tipo de volumes - crate/box/pallets. Apresente no seguinte formato: "quantidade, Tipo: tipo", use esse formato apenas para esse caso . Caso não encontre, retorne como "Não identificado".
 • Declarações e observações - detalhamento do frete internacional e nacional
-• Nome e endereço do transportador - Apresente os valores separados por virgula
+• Nome e endereço do transportador - Apresente os valores separados por ","
 • Declaração valor das mercadorias (valor por extenso)
 • Código/Referência das mercadorias
 • Descrição resumida das mercadorias - Trazer todos os nomes de produtos diferentes na descrição
@@ -402,7 +402,7 @@ export const checklistOrdemDeCompra = `
 • Nome do Documento – Sempre exiba o valor em letras maiúsculas. Caso não esteja nesse formato, converta-o.
 • Data do documento
 • Número da ordem da compra
-• Dados do emissor do documento Adquirente/Notify/Destinatário) - Apresentar os valores deste item separados por vírgula. Caso as informações não estejam explicitadas, indicar como "Não identificado".
+• Dados do emissor do documento Adquirente/Notify/Destinatário) - Apresentar os valores deste item separados por ",". Caso as informações não estejam explicitadas, indicar como "Não identificado".
 • Dados do Importador - Também chamado de "Importação por conta e ordem" ou "importação por encomenda". Caso as informações não estejam explicitadas, indicar como "Não identificado".
 • Dados do Exportador/Fornecedor - (Razão social, endereço e CNPJ) - Buscar também por "importação por conta e ordem" ou "importação por encomenda". Caso não encontre nenhum valor associado aos nomes específicos, considere como "Não identificado". 
 • Descrição das mercadorias

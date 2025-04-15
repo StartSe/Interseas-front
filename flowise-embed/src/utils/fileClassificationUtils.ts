@@ -241,7 +241,7 @@ export const checklistCRT = `
 
 Conferências:
 • Máquina/Equipamento
-• Documentos Anexos/D.E. Estrangeira - procure como "destinácion" ou "permiso de exportacion" e inicia com 2 ou 4 caracteres ref. ao ano (24 ou 2024, por exemplo), traga apenas os dados do campo
+• Documentos Anexos / D.E. Estrangeira – procurar pelos termos "destinación" ou "permiso de exportación", iniciando com 2 ou 4 caracteres referentes ao ano (por exemplo, 24 ou 2024); trazer apenas os dados do campo.
 `;
 
 export const checklistPackingList = `

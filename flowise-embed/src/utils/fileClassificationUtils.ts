@@ -46,7 +46,12 @@ export const checklistCeMercante = `
 • Valor da Capatazia - THC, DTHC, THD, Terminal Handling Charge, Terminal Handling Charge Destination
 • Tipos de carga - Campos "Tipo" em "Relação de itens da carga"
 • Quantidade de containers por tipo - Traga os dados do container para todos os containers
-• Dados dos containeres - Trazer todas as informações referentes à Relação de itens de carga mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.`;
+• Dados dos containeres - Trazer todas as informações referentes à Relação de itens de carga mantendo o label das informações, separe cada container em uma linha, ou seja, reúna em <p></p> Começando em número do container e quebrando a linha sempre que houver outro Número de container, usando um ‘/n’, para poder iniciar outro paragrafo. Apenas as informações de um container por linha. Número do Container - (no formato <3 letras>U<7 números>); Número dos lacres dos containers - (seal); Peso Bruto; Cubagem; Tipo de carga. Traga uma string com todos estes dados. Não converta os atributos internos dos containers para json.
+• Carga perigosa - Código Indicador 
+• Carga perigosa - Classe
+• NCMs
+• Quantidade e tipo de volumes - Se nao encontrar, **apenas** retorne "Não identificado"
+`;
 
 export const checklistCertificadoOrigem = `
 • Dados do Exportador - nome, endereço, NIF
@@ -82,7 +87,7 @@ export const checklistCommercialInvoice = `
 • Moeda de pagamento
 • Condições de Pagamento
 • Dados Bancários do Exportador - nome do banco pode estar em outro idioma(true/false)
-• Números do lote
+• Números do lote - Se o número do lote não estiver explícito, retorne **apenas** "Não identificado"
 • NCM/HS Code
 • Porto de Embarque
 • Porto de Desembarque
@@ -95,12 +100,12 @@ export const checklistCommercialInvoice = `
 • Frete - Todas as informações referentes a frete. Trazer label, moeda e valor (Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD), indicando o nome do campo e sua respectiva informação. Exemplo: "Label: Delivery FOB Antwerp / Belgium + packagingcosts; Moeda: EUR; Valor: 16.180,66" . Trazer todas as informações que encontrar de forma detalhada, organizada com: Label, moeda e valores parciais. Traga uma string com todos estes dados, desconsiderando o tipo e o valor total. Não converta os atributos internos do frete para json.
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
-• Quantidade e tipo de volumes - crate/box/pallets
+• Quantidade e tipo de volumes 
 • ${descricao_ex_checklist}
 • Número de Série - se mercadoria é máquina ou equipamento, buscar como Serial Number, SN, NS, S/N, N/S
 • Modelo
 Conferências:
-• Importação direta - Deve retornar true apenas se Adquirente for igual ao Importador *ou* se dados do importador forem identificados, mas dados do adquirente não. Caso contrário, retornar false
+• Importação direta - Deve retornar "Consta" apenas se Adquirente for igual ao Importador *ou* se dados do importador forem identificados, mas dados do adquirente não. Caso contrário, retornar "Não consta"
 • Importação por Conta e Ordem ou Encomenda - Deve retornar true apenas se Adquirente for diferente ao Importador e ambos os dados forem encontrados. Caso contrário, retornar false
 • Multiplicação de valor unitário dos itens comercializados - Retornar as mercadorias no formato: "valor unitário x quantidade comercializada = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)". Inclua "<br>" para separar as mercadorias
 • Valor Total das Mercadorias - Considerando todas as páginas faça a somatório do valor total informado por espécie de mercadoria usando a ferramenta calculator e retorne no formato total: "valor da mercadoria 1 + valor da mercadoria 2 + ... + valor da mercadoria n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)".
@@ -250,9 +255,10 @@ export const checklistPackingList = `
 • Código/Referência das mercadorias
 • Quantidade e Tipo de Volumes - pode ser um entre: crate, box, pallets, bags ou outro relacionado ao tema volume. Se identificar mais de um tipo, retorne "volumes". A saída deve manter a estrutura completa da informação, incluindo agrupamentos secundários e múltiplos tipos de embalagem. Garanta que nenhum tipo de volume seja omitido.
 • Peso Líquido por volume - Net Weight, N.W, Peso Neto ou P.N per volume
-• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar o valor total usando a ferramenta calculator, **retorne** no formato total: "peso liquido 1 + peso liquido 2 + ... + peso liquido n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
-• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B)
-• Cubagem total - Considerando todas as páginas, somar as informações relacionadas a cubagem no documento e retornar o valor total usando a ferramenta calculator - (m³/m3)
+• Peso Líquido total - Considerando todas as páginas, faça o somatório do peso líquido total (N.W) informado no documento e retornar apenas o resultado usando a ferramenta calculator. Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado.
+• Peso Bruto total - Considerando todas as páginas, somar as informações relacionadas a peso bruto total no documento e retornar apenas o valor total usando a ferramenta calculator ou extrair diretamente a informação caso já se encontre no documento - (Gross Weight, G.W, Peso Bruto ou P.B). Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado.
+• Cubagem total - Somar todas as informações de cubagem do documento, considerando todas as páginas, e retornar apenas o valor total (m³/m3) utilizando a ferramenta Calculator. Nunca exibir os cálculos ou qualquer outra informação, apenas o resultado.
+
 Conferências:
 • Peso líquido por volume = peso líquido total - Faça a somatório do peso líquido por volume usando a ferramenta calculator e verifique se seu resultado é igual ao peso líquido total informado no documento. Retorne no formato total: "peso liquido do volume 1 + peso liquido do volume 2 + ... + peso liquido do volume n = resultado (VALOR TOTAL DE ACORDO/VALOR TOTAL NÃO ESTÁ DE ACORDO)";
 `;
@@ -479,7 +485,7 @@ export const checklistMSDS = `
 • Descrição das mercadorias
 • Carga perigosa - Código Indicador (UN)
 • Carga perigosa - Classe
-• Carga perigosa - Package group`;
+• Carga perigosa - Package group - responder em numero romano`;
 
 export const checklistCotacaoDeFrete = `
 • Mercadorias/Commodity

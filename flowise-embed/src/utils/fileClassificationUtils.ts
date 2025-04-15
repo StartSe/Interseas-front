@@ -213,7 +213,7 @@ export const checklistCRT = `
 • Seguro (tipo, moeda e valor) - apresente os valores assim: tipo:tipo, moeda:moeda, valor: valor
 • Cubagem - m³/m3
 • INCOTERM - procure os possíveis valores de Incoterm no documento, retorne apenas a sigla
-• Notificar -  - Apresente os valores separados por virgula
+• Notificar - Apresente os valores separados ","
 • Peso Bruto - Procure no documento chaves como Gross Weight, GW, Peso Bruto ou PB acompanhado de valores númericos e unidades de medida de peso
 • Peso Liquido – Procure no documento chaves como Net Weight, NW, Peso Neto ou PN acompanhado de valores númericos e unidades de medida de peso
 • Valor do Frete - Todas as informações referentes a frete. Trazer tipo(Prepaid/Collect); moeda e valor (Total Prepaid; Total Collect; Total Freight, Basic Ocean Freight; Ocean Freight; O/F; OF; Freight; International freight; Freight and Charges, CAPATAZIA, THD). Trazer todas as informações que encontrar de forma detalhada, organizada com: Frete:tipo, moeda:moeda, valor:valor. Traga uma string com todos estes dados. Não converta os atributos internos do frete para json.

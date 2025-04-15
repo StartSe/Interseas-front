@@ -86,7 +86,7 @@ export const checklistCommercialInvoice = `
 • Valor total de cada espécie de mercadoria – Pode ser identificado em uma coluna com o título "Total", considerando os valores listados abaixo desse cabeçalho. Analise todas as páginas do documento. O valor total corresponde à multiplicação da quantidade pelo valor unitário ou ao valor total já informado no documento. Exiba apenas o resultado final da operação, separando mercadorias diferentes com ponto e vírgula ';'.
 • Moeda de pagamento - trazer a moeda de pagamento
 • Condições de Pagamento
-• Dados Bancários do Exportador - nome do banco pode estar em outro idioma, Se exibir exiba "Consta" se nao traga "Nao Consta"
+• Dados Bancários do Exportador - nome do banco pode estar em outro idioma; caso esteja presente, exibir "Consta"; caso contrário, exibir "Não consta"
 • Números do lote - Se o número do lote não estiver explícito, retorne **apenas** "Não identificado"
 • NCM/HS Code 
 • Porto de Embarque  - Caso não encontre, retorne como "Não identificado"

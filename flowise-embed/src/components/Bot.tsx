@@ -895,7 +895,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     updateMessages(inputValue, []);
     const ncmAnalysis = await sendBackgroundMessage(inputValue, []);
     setMessages((prevMessages) => {
-      const newMessage = { message: ncmAnalysis.text, type: 'apiMessage' } as MessageType;
+      const messageContent = `<div data-testid="tax-classification-data">${ncmAnalysis.text}</div>`;
+      const newMessage = { message: messageContent, type: 'apiMessage' } as MessageType;
       const updated = [...prevMessages, newMessage];
       addChatMessage(updated);
       return [...updated];

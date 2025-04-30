@@ -2166,9 +2166,19 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     if (fileProcessed && fileProcessed != 'null') {
       await saveCacheExtractionMessages(file.name, fileProcessed);
-      let processedDocumentJson = JSON.parse(fileProcessed);
-      processedDocumentJson = sanitizeJson(processedDocumentJson);
-      structureAndSaveMessages(processedDocumentJson, fileMap);
+      try {
+        let processedDocumentJson = JSON.parse(fileProcessed);
+        processedDocumentJson = sanitizeJson(processedDocumentJson);
+        structureAndSaveMessages(processedDocumentJson, fileMap);
+      } catch (error) {
+        console.error(error);
+        const errorMessage = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+        setMessages((prevMessages) => {
+          const newMessage = { message: errorMessage, type: 'apiMessage' } as MessageType;
+          const updated = [...prevMessages, newMessage];
+          return [...updated];
+        });
+      }
       setIsNextChecklistButtonDisabled(false);
     } else {
       await extractNewChecklist(file, fileMap, urls);
@@ -2408,7 +2418,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         } else if (contentJson !== null) {
           continue;
         } else {
-          visibleMessages.push(message);
+          const includesBaseJsonChars = ['{', '}', ':', ','].every((char) => message.content.includes(char));
+          const includesAnyOtherJsonChars = ['"', '[', ']'].some((char) => message.content.includes(char));
+          const isInvalidJson = includesBaseJsonChars && includesAnyOtherJsonChars;
+
+          if (isInvalidJson) {
+            const messageContent = messageUtils.UNABLE_TO_PROCESS_CHECKLIST_MESSAGE;
+            const chatMessageToShow = {
+              ...message,
+              content: messageContent,
+            };
+            visibleMessages.push(chatMessageToShow);
+          } else {
+            visibleMessages.push(message);
+          }
         }
       }
     }

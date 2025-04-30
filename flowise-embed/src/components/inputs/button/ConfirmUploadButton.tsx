@@ -7,7 +7,7 @@ type Props = ParentProps & {
   onSubmit: (event: MouseEvent) => void;
 };
 
-const defaultBackgroundColor = '#002F6C';
+const defaultBackgroundColor = '#136FEE';
 const defaultTextColor = '#FAFAFA';
 
 export const ConfirmUploadButton = (props: Props) => {

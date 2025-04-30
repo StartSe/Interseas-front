@@ -1,22 +1,15 @@
 import { customElement } from 'solid-element';
-import { defaultBotProps, defaultBotPropsAnalise } from './constants';
+import { defaultBotProps, defaultHomeProps, defaultMenuProps } from './constants';
 import { Bubble } from './features/bubble';
-import { BubbleAnalise } from './features/bubbleCriticalAnalysis';
 import { Full } from './features/full';
-import { FullCriticalAnalysis } from './features/fullCriticalAnalysis';
+import { Menu } from './features/menu';
+import { Home } from '@/pages/Home/Home';
 
 export const registerWebComponents = () => {
   if (typeof window === 'undefined') return;
-  const url = window.location.href;
-
-  if (url.includes('index.html')) {
-    customElement('flowise-fullchatbot', defaultBotProps, Full as any);
-    customElement('flowise-chatbot', defaultBotProps, Bubble);
-  }
-  if (url.includes('analise_critica.html')) {
-    customElement('analise-fullchatbot', defaultBotPropsAnalise, FullCriticalAnalysis as any);
-    customElement('analise-chatbot', defaultBotPropsAnalise, BubbleAnalise);
-  }
+  // @ts-expect-error element incorect type
+  customElement('flowise-fullchatbot', defaultBotProps, Full);
+  customElement('flowise-chatbot', defaultBotProps, Bubble);
+  customElement('flowise-menu', defaultMenuProps, Menu);
+  customElement('flowise-home', defaultHomeProps, Home);
 };
-
-export const nameURL = window.location.href;

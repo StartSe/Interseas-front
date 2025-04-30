@@ -5,6 +5,7 @@ export type BubbleTheme = {
     chatWindow?: ChatWindowTheme;
     button?: ButtonTheme;
     tooltip?: ToolTipTheme;
+    disclaimer?: DisclaimerPopUpTheme;
 };
 export type TextInputTheme = {
     backgroundColor?: string;
@@ -43,6 +44,7 @@ export type FeedbackTheme = {
 };
 export type ChatWindowTheme = {
     showTitle?: boolean;
+    flow: Flow;
     showAgentMessages?: boolean;
     title?: string;
     titleAvatarSrc?: string;
@@ -58,9 +60,13 @@ export type ChatWindowTheme = {
     textInput?: TextInputTheme;
     feedback?: FeedbackTheme;
     footer?: FooterTheme;
+    sourceDocsTitle?: string;
     poweredByTextColor?: string;
     starterPrompts?: string[];
     starterPromptFontSize?: number;
+    clearChatOnReload?: boolean;
+    dateTimeToggle?: DateTimeToggleTheme;
+    renderHTML?: boolean;
 };
 export type ButtonTheme = {
     size?: 'small' | 'medium' | 'large' | number;
@@ -84,6 +90,15 @@ export type autoWindowOpenTheme = {
     openDelay?: number;
     autoOpenOnMobile?: boolean;
 };
+export type DisclaimerPopUpTheme = {
+    title?: string;
+    message?: string;
+    buttonText?: string;
+};
+export type DateTimeToggleTheme = {
+    date?: boolean;
+    time?: boolean;
+};
 export type ButtonInputTheme = {
     backgroundColor?: string;
     textColor?: string;
@@ -93,4 +108,10 @@ export type TextExtractionConfig = {
     default: string;
     image: string;
 };
+export declare enum Flow {
+    Compliance = "compliance",
+    CriticalAnalysis = "critical_analysis",
+    taxClassification = "tax_classification",
+    Empty = ""
+}
 //# sourceMappingURL=types.d.ts.map

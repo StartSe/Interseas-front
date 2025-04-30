@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="apple-touch-icon" href="./assets/images/icon/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="./assets/images/icon/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./assets/images/icon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="./assets/images/icon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <title>Classificação Fiscal - Interseas</title>
+  <meta name="description" content="ComexAI - Classificação Fiscal" />
+  <script type="module">
+    import { checkAuth } from "./assets/js/auth.js";
+
+    await checkAuth({ redirectNotAuthenticated: true });
+  </script>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script type="module">
+    import Chatbot from './flowise-embed/dist/web.js';
+    import { menuItems } from './assets/js/data.js'
+
+    const chatflowid = 'a86ac7c4-a00d-4c7a-b42f-a24a5c0c8b3c';
+
+    Chatbot.initMenu({
+      currentFlow: 'tax_classification',
+      chatflowid: chatflowid,
+      items: menuItems,
+    });
+
+    Chatbot.initFull({
+      chatflowid: chatflowid,
+      apiHost: 'https://flowise.interseas-caprover.startse.com',
+      theme: {
+        button: {
+          backgroundColor: '#136FEE',
+          right: 20,
+          bottom: 20,
+          size: 48,
+          dragAndDrop: true,
+          iconColor: 'white',
+          autoWindowOpen: {
+            autoOpen: false,
+            openDelay: 2,
+            autoOpenOnMobile: false,
+          },
+        },
+        chatWindow: {
+          showTitle: true,
+          renderHTML: true,
+          flow: 'tax_classification',
+          showAgentMessages: true,
+          title: 'Classificação Fiscal',
+          welcomeMessage: `Olá! Sou Comex AI, assistente de IA de Classificação Fiscal.
+          Para sugerir a classificação fiscal da sua mercadoria, precisamos de algumas
+          informações. Por favor, envie uma mensagem de texto preenchendo os campos
+          abaixo`,
+          errorMessage: 'This is a custom error message',
+          backgroundColor: '#ffffff',
+          backgroundImage: 'enter image path or link',
+          fontSize: 16,
+          starterPromptFontSize: 15,
+          botMessage: {
+            backgroundColor: '#ECECEC',
+            textColor: '#303235',
+            showAvatar: true,
+          },
+          userMessage: {
+            backgroundColor: '#136FEE',
+            textColor: '#ffffff',
+          },
+          textInput: {
+            placeholder: 'Escreva sua mensagem...',
+            backgroundColor: '#ffffff',
+            textColor: '#303235',
+            sendButtonColor: '#136FEE',
+            maxChars: 1000,
+            maxCharsWarningMessage: 'Você excedeu o número máximo de caracteres. Por favor, entre uma mensagem de até 1000 caracteres.',
+            autoFocus: true,
+            sendMessageSound: true,
+            receiveMessageSound: true,
+          },
+          feedback: {
+            color: '#303235',
+          },
+          footer: {
+            textColor: '#002F6C',
+            text: 'Powered by',
+            company: 'StartSe',
+            companyLink: 'https://startse.com',
+          }
+        },
+      },
+    });
+  </script>
+  <flowise-menu></flowise-menu>
+  <flowise-fullchatbot></flowise-fullchatbot>
+</body>
+
+</html>

@@ -10,6 +10,7 @@ type Props = ParentProps & {
     uploadLabel?: string;
     uploadingButtonLabel?: string;
     errorMessage?: string;
+    uploadLimit?: number;
 };
 export declare const FileUploadModal: (props: Props) => import("solid-js").JSX.Element;
 export {};

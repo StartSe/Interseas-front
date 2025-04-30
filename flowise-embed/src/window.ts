@@ -1,11 +1,16 @@
 import { observersConfigType } from './components/Bot';
+import { BubbleTheme } from './features/bubble/types';
+import { MenuProps } from './features/menu';
+import { HomeProps } from './pages/Home/Home';
 
 /* eslint-disable solid/reactivity */
 type BotProps = {
   chatflowid: string;
   apiHost?: string;
+  onRequest?: (request: RequestInit) => Promise<void>;
   chatflowConfig?: Record<string, unknown>;
   observersConfig?: observersConfigType;
+  theme?: BubbleTheme;
 };
 
 let elementUsed: Element | undefined;
@@ -26,6 +31,20 @@ export const init = (props: BotProps) => {
   elementUsed = element;
 };
 
+export const initMenu = (props: MenuProps) => {
+  const element = document.querySelector('flowise-menu');
+  if (!element) throw new Error('<flowise-menu> element not found.');
+  Object.assign(element, props);
+};
+
+export const initHome = (props: HomeProps) => {
+  destroy();
+  const fullElement = document.querySelector('flowise-home');
+  if (!fullElement) throw new Error('<flowise-home> element not found.');
+  Object.assign(fullElement, props);
+  elementUsed = fullElement;
+};
+
 export const destroy = () => {
   elementUsed?.remove();
 };
@@ -34,6 +53,8 @@ type Chatbot = {
   initFull: typeof initFull;
   init: typeof init;
   destroy: typeof destroy;
+  initMenu: typeof initMenu;
+  initHome: typeof initHome;
 };
 
 declare const window:
@@ -46,6 +67,8 @@ export const parseChatbot = () => ({
   initFull,
   init,
   destroy,
+  initMenu,
+  initHome,
 });
 
 export const injectChatbotInWindow = (bot: Chatbot) => {

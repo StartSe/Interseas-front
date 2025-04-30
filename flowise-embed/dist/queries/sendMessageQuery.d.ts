@@ -8,9 +8,13 @@ export type IncomingInput = {
     fileName?: string;
     leadEmail?: string;
     action?: IAction;
+};
+type BaseRequest = {
+    apiHost?: string;
+    onRequest?: (request: RequestInit) => Promise<void>;
     history?: MessageType[];
 };
-export type MessageRequest = {
+export type MessageRequest = BaseRequest & {
     chatflowid?: string;
     apiHost?: string;
     body?: IncomingInput;
@@ -22,15 +26,20 @@ export type FeedbackInput = {
     rating: FeedbackRatingType;
     content?: string;
 };
-export type CreateFeedbackRequest = {
+export type CreateFeedbackRequest = BaseRequest & {
     chatflowid?: string;
     apiHost?: string;
     body?: FeedbackInput;
 };
-export type UpdateFeedbackRequest = {
+export type UpdateFeedbackRequest = BaseRequest & {
     id: string;
     apiHost?: string;
     body?: Partial<FeedbackInput>;
+};
+export type UpsertRequest = BaseRequest & {
+    chatflowid: string;
+    apiHost?: string;
+    formData: FormData;
 };
 export type LeadCaptureInput = {
     chatflowid: string;
@@ -39,36 +48,45 @@ export type LeadCaptureInput = {
     email?: string;
     phone?: string;
 };
-export type LeadCaptureRequest = {
+export type LeadCaptureRequest = BaseRequest & {
     apiHost?: string;
     body: Partial<LeadCaptureInput>;
 };
-export declare const sendFeedbackQuery: ({ chatflowid, apiHost, body }: CreateFeedbackRequest) => Promise<{
+export declare const sendFeedbackQuery: ({ chatflowid, apiHost, body, onRequest }: CreateFeedbackRequest) => Promise<{
     data?: unknown;
     error?: Error | undefined;
 }>;
-export declare const updateFeedbackQuery: ({ id, apiHost, body }: UpdateFeedbackRequest) => Promise<{
+export declare const updateFeedbackQuery: ({ id, apiHost, body, onRequest }: UpdateFeedbackRequest) => Promise<{
     data?: unknown;
     error?: Error | undefined;
 }>;
-export declare const sendMessageQuery: ({ chatflowid, apiHost, body }: MessageRequest) => Promise<{
+export declare const sendMessageQuery: ({ chatflowid, apiHost, body, onRequest }: MessageRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;
-export declare const getChatbotConfig: ({ chatflowid, apiHost }: MessageRequest) => Promise<{
+export declare const createAttachmentWithFormData: ({ chatflowid, apiHost, formData, onRequest }: UpsertRequest) => Promise<{
+    data?: unknown;
+    error?: Error | undefined;
+}>;
+export declare const upsertVectorStoreWithFormData: ({ chatflowid, apiHost, formData, onRequest }: UpsertRequest) => Promise<{
+    data?: unknown;
+    error?: Error | undefined;
+}>;
+export declare const getChatbotConfig: ({ chatflowid, apiHost, onRequest }: MessageRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;
-export declare const isStreamAvailableQuery: ({ chatflowid, apiHost }: MessageRequest) => Promise<{
+export declare const isStreamAvailableQuery: ({ chatflowid, apiHost, onRequest }: MessageRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;
-export declare const sendFileDownloadQuery: ({ apiHost, body }: MessageRequest) => Promise<{
+export declare const sendFileDownloadQuery: ({ apiHost, body, onRequest }: MessageRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;
-export declare const addLeadQuery: ({ apiHost, body }: LeadCaptureRequest) => Promise<{
+export declare const addLeadQuery: ({ apiHost, body, onRequest }: LeadCaptureRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;
+export {};
 //# sourceMappingURL=sendMessageQuery.d.ts.map

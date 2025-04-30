@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./assets/styles/header.css" />
+  <link rel="stylesheet" href="./flowise-embed/src/pages/Home/home.css" />
+  <link rel="apple-touch-icon" href="./assets/images/icon/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="./assets/images/icon/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./assets/images/icon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="./assets/images/icon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <title>Página Inicial - Interseas</title>
+  <meta name="description" content="ComexAI - Página Inicial">
+  <script type="module">
+    import { checkAuth } from "./assets/js/auth.js";
+
+    await checkAuth({ redirectNotAuthenticated: true });
+  </script>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script type="module">
+    import Chatbot from "./flowise-embed/dist/web.js";
+    import { menuItems } from "./assets/js/data.js";
+
+    Chatbot.initMenu({
+      currentFlow: "home",
+      items: menuItems,
+      fillColor: "#000000",
+    });
+
+    Chatbot.initHome({
+      items: menuItems,
+    });
+  </script>
+  <header>
+    <flowise-menu></flowise-menu>
+    <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
+  </header>
+  <flowise-home></flowise-home>
+
+</body>
+
+</html>

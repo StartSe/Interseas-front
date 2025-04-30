@@ -1,0 +1,30 @@
+import { Setter } from 'solid-js';
+import { IAction, MessageType } from '../Bot';
+type Props = {
+    message: MessageType;
+    chatflowid: string;
+    chatId: string;
+    apiHost?: string;
+    fileAnnotations?: any;
+    showAvatar?: boolean;
+    avatarSrc?: string;
+    backgroundColor?: string;
+    textColor?: string;
+    chatFeedbackStatus?: boolean;
+    fontSize?: number;
+    feedbackColor?: string;
+    isLoading: boolean;
+    showAgentMessages?: boolean;
+    handleActionClick: (label: string, action: IAction | undefined | null) => void;
+    setMessages: Setter<MessageType[]>;
+    handleSubmit: (inputValue: string, action?: IAction | null) => void;
+    clearChat: () => void;
+    selectionOptions: string[];
+    isDisabled: boolean;
+    setIsDisabled: () => void;
+    messageIndex: number;
+    printCriticalAnalysisData: () => void;
+};
+export declare const SelectionBubble: (props: Props) => import("solid-js").JSX.Element;
+export {};
+//# sourceMappingURL=SelectionBubble.d.ts.map

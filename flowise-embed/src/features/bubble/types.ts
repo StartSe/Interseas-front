@@ -6,6 +6,7 @@ export type BubbleTheme = {
   chatWindow?: ChatWindowTheme;
   button?: ButtonTheme;
   tooltip?: ToolTipTheme;
+  disclaimer?: DisclaimerPopUpTheme;
 };
 
 export type TextInputTheme = {
@@ -50,6 +51,7 @@ export type FeedbackTheme = {
 
 export type ChatWindowTheme = {
   showTitle?: boolean;
+  flow: Flow;
   showAgentMessages?: boolean; // parameter to show agent reasonings when using agentflows
   title?: string;
   titleAvatarSrc?: string;
@@ -65,9 +67,13 @@ export type ChatWindowTheme = {
   textInput?: TextInputTheme;
   feedback?: FeedbackTheme;
   footer?: FooterTheme;
+  sourceDocsTitle?: string;
   poweredByTextColor?: string;
   starterPrompts?: string[];
   starterPromptFontSize?: number;
+  clearChatOnReload?: boolean;
+  dateTimeToggle?: DateTimeToggleTheme;
+  renderHTML?: boolean;
 };
 
 export type ButtonTheme = {
@@ -95,6 +101,17 @@ export type autoWindowOpenTheme = {
   autoOpenOnMobile?: boolean; // Optional parameter for opening on mobile
 };
 
+export type DisclaimerPopUpTheme = {
+  title?: string;
+  message?: string;
+  buttonText?: string;
+};
+
+export type DateTimeToggleTheme = {
+  date?: boolean;
+  time?: boolean;
+};
+
 export type ButtonInputTheme = {
   backgroundColor?: string;
   textColor?: string;
@@ -105,3 +122,10 @@ export type TextExtractionConfig = {
   default: string;
   image: string;
 };
+
+export enum Flow {
+  Compliance = 'compliance',
+  CriticalAnalysis = 'critical_analysis',
+  taxClassification = 'tax_classification',
+  Empty = '',
+}

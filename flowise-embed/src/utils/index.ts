@@ -6,6 +6,8 @@ export const isEmpty = (value: string | undefined | null): value is undefined =>
 
 export const isNotEmpty = (value: string | undefined | null): value is string => value !== undefined && value !== null && value !== '';
 
+const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+
 export const sendRequest = async <ResponseData>(
   params:
     | {
@@ -13,22 +15,41 @@ export const sendRequest = async <ResponseData>(
         method: string;
         body?: Record<string, unknown> | FormData;
         type?: string;
+        headers?: Record<string, any>;
+        formData?: FormData;
+        onRequest?: (request: RequestInit) => Promise<void>;
       }
     | string,
 ): Promise<{ data?: ResponseData; error?: Error }> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), fiveMinutesInMilliseconds);
   try {
     const url = typeof params === 'string' ? params : params.url;
-    const response = await fetch(url, {
+    const headers =
+      typeof params !== 'string' && isDefined(params.body)
+        ? {
+            'Content-Type': 'application/json',
+            ...params.headers,
+          }
+        : undefined;
+    let body: string | FormData | undefined = typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined;
+    if (typeof params !== 'string' && params.formData) body = params.formData;
+
+    const requestInfo: RequestInit = {
       method: typeof params === 'string' ? 'GET' : params.method,
       mode: 'cors',
-      headers:
-        typeof params !== 'string' && isDefined(params.body)
-          ? {
-              'Content-Type': 'application/json',
-            }
-          : undefined,
-      body: typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined,
-    });
+      headers,
+      body,
+      signal: controller.signal,
+    };
+
+    if (typeof params !== 'string' && params.onRequest) {
+      await params.onRequest(requestInfo);
+    }
+
+    const response = await fetch(url, requestInfo);
+
+    clearTimeout(timeoutId);
     let data: any;
     const contentType = response.headers.get('Content-Type');
     if (contentType && contentType.includes('application/json')) {
@@ -104,6 +125,18 @@ export const removeLocalStorageChatHistory = (chatflowid: string) => {
   }
 };
 
+export const removeLocalStorageChatHistoryItem = (chatflowid: string, chatId: string) => {
+  const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
+  if (!chatDetails) return;
+  try {
+    const obj = { chatHistory: null, chatId: chatId };
+    localStorage.removeItem(`${chatflowid}_EXTERNAL`);
+    localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
+  } catch (e) {
+    return;
+  }
+};
+
 export const getBubbleButtonSize = (size: 'small' | 'medium' | 'large' | number | undefined) => {
   if (!size) return 48;
   if (typeof size === 'number') return size;
@@ -111,4 +144,27 @@ export const getBubbleButtonSize = (size: 'small' | 'medium' | 'large' | number 
   if (size === 'medium') return 48;
   if (size === 'large') return 64;
   return 48;
+};
+
+export const setCookie = (cname: string, cvalue: string, exdays: number) => {
+  const d = new Date();
+  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+  const expires = 'expires=' + d.toUTCString();
+  document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+};
+
+export const getCookie = (cname: string): string => {
+  const name = cname + '=';
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return '';
 };

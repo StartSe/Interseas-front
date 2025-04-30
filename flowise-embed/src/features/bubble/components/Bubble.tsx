@@ -5,6 +5,7 @@ import { BubbleParams } from '../types';
 import { Bot, BotProps } from '../../../components/Bot';
 import Tooltip from './Tooltip';
 import { getBubbleButtonSize } from '@/utils';
+import { Flow } from '../types';
 
 const defaultButtonColor = '#3B81F6';
 const defaultIconColor = 'white';
@@ -124,6 +125,7 @@ export const Bubble = (props: BubbleProps) => {
               bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
               bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}
               showTitle={bubbleProps.theme?.chatWindow?.showTitle}
+              flow={bubbleProps.theme?.chatWindow?.flow || Flow.Empty}
               showAgentMessages={bubbleProps.theme?.chatWindow?.showAgentMessages}
               title={bubbleProps.theme?.chatWindow?.title}
               titleAvatarSrc={bubbleProps.theme?.chatWindow?.titleAvatarSrc}
@@ -136,12 +138,18 @@ export const Bubble = (props: BubbleProps) => {
               feedback={bubbleProps.theme?.chatWindow?.feedback}
               fontSize={bubbleProps.theme?.chatWindow?.fontSize}
               footer={bubbleProps.theme?.chatWindow?.footer}
+              sourceDocsTitle={bubbleProps.theme?.chatWindow?.sourceDocsTitle}
               starterPrompts={bubbleProps.theme?.chatWindow?.starterPrompts}
               starterPromptFontSize={bubbleProps.theme?.chatWindow?.starterPromptFontSize}
               chatflowid={props.chatflowid}
               chatflowConfig={props.chatflowConfig}
               apiHost={props.apiHost}
+              onRequest={props.onRequest}
               observersConfig={props.observersConfig}
+              clearChatOnReload={bubbleProps.theme?.chatWindow?.clearChatOnReload}
+              disclaimer={bubbleProps.theme?.disclaimer}
+              dateTimeToggle={bubbleProps.theme?.chatWindow?.dateTimeToggle}
+              renderHTML={props.theme?.chatWindow?.renderHTML}
             />
           </div>
         </Show>

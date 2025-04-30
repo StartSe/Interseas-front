@@ -9,6 +9,8 @@ export default class CompareDocuments {
 
   private parsedJsonExtractResponse: any;
 
+  private parsedSpecificJsonExtractResponse: any;
+
   private lastMessage: any;
 
   constructor(
@@ -63,12 +65,15 @@ export default class CompareDocuments {
 
   private async checkFilesInPairs(firstFile: FileMapping, secondFile: FileMapping) {
     const prompt = this.comparePairForSpecificCompliance(firstFile, secondFile);
+    const promptToCrossValidation = `CROSS_VALIDATION\n
+    ${firstFile.file.name} ${JSON.stringify(firstFile.content || firstFile.checklist)}\n
+    ${secondFile.file.name} ${JSON.stringify(secondFile.content || secondFile.checklist)}`;
 
-    await this.analyseFilesWithAI(prompt);
+    await this.analyseFilesWithAI(promptToCrossValidation);
 
     if (prompt.includes('Specific compliance')) {
-      this.sendMessageToChat(this.parsedJsonExtractResponse);
-      return;
+      await this.analyseFilesWithAI(prompt);
+      this.sendMessageToChat(this.parsedSpecificJsonExtractResponse);
     }
 
     this.unifyDifferentValues();
@@ -83,9 +88,9 @@ export default class CompareDocuments {
       (firstFile.type === DocumentTypes.CE_MERCANTE && secondFile.type === DocumentTypes.CONHECIMENTO_BL) ||
       (firstFile.type === DocumentTypes.CONHECIMENTO_BL && secondFile.type === DocumentTypes.CE_MERCANTE);
 
-    const CRTxCOMERCIAL_INVOICE =
-      (firstFile.type === DocumentTypes.CONHECIMENTO_CRT && secondFile.type === DocumentTypes.COMMERCIAL_INVOICE) ||
-      (firstFile.type === DocumentTypes.COMMERCIAL_INVOICE && secondFile.type === DocumentTypes.CONHECIMENTO_CRT);
+    const CRTxMIC_DTA =
+      (firstFile.type === DocumentTypes.CONHECIMENTO_CRT && secondFile.type === DocumentTypes.CONHECIMENTO_MIC_DTA) ||
+      (firstFile.type === DocumentTypes.CONHECIMENTO_MIC_DTA && secondFile.type === DocumentTypes.CONHECIMENTO_CRT);
 
     const firstFileWithAddedKey = JSON.stringify({
       ...firstFile.filledChecklist,
@@ -97,24 +102,24 @@ export default class CompareDocuments {
       type: secondFile.type,
     });
 
+    const baseSpecificCompliancePrompt = 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey;
+
     if (CCTxHAWB) {
-      return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CCTCOMPLIANCE;
+      return baseSpecificCompliancePrompt + CCTCOMPLIANCE;
     } else if (CE_MERCANTExBL_CONHECIMENTO) {
-      return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CE_MERCANTE;
-    } else if (CRTxCOMERCIAL_INVOICE) {
-      return 'Specific compliance ' + firstFileWithAddedKey + secondFileWithAddedKey + CRT;
-    } else {
-      return `CROSS_VALIDATION\n${JSON.stringify(firstFile.type)} ${JSON.stringify(firstFile.content)}\n${JSON.stringify(
-        secondFile.type,
-      )} ${JSON.stringify(secondFile.content)}`;
+      return baseSpecificCompliancePrompt + CE_MERCANTE;
+    } else if (CRTxMIC_DTA) {
+      return baseSpecificCompliancePrompt + CRT;
     }
+
+    return '';
   }
 
   private async analyseFilesWithAI(prompt: string) {
     const response = await this.dependencies.sendBackgroundMessage(prompt, []);
 
     if (prompt.includes('Specific compliance')) {
-      this.parsedJsonExtractResponse = response;
+      this.parsedSpecificJsonExtractResponse = response;
       return;
     }
 
@@ -126,7 +131,7 @@ export default class CompareDocuments {
   private unifyDifferentValues() {
     try {
       this.parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
-        if (dataDocument.data[0].value !== dataDocument.data[1].value) {
+        if (dataDocument.data.length > 1 && dataDocument.data[0].value?.toLowerCase() !== dataDocument.data[1].value?.toLowerCase()) {
           const differentValue = {
             [dataDocument.data[0].key_identifier]: [
               {
@@ -146,7 +151,7 @@ export default class CompareDocuments {
         }
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -167,6 +172,7 @@ export default class CompareDocuments {
         message: message.text,
         type: 'apiMessage',
       },
+      { message: '', type: 'apiMessage' },
     ]);
 
     this.lastMessage = message;

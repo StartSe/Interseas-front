@@ -4,6 +4,7 @@ import { UploadFile, createFileUploader, createDropzone } from '@solid-primitive
 import { UploadIcon } from '@/components/icons/UploadIcon';
 import { UploadFileItem } from '@/features/modal/components/UploadFileItem';
 import { ConfirmUploadButton } from '@/components/inputs/button/ConfirmUploadButton';
+import { messageUtils } from '@/utils/messageUtils';
 
 type Props = {
   onSubmit: (files: UploadFile[]) => void;
@@ -12,6 +13,7 @@ type Props = {
   modalTitle?: string;
   uploadingButtonLabel?: string;
   errorMessage?: string;
+  uploadLimit?: number;
 };
 
 export const UploadFileForm = (props: Props) => {
@@ -74,7 +76,15 @@ export const UploadFileForm = (props: Props) => {
                   Escolha
                 </a>
               </h3>
-              <p class="formacts">Formatos suportados: {Object.keys(acceptedFileTypes).join(', ')}</p>
+              <p class="formacts">
+                {messageUtils.SUPPORTED_FILE_TYPES} {Object.keys(acceptedFileTypes).join(', ')}
+              </p>
+              {props.uploadLimit && (
+                <p class="uploadLimit" style={{ color: files().length > props.uploadLimit ? 'red' : '' }}>
+                  {messageUtils.UPLOAD_LIMIT}
+                  {props.uploadLimit}
+                </p>
+              )}{' '}
             </div>
           </div>
         </div>
@@ -98,7 +108,7 @@ export const UploadFileForm = (props: Props) => {
         onSubmit={onSubmit}
         backgroundColor={props.buttonInput?.backgroundColor}
         textColor={props.buttonInput?.textColor}
-        disabled={files().length === 0 || error().length > 0}
+        disabled={files().length === 0 || error().length > 0 || files().length > (props.uploadLimit ?? 10)}
       >
         {props.uploadingButtonLabel}
       </ConfirmUploadButton>

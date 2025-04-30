@@ -1,0 +1,30 @@
+
+/* Variáveis CSS */
+:root {
+  --bg-color-light: #fafafa;
+  --header-height: 3.0625rem;
+  --shadow-md: 0 .25rem .125rem -.125rem rgba(0, 0, 0, .25);
+}
+
+/* Reset e estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Header */
+header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-color-light);
+    box-shadow: var(--shadow-md);
+  }

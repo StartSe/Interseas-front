@@ -1,6 +1,6 @@
 import { Show } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
-import { SendIcon } from '../icons';
+import { DeleteIcon, SendIcon } from '../icons';
 
 type SendButtonProps = {
   sendButtonColor?: string;
@@ -9,11 +9,12 @@ type SendButtonProps = {
   disableIcon?: boolean;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
-type NewItemButtonProps = {
+type DeleteButtonProps = {
   newItemText: string;
   textColor?: string;
   borderColor?: string;
 } & SendButtonProps;
+
 export const SendButton = (props: SendButtonProps) => {
   return (
     <button
@@ -26,18 +27,19 @@ export const SendButton = (props: SendButtonProps) => {
       }
       style={{ background: 'transparent', border: 'none' }}
     >
-      <Show when={!props.isLoading}>
+      <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
         <SendIcon color={props.sendButtonColor} class={'send-icon flex ' + (props.disableIcon ? 'hidden' : '')} />
       </Show>
     </button>
   );
 };
 
-export const NewItemButton = (props: NewItemButtonProps) => {
+export const DeleteButton = (props: DeleteButtonProps) => {
   // Check if <flowise-fullchatbot> is present in the DOM
   const isFullChatbot = document.querySelector('flowise-fullchatbot') !== null;
   const paddingClass = isFullChatbot ? 'px-4' : 'px-12';
   const defaultColor = 'white';
+
   return (
     <button
       type="submit"
@@ -48,9 +50,11 @@ export const NewItemButton = (props: NewItemButtonProps) => {
         props.class
       }
       style={{ background: 'transparent', border: `1px solid ${props.borderColor || defaultColor}`, padding: '0.3125rem 1.875rem' }}
-      title="New Chat"
+      title="Reset Chat"
     >
-      <span style={{ color: props.textColor || defaultColor, 'text-transform': 'uppercase' }}>+ {props.newItemText}</span>
+      <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
+        <span style={{ color: props.textColor || defaultColor, 'text-transform': 'uppercase' }}>+ {props.newItemText}</span>
+      </Show>
     </button>
   );
 };

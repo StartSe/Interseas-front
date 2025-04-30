@@ -1,75 +1,76 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Análise de Compliance - Interseas</title>
-  <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script type="module">
-        import Chatbot from './flowise-embed/dist/web.js';
-        Chatbot.initFull({
-          chatflowid: '162459a5-b621-464d-9dc9-ae59ccc1077c',
-          apiHost: 'https://interseas-flowise.paas.startse.com',
-          theme: {
-            button: {
-              backgroundColor: '#002F6C',
-              right: 20,
-              bottom: 20,
-              size: 48,
-              dragAndDrop: true,
-              iconColor: 'white',
-              autoWindowOpen: {
-                autoOpen: false,
-                openDelay: 2,
-                autoOpenOnMobile: false,
-              },
-            },
-            chatWindow: {
-              showTitle: true,
-              showAgentMessages: true,
-              title: 'Análise de Compliance',
-              welcomeMessage: 'Olá! Sou o assistente de IA da Interseas, especializado em Análise de Compliance. Por favor, faça o upload dos seus documentos para que possamos iniciar a análise e esclarecer todas as suas dúvidas.',
-              errorMessage: 'This is a custom error message',
-              backgroundColor: '#ffffff',
-              backgroundImage: 'enter image path or link',
-              fontSize: 16,
-              starterPromptFontSize: 15,
-              botMessage: {
-                backgroundColor: '#f7f8ff',
-                textColor: '#303235',
-                showAvatar: true,
-              },
-              userMessage: {
-                backgroundColor: '#002F6C',
-                textColor: '#ffffff',
-              },
-              textInput: {
-                placeholder: 'Qual sua dúvida?',
-                backgroundColor: '#ffffff',
-                textColor: '#303235',
-                sendButtonColor: '#002F6C',
-                maxChars: 50,
-                maxCharsWarningMessage: 'You exceeded the characters limit. Please input less than 50 characters.',
-                autoFocus: true,
-                sendMessageSound: true,
-                receiveMessageSound: true,
-              },
-              feedback: {
-                color: '#303235',
-              },
-              footer: {
-                textColor: '#002F6C',
-                text: 'Powered by',
-                company: 'StartSe',
-                companyLink: 'https://startse.com',
-              }
-            },
-          },
-        });
-      </script>
-      <flowise-fullchatbot></flowise-fullchatbot>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./assets/styles/header.css" />
+  <link rel="stylesheet" href="./assets/styles/login.css" />
+  <link rel="apple-touch-icon" href="./assets/images/icon/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="./assets/images/icon/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./assets/images/icon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="./assets/images/icon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <title>Login - Interseas</title>
+  <meta name="description" content="ComexAI - Login">
+  <script type="module">
+    import { checkAuth } from "./assets/js/auth.js";
+
+    const HOME_PAGE = 'home.html';
+
+    await checkAuth({ redirectAuthenticated: true, authenticatedDestinationPage: HOME_PAGE });
+  </script>
+</head>
+
+<body>
+  <header>
+    <img src="./flowise-embed/src/assets/logo.svg" alt="Interseas Logo" />
+  </header>
+
+  <div class="page">
+    <div class="modal" id="loginModal">
+      <div class="card">
+        <img src="./assets/images/login-icon.png"  alt="loginimage">
+        <h2 class="text-login">Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">E-mail</label>
+            <input type="email" id="username" name="username" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <div id="error-message" class="error-message"></div>
+          <button type="submit" id="login-button" class="btn-login">CONFIRMAR</button>
+          <div id="errorMessage" class="error-message">
+            Credenciais inválidas. Tente novamente.
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="background">
+      <img src="./assets/images/login-background.jpeg" alt="agenteslogo">
+    </div>
+  </div>
+
+  <script type="module">
+    import { authenticate } from "./assets/js/auth.js";
+
+    const handleFormData = (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const authenticated = authenticate(username, password);
+
+      if (!authenticated) {
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    };
+
+    document.getElementById('loginForm').addEventListener('submit', handleFormData);
+  </script>
+</body>
+
 </html>
-
-

@@ -7,10 +7,6 @@ export default class CompareDocuments {
 
   private listDifferentKeys: any[] = [];
 
-  private parsedJsonExtractResponse: any;
-
-  private parsedSpecificJsonExtractResponse: any;
-
   private lastMessage: any;
 
   constructor(
@@ -69,14 +65,15 @@ export default class CompareDocuments {
     ${firstFile.file.name} ${JSON.stringify(firstFile.content || firstFile.checklist)}\n
     ${secondFile.file.name} ${JSON.stringify(secondFile.content || secondFile.checklist)}`;
 
-    await this.analyseFilesWithAI(promptToCrossValidation);
+    // Pairs are checked concurrently, so each pair keeps its own responses instead of sharing instance state.
+    const crossValidationResponse = await this.analyseFilesWithAI(promptToCrossValidation);
 
     if (prompt.includes('Specific compliance')) {
-      await this.analyseFilesWithAI(prompt);
-      this.sendMessageToChat(this.parsedSpecificJsonExtractResponse);
+      const specificComplianceResponse = await this.analyseFilesWithAI(prompt);
+      this.sendMessageToChat(specificComplianceResponse);
     }
 
-    this.unifyDifferentValues();
+    this.unifyDifferentValues(crossValidationResponse);
   }
 
   private comparePairForSpecificCompliance(firstFile: FileMapping, secondFile: FileMapping): string {
@@ -115,22 +112,21 @@ export default class CompareDocuments {
     return '';
   }
 
-  private async analyseFilesWithAI(prompt: string) {
+  private async analyseFilesWithAI(prompt: string): Promise<any> {
     const response = await this.dependencies.sendBackgroundMessage(prompt, []);
 
     if (prompt.includes('Specific compliance')) {
-      this.parsedSpecificJsonExtractResponse = response;
-      return;
+      return response;
     }
 
     const extractedJsonResponse = response.text.replace(/```json|```/g, '');
 
-    this.parsedJsonExtractResponse = JSON.parse(extractedJsonResponse);
+    return JSON.parse(extractedJsonResponse);
   }
 
-  private unifyDifferentValues() {
+  private unifyDifferentValues(crossValidationResponse: any) {
     try {
-      this.parsedJsonExtractResponse.equivalent_keys.forEach((dataDocument: any) => {
+      crossValidationResponse.equivalent_keys.forEach((dataDocument: any) => {
         if (dataDocument.data.length > 1 && dataDocument.data[0].value?.toLowerCase() !== dataDocument.data[1].value?.toLowerCase()) {
           const differentValue = {
             [dataDocument.data[0].key_identifier]: [
